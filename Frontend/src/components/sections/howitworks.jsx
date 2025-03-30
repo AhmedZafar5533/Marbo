@@ -69,14 +69,7 @@ const steps = [
     category: "services",
     color: colors.primary,
   },
-  {
-    title: "Secure Transactions",
-    description:
-      "Enjoy transparent and safe transactions backed by robust security measures that build confidence in every interaction.",
-    icon: <FaLock />,
-    category: "services",
-    color: colors.primary,
-  },
+
 ];
 
 
@@ -145,7 +138,7 @@ const HowItWorks = () => {
 
   return (
     <section
-      className="relative py-20 px-4 md:px-8 overflow-hidden"
+      className="relative py-10 md:mb-10 md:py-45 px-4 md:px-8 "
       ref={containerRef}
       style={{
         background: `linear-gradient(to bottom, ${colors.background}, ${colors.accent}20)`,
@@ -475,40 +468,7 @@ const HowItWorks = () => {
           </div>
         )}
 
-        {/* Call to action section */}
-        <motion.div
-          className="text-center mt-16 md:mt-75 pt-5 md:pt-16 relative z-10"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
-          <h3
-            className="text-2xl md:text-3xl font-bold mb-4"
-            style={{ color: colors.text }}
-          >
-            Ready to get started?
-          </h3>
-          <p
-            className="max-w-2xl mx-auto mb-8"
-            style={{ color: `${colors.text}CC` }}
-          >
-            Join thousands of vendors and buyers already using Marbo Global to connect, sell, and shop globally.
-          </p>
 
-          <motion.button
-            className="px-8 py-4 rounded-full font-medium transition-all duration-300"
-            style={{
-              backgroundImage: "linear-gradient(#FD1A03, #ec5f4f)",
-              color: colors.background,
-              boxShadow: `0 10px 25px -5px ${colors.primary}70`
-            }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            Sign Up Now
-          </motion.button>
-        </motion.div>
       </div>
     </section>
   );
