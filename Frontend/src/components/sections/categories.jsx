@@ -232,7 +232,7 @@ const CategoriesAndServices = () => {
       </section>
 
       {/* Categories Section - with improved carousel */}
-      <section className="relative z-10 py-10 px-6 bg-gradient-to-t from-white to-[#FCE6A6]/20">
+      <section className="relative z-10 py-10 md:px-6 bg-gradient-to-t from-white to-[#FCE6A6]/20">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0 }}
