@@ -26,6 +26,7 @@ import 'swiper/css/pagination';
 
 
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const ServiceCard = ({ service }) => {
   return (
@@ -69,12 +70,14 @@ const ServiceCard = ({ service }) => {
 
         {/* CTA button with improved interaction */}
         <div className="mt-auto">
-          <button className="inline-flex items-center text-red-600 hover:text-red-800 font-medium transition-all group/cta">
-            <span className="border-b border-transparent group-hover/cta:border-red-600 transition-all">
-              View Providers
-            </span>
-            <FaChevronRight className="ml-2 w-3 h-3 transition-transform group-hover/cta:translate-x-1" />
-          </button>
+          <Link to={'/providers'}  >
+            <button className="inline-flex items-center cursor-pointer text-red-600 hover:text-red-800 font-medium transition-all group/cta">
+              <span className="border-b border-transparent group-hover/cta:border-red-600 transition-all">
+                View Providers
+              </span>
+              <FaChevronRight className="ml-2 w-3 h-3 transition-transform group-hover/cta:translate-x-1" />
+            </button>
+          </Link>
         </div>
       </div>
     </motion.div>
@@ -420,8 +423,8 @@ const ServicesSection = () => {
                   key={index}
                   onClick={() => setActiveCategory(category.name)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${activeCategory === category.name
-                      ? 'bg-red-600 text-white shadow-md'
-                      : 'bg-white text-slate-700 hover:bg-red-50 hover:text-red-600'
+                    ? 'bg-red-600 text-white shadow-md'
+                    : 'bg-white text-slate-700 hover:bg-red-50 hover:text-red-600'
                     }`}
                 >
                   {category.name}
@@ -455,28 +458,25 @@ const ServicesSection = () => {
                 </div>
 
                 {/* Mobile & Tablet View - Enhanced Swiper with touch swiping */}
+
                 <div className="lg:hidden relative">
                   <Swiper
-                    modules={[Navigation, Pagination]}
+                    modules={[Navigation]} // Removed Pagination module
                     spaceBetween={16}
                     slidesPerView={1.2}
-                    pagination={{
-                      clickable: true,
-                      dynamicBullets: true
-                    }}
                     breakpoints={{
                       480: {
                         slidesPerView: 1.5,
-                        spaceBetween: 16
+                        spaceBetween: 16,
                       },
                       640: {
                         slidesPerView: 2,
-                        spaceBetween: 20
+                        spaceBetween: 20,
                       },
                       768: {
                         slidesPerView: 2.5,
-                        spaceBetween: 24
-                      }
+                        spaceBetween: 24,
+                      },
                     }}
                     className="px-2 pb-10"
                     navigation={{
@@ -497,20 +497,24 @@ const ServicesSection = () => {
                         />
                       </SwiperSlide>
                     ))}
-
                     {/* Custom navigation buttons */}
-                    <div className={`swiper-prev-${categoryIndex} absolute top-1/2 -translate-y-1/2 left-0 z-1 hidden md:block`}>
+                    <div
+                      className={`swiper-prev-${categoryIndex} absolute top-1/2 -translate-y-1/2 left-0 z-1 hidden md:block`}
+                    >
                       <button className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-lg hover:bg-red-50 transition-colors">
                         <FaChevronLeft className="text-red-600 text-sm" />
                       </button>
                     </div>
-                    <div className={`swiper-next-${categoryIndex} absolute top-1/2 -translate-y-1/2 right-0 z-10 hidden md:block`}>
+                    <div
+                      className={`swiper-next-${categoryIndex} absolute top-1/2 -translate-y-1/2 right-0 z-10 hidden md:block`}
+                    >
                       <button className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-lg hover:bg-red-50 transition-colors">
                         <FaChevronRight className="text-red-600 text-sm" />
                       </button>
                     </div>
                   </Swiper>
                 </div>
+
 
                 {/* Desktop View - Grid layout */}
                 <div className="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -595,44 +599,44 @@ const ServicesCarousel = () => {
   const carouselRef = useRef(null);
   const autoPlayRef = useRef(null);
 
-  const services = 
-  [
-    {
-      id: 1,
-      title: "Custom Artwork",
-      category: "Art",
-      description: "Bespoke paintings and handcrafted designs.",
-      link: "https://plus.unsplash.com/premium_photo-1671527298459-cea23635bd5b",
-    },
-    {
-      id: 2,
-      title: "Medical Consultation",
-      category: "Health",
-      description: "Expert medical advice and online consultations.",
-      link: "https://images.pexels.com/photos/5452232/pexels-photo-5452232.jpeg"
-    },
-    {
-      id: 4,
-      title: "Home Renovation",
-      category: "Construction",
-      description: "High-quality home remodeling services.",
-      link: "https://images.pexels.com/photos/7092358/pexels-photo-7092358.jpeg",
-    },
-    {
-      id: 5,
-      title: "Grocery Delivery",
-      category: "Groceries",
-      description: "Get your daily essentials delivered fast.",
-      link: "https://images.pexels.com/photos/7457217/pexels-photo-7457217.jpeg",
-    },
-    {
-      id: 6,
-      title: "Property Listings",
-      category: "Real Estate",
-      description: "Find your dream home with ease.",
-      link: "https://images.pexels.com/photos/7578890/pexels-photo-7578890.jpeg",
-    },
-  ];
+  const services =
+    [
+      {
+        id: 1,
+        title: "Custom Artwork",
+        category: "Art",
+        description: "Bespoke paintings and handcrafted designs.",
+        link: "https://plus.unsplash.com/premium_photo-1671527298459-cea23635bd5b",
+      },
+      {
+        id: 2,
+        title: "Medical Consultation",
+        category: "Health",
+        description: "Expert medical advice and online consultations.",
+        link: "https://images.pexels.com/photos/5452232/pexels-photo-5452232.jpeg"
+      },
+      {
+        id: 4,
+        title: "Home Renovation",
+        category: "Construction",
+        description: "High-quality home remodeling services.",
+        link: "https://images.pexels.com/photos/7092358/pexels-photo-7092358.jpeg",
+      },
+      {
+        id: 5,
+        title: "Grocery Delivery",
+        category: "Groceries",
+        description: "Get your daily essentials delivered fast.",
+        link: "https://images.pexels.com/photos/7457217/pexels-photo-7457217.jpeg",
+      },
+      {
+        id: 6,
+        title: "Property Listings",
+        category: "Real Estate",
+        description: "Find your dream home with ease.",
+        link: "https://images.pexels.com/photos/7578890/pexels-photo-7578890.jpeg",
+      },
+    ];
 
   // Handle screen size changes
   useEffect(() => {
@@ -736,14 +740,14 @@ const ServicesCarousel = () => {
           // Only apply the background image if this slide has been loaded.
           const backgroundStyle = loadedImages[index]
             ? {
-                backgroundImage: service.link
-                  ? `url(${service.link})`
-                  : `url(/api/placeholder/800/400?text=${encodeURIComponent(service.title)})`,
-                animation: isActive ? 'zoomIn 8s ease-out forwards' : 'none'
-              }
+              backgroundImage: service.link
+                ? `url(${service.link})`
+                : `url(/api/placeholder/800/400?text=${encodeURIComponent(service.title)})`,
+              animation: isActive ? 'zoomIn 8s ease-out forwards' : 'none'
+            }
             : {
-                backgroundColor: '#333' // placeholder background color
-              };
+              backgroundColor: '#333' // placeholder background color
+            };
 
           return (
             <div
@@ -803,7 +807,7 @@ const ServicesCarousel = () => {
         })}
 
         {/* Navigation buttons - show only on tablet/desktop */}
-        {/* {!isMobile && (
+        {!isMobile && (
           <div className="absolute z-20 w-full flex justify-between top-1/2 -translate-y-1/2 px-4">
             <button
               className="bg-black/30 text-white w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center cursor-pointer transition duration-300 hover:bg-red-700 hover:scale-105 backdrop-blur-sm border border-white/10"
@@ -820,23 +824,21 @@ const ServicesCarousel = () => {
               <span className="text-base lg:text-xl">→</span>
             </button>
           </div>
-        )} */}
-
-        {/* Indicator dots
-        <div className="absolute left-1/2 bottom-1 -translate-x-1/2 flex flex-row gap-2 z-10">
+        )}
+        {/*Indicator dots */}
+        <div className="absolute left-1/2 bottom-4 -translate-x-1/2 flex flex-row gap-2 z-10">
           {displayServices.map((_, index) => (
             <button
               key={index}
-              className={`w-2 h-2 md:w-2.5 md:h-2.5 rounded-full transition-all duration-300 ${
-                index === activeIndex
-                  ? 'bg-gradient-to-r from-red-600 to-orange-500 scale-125 shadow-lg shadow-red-600/50'
-                  : 'bg-white/20'
-              } border-none cursor-pointer`}
+              className={`w-2 h-2 md:w-2.5 md:h-2.5 rounded-full transition-all duration-300 ${index === activeIndex
+                ? 'bg-gradient-to-r from-red-600 to-orange-500 scale-125 shadow-lg shadow-red-600/50'
+                : 'bg-white/20'
+                } border-none cursor-pointer`}
               onClick={() => setActiveIndex(index)}
               aria-label={`Go to service ${index + 1}`}
             ></button>
           ))}
-        </div> */}
+        </div>
       </div>
 
       <style>{`
