@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+* {
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+        sans-serif;
+}
+body {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}

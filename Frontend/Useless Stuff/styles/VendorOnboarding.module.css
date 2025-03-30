@@ -1,0 +1,91 @@
+.vendorOnboarding {
+    max-width: 600px;
+    margin: 75px auto;
+    padding: 30px;
+    text-align: center;
+    background: #fff;
+    border-radius: 12px;
+    height: 50vh;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.heading {
+    font-size: 38px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.step {
+    padding: 25px;
+    border-radius: 12px;
+    margin-top: 50px;
+}
+
+
+.stepHeading {
+    font-size: 26px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-transform: capitalize;
+}
+
+.input {
+    width: 80%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    color: #2c3e50;
+    background-color: #f5f5f5;
+    transition: all 0.3s ease-in-out;
+}
+
+.input:focus {
+    border-color: #b87333;
+    outline: none;
+    background-color: #fff;
+    box-shadow: 0 0 8px rgba(184, 115, 51, 0.5);
+}
+
+.button {
+    padding: 12px 24px;
+    background: #b87333;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 17px;
+    margin-right: 10px;
+    transition: all 0.3s ease-in-out;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.button:hover {
+    background: #8c7b75;
+    box-shadow: 0 4px 12px rgba(140, 123, 117, 0.3);
+}
+
+.fileInput {
+    margin-bottom: 15px;
+}
+
+.reviewDetails {
+    text-align: left;
+    margin-bottom: 20px;
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.reviewDetails p {
+    font-size: 16px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}

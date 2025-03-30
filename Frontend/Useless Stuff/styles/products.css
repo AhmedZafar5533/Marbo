@@ -1,0 +1,698 @@
+/* Global Variables for Consistent Theming */
+:root {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --text-primary: white;
+  --text-secondary: #94a3b8;
+  --accent-primary: #0ea5e9;
+  --accent-secondary: #6366f1;
+  --border-color: rgba(100, 116, 139, 0.2);
+  --transition-speed: 0.3s;
+}
+
+/* Global Container */
+.netflix-products-container {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 100%
+  );
+  color: var(--text-primary);
+  overflow: hidden;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  contain: layout;
+  will-change: background;
+}
+
+/* Background Elements */
+.background-elements {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.background-circle-top,
+.background-circle-bottom {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.1;
+  animation: pulse 5s infinite alternate ease-in-out;
+}
+
+.background-circle-top {
+  top: -25%;
+  right: -25%;
+  width: 600px;
+  height: 600px;
+  background-color: rgba(49, 46, 129, 0.1);
+}
+
+.background-circle-bottom {
+  bottom: -25%;
+  left: -25%;
+  width: 500px;
+  height: 500px;
+  background-color: rgba(128, 0, 128, 0.1);
+  animation-delay: 0.5s;
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+/* Section Styles */
+.products-section {
+  position: relative;
+  z-index: 10;
+  padding: 6rem clamp(1rem, 5vw, 4rem);
+  width: 100%;
+}
+
+.products-content {
+  max-width: 72rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Section Title */
+.section-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 4rem;
+  position: relative;
+}
+
+.title-underline {
+  position: absolute;
+  left: 50%;
+  bottom: -1rem;
+  transform: translateX(-50%);
+  width: 6rem;
+  height: 0.25rem;
+  background-color: var(--accent-primary);
+  border-radius: 9999px;
+}
+
+/* Carousel Container */
+.carousel-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Navigation Buttons */
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  width: clamp(2.5rem, 5vw, 3.5rem);
+  height: clamp(2.5rem, 5vw, 3.5rem);
+  background-color: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(15px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transition: all var(--transition-speed) ease;
+  cursor: pointer;
+}
+
+.nav-button-left {
+  left: clamp(1rem, 3vw, 2rem);
+}
+
+.nav-button-right {
+  right: clamp(1rem, 3vw, 2rem);
+}
+
+.nav-icon {
+  width: clamp(1.25rem, 3vw, 1.75rem);
+  height: clamp(1.25rem, 3vw, 1.75rem);
+  color: var(--accent-primary);
+}
+
+/* Product Container */
+.product-container {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 2rem 1rem;
+  gap: 2rem;
+  /* Hide scrollbars across browsers */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.product-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+/* Card Layout Improvements */
+.product-card,
+.browse-more-card {
+  flex-shrink: 0;
+  width: clamp(18rem, 90vw, 24rem);
+  height: auto; /* Allow dynamic height */
+  perspective: 1000px; /* Add 3D effect for hover */
+}
+
+.product-card-inner,
+.browse-more-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(20px);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transition: all var(--transition-speed) ease;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+}
+
+/* Enhanced Hover Effect */
+.product-card-inner:hover,
+.browse-more-inner:hover {
+  transform: scale(1.03) rotateX(2deg) rotateY(-2deg);
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.3);
+}
+
+/* Product Image Improvements */
+.product-image {
+  height: 14rem;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s ease;
+}
+
+.product-image::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 60%,
+    rgba(15, 23, 42, 0.7) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.product-card-inner:hover .product-image::before {
+  opacity: 1;
+}
+
+.product-image:hover {
+  transform: scale(1.1);
+}
+
+/* Product Details Refinement */
+.product-details {
+  flex: 1;
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.product-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.product-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.product-card-inner:hover .product-title {
+  color: var(--accent-primary);
+}
+
+.product-price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  text-shadow: 0 2px 4px rgba(14, 165, 233, 0.3);
+}
+
+.product-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.3s ease;
+}
+
+.product-card-inner:hover .product-description {
+  color: var(--text-primary);
+}
+
+/* Button Styling */
+.product-button,
+.browse-more-button {
+  margin-top: auto; /* Push button to bottom */
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 2rem;
+  border: 2px solid rgba(51, 65, 85, 0.5);
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  background-color: transparent;
+  transition: all var(--transition-speed) ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-button::before,
+.browse-more-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: all 0.6s ease;
+}
+
+.product-button:hover::before,
+.browse-more-button:hover::before {
+  left: 100%;
+}
+
+.product-button:hover,
+.browse-more-button:hover {
+  background-color: rgba(51, 65, 85, 0.2);
+  border-color: var(--accent-primary);
+}
+
+.button-icon {
+  margin-left: 0.5rem;
+  transition: transform var(--transition-speed) ease;
+}
+
+.product-button:hover .button-icon,
+.browse-more-button:hover .button-icon {
+  transform: translateX(0.25rem);
+}
+
+/* Category Badge Enhancement */
+.category-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: linear-gradient(
+    to right,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
+  color: var(--text-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-10px);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.product-card-inner:hover .category-badge {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Browse More Card Specific Styling */
+.browse-more-card {
+  perspective: 1000px;
+}
+
+.browse-more-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  transform-style: preserve-3d;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover Effects */
+.browse-more-inner:hover {
+  transform: scale(1.03) rotateX(2deg) rotateY(-2deg);
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.3);
+}
+
+/* Icon Container */
+.browse-more-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 5rem;
+  height: 5rem;
+  background: linear-gradient(
+    to bottom right,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
+  border-radius: 50%;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+  transform: translateZ(30px); /* 3D effect */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.browse-more-inner:hover .browse-more-icon {
+  transform: translateZ(50px) rotate(360deg);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.browse-more-icon .icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--text-primary);
+  transition: transform 0.3s ease;
+}
+
+.browse-more-inner:hover .browse-more-icon .icon {
+  transform: scale(1.1) rotate(15deg);
+}
+
+/* Decorative Background Effect */
+.browse-more-inner::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at center,
+    rgba(14, 165, 233, 0.1) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.browse-more-inner:hover::before {
+  opacity: 1;
+}
+
+/* Title Styling */
+.browse-more-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+  transform: translateZ(20px); /* 3D effect */
+}
+
+.browse-more-inner:hover .browse-more-title {
+  color: var(--accent-primary);
+}
+
+/* Description Styling */
+.browse-more-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+  transition: color 0.3s ease;
+  transform: translateZ(10px); /* 3D effect */
+}
+
+.browse-more-inner:hover .browse-more-description {
+  color: var(--text-primary);
+}
+
+/* Browse More Button */
+.browse-more-button {
+  margin-top: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 2rem;
+  border: 2px solid rgba(51, 65, 85, 0.5);
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  background-color: transparent;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(40px); /* 3D effect */
+}
+
+.browse-more-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: all 0.6s ease;
+}
+
+.browse-more-button:hover::before {
+  left: 100%;
+}
+
+.browse-more-button:hover {
+  background-color: rgba(51, 65, 85, 0.2);
+  border-color: var(--accent-primary);
+}
+
+.browse-more-button .button-icon {
+  margin-left: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.browse-more-button:hover .button-icon {
+  transform: translateX(0.25rem);
+}
+
+/* Subtle Pulsing Animation */
+@keyframes subtle-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.browse-more-inner:hover {
+  animation: subtle-pulse 2s infinite;
+}
+
+/* Carousel Dots */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+  gap: 0.5rem;
+}
+
+.dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: #4b5563;
+  border-radius: 50%;
+  transition: all var(--transition-speed) ease;
+  cursor: pointer;
+}
+
+.dot.active-dot {
+  background-color: var(--accent-primary);
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Performance and Accessibility Improvements */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+
+
+
+/* Additional Media Queries for Enhanced Responsiveness */
+@media screen and (max-width: 1200px) {
+    .netflix-products-container {
+      padding: 2rem 1rem;
+    }
+  
+    .products-section {
+      padding: 4rem 1rem;
+    }
+  
+    .nav-button {
+      width: clamp(2rem, 4vw, 3rem);
+      height: clamp(2rem, 4vw, 3rem);
+    }
+  }
+  
+  @media screen and (max-width: 768px) {
+    .product-container {
+      gap: 1rem;
+      padding: 1rem 0.5rem;
+      scroll-snap-type: x mandatory;
+    }
+  
+    .product-card,
+    .browse-more-card {
+      width: clamp(16rem, 80vw, 22rem);
+      scroll-snap-align: center;
+    }
+  
+    .section-title {
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+    }
+  
+    .nav-button {
+      display: none; /* Optional: Hide navigation buttons on mobile */
+    }
+  
+    .product-details {
+      padding: 1rem 1.5rem;
+    }
+  
+    .background-circle-top,
+    .background-circle-bottom {
+      width: 300px;
+      height: 300px;
+    }
+  
+    .carousel-dots {
+      margin-top: 2rem;
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .product-card,
+    .browse-more-card {
+      width: clamp(14rem, 90vw, 18rem);
+    }
+  
+    .product-title {
+      font-size: 1.1rem;
+    }
+  
+    .product-price {
+      font-size: 1rem;
+    }
+  
+    .product-description {
+      font-size: 0.8rem;
+    }
+  
+    .category-badge {
+      padding: 0.3rem 0.75rem;
+      font-size: 0.65rem;
+    }
+  
+    .browse-more-title {
+      font-size: 1.2rem;
+    }
+  
+    .browse-more-description {
+      font-size: 0.8rem;
+    }
+  }
+  
+  /* Touch-Friendly Enhancements */
+  @media (hover: none) and (pointer: coarse) {
+    .product-card-inner:hover,
+    .browse-more-inner:hover {
+      transform: scale(1.02);
+      box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.2);
+    }
+  
+    .nav-button {
+      width: clamp(3rem, 10vw, 4rem);
+      height: clamp(3rem, 10vw, 4rem);
+    }
+  
+    .product-button,
+    .browse-more-button {
+      padding: 1rem 2.5rem;
+      font-size: 1rem;
+    }
+  }
+  
+  /* Container Query for Advanced Responsive Design */
+  @container (max-width: 600px) {
+    .product-details {
+      padding: 1rem;
+    }
+  
+    .product-title {
+      font-size: 1.1rem;
+    }
+  }
