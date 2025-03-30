@@ -395,7 +395,7 @@ const CategoriesAndServices = () => {
               <div className="flex flex-wrap justify-center gap-4">
                 <Link to={"/redirect"}>
                   <button className="px-8 py-4 cursor-pointer bg-white text-[#FD1A03] rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
-                    Get Started Now
+                    Get Started
                   </button>
                 </Link>
                 <Link to={"/contact-us"}>
