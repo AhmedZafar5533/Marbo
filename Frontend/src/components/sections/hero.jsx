@@ -185,7 +185,7 @@ const HeroSection = () => {
           <h1
             ref={titleRef}
             id="animatedTitle"
-            className="inline-block text-3xl sm:text-4xl md:text-5xl font-bold font-['Playfair_Display'] tracking-wider leading-tight text-[#FD1A03]"
+            className="inline-block text-3xl sm:text-4xl md:text-5xl font-bold font-['Playfair_Display'] tracking-wider leading-tight text-[#455047]"
           >
             Bridging Home and Global Service Providers
           </h1>
