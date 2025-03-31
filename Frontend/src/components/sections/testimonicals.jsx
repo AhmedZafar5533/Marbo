@@ -17,7 +17,7 @@ const testimonialsData = [
     quote:
       "Absolutely love the support and attention to detail. This is exactly what I needed!",
     name: "James",
-    role: "Web Developer",
+    role: "Marbo vendor",
     image: "https://randomuser.me/api/portraits/men/5.jpg",
     background:
       "https://images.unsplash.com/photo-1740004731264-3cde5c198cc2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw3fHx8ZW58MHx8fHx8",
