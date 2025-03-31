@@ -73,7 +73,7 @@ const HeroSection = () => {
   const renderFloatingProfiles = () => {
     const profiles = [
       {
-        top: "20%",
+        top: "30%",
         left: "10%",
         bg: "bg-[#FD1A03]",
         img: "https://images.pexels.com/photos/904332/pexels-photo-904332.jpeg?auto=compress&cs=tinysrgb&w=600",
