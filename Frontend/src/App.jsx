@@ -9,9 +9,14 @@ import { useAuthStore } from "../Store/authStore";
 
 // Components
 import LoadingSpinner from "./components/LoadingSpinner";
-import ForgotPasswordForm from "./Pages/passwordResetEmail";
-import ResetPasswordForm from "./Pages/resetPassword";
-import SubscriptionCheckout from "./Pages/subscriptionCheckout";
+
+
+// Password Forget Pages
+
+const ResetPasswordForm = lazy(() => import("./Pages/resetPassword"));
+const SubscriptionCheckout = lazy(() => import("./Pages/subscriptionCheckout"));
+const ForgotPasswordForm = lazy(() => import("./Pages/passwordResetEmail"));
+
 
 // Lazy-loaded Layouts
 const MainLayout = lazy(() => import("./Layout/MainlLayout"));

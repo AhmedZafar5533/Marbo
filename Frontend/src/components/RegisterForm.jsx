@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LogIn, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
+import { LogIn, Eye, EyeOff, AlertCircle, Loader2, X, Check } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../Store/authStore';
 
@@ -13,6 +13,14 @@ const SignupPage = () => {
     confirmPassword: ''
   });
   const [errors, setErrors] = useState({});
+  const [passwordValidation, setPasswordValidation] = useState({
+    isString: false,
+    notEmpty: false,
+    minLength: false,
+    maxLength: true, // Default to true as it's unlikely to exceed 128 chars initially
+    hasUpperCase: false,
+    hasLowerCase: false
+  });
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,7 +44,7 @@ const SignupPage = () => {
 
   useEffect(() => {
     const role = new URLSearchParams(location.search).get('role');
-    if(!role) 
+    if (!role)
       navigate('/redirect');
     if (role) {
       setFormData(prev => ({ ...prev, role }));
@@ -50,6 +58,22 @@ const SignupPage = () => {
       navigate('/verify');
     }
   }, [authenticationState, redirectToOtp, navigate]);
+
+  // Password validation checker
+  useEffect(() => {
+    const { password } = formData;
+    const uppercaseRegex = /[A-Z]/;
+    const lowercaseRegex = /[a-z]/;
+
+    setPasswordValidation({
+      isString: typeof password === 'string',
+      notEmpty: password.trim() !== '',
+      minLength: password.length >= 8,
+      maxLength: password.length <= 128,
+      hasUpperCase: uppercaseRegex.test(password),
+      hasLowerCase: lowercaseRegex.test(password)
+    });
+  }, [formData.password]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -82,35 +106,60 @@ const SignupPage = () => {
     sendRegisterReguest(formData);
   };
 
+  // Password validation checklist component
+  const PasswordChecklist = () => {
+    const requirements = [
+      { key: "isString", text: "Password must be a string", met: passwordValidation.isString },
+      { key: "notEmpty", text: "Password is required", met: passwordValidation.notEmpty },
+      { key: "minLength", text: "Password must be at least 8 characters long", met: passwordValidation.minLength },
+      { key: "maxLength", text: "Password must be at most 128 characters long", met: passwordValidation.maxLength },
+      { key: "hasUpperCase", text: "Password must contain at least one uppercase letter", met: passwordValidation.hasUpperCase },
+      { key: "hasLowerCase", text: "Password must contain at least one lowercase letter", met: passwordValidation.hasLowerCase }
+    ];
+
+    return (
+      <div className="mt-2 space-y-1 text-sm">
+        {requirements.map((req) => (
+          <div key={req.key} className="flex items-center">
+            {req.met ? (
+              <Check className="h-4 w-4 text-green-500 mr-2" />
+            ) : (
+              <X className="h-4 w-4 text-red-500 mr-2" />
+            )}
+            <span className={req.met ? "text-green-600" : "text-red-500"}>
+              {req.text}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col lg:flex-row">
       <div className="w-full h-full flex items-center justify-center p-6 sm:p-12">
-        <div  className="absolute top-6 left-6 flex items-center text-red-600 font-bold">
+        <div className="absolute top-6 left-6 flex items-center text-red-600 font-bold">
+          <div className="flex-shrink-0">
+            <a
+              href="/"
+              aria-label="Go to homepage"
+              className="flex items-center space-x-3 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 group"
+            >
+              {/* Logo icon */}
+              <div
+                className="relative h-12 w-12 rounded-full bg-gradient-to-tr from-red-600 to-red-500 shadow-lg flex items-center justify-center transition-transform transform group-hover:scale-110"
+              >
+                <span className="text-white font-extrabold text-2xl">M</span>
+                {/* subtle ring on hover */}
+                <span className="absolute inset-0 rounded-full ring-2 ring-white opacity-0 group-hover:opacity-20 transition-opacity"></span>
+              </div>
 
-             <div className="flex-shrink-0">
-               <a
-                 href="/"
-                 aria-label="Go to homepage"
-                 className="flex items-center space-x-3 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 group"
-               >
-                 {/* Logo icon */}
-                 <div
-                   className="relative h-12 w-12 rounded-full bg-gradient-to-tr from-red-600 to-red-500 shadow-lg flex items-center justify-center transition-transform transform group-hover:scale-110"
-                 >
-                   <span className="text-white font-extrabold text-2xl">M</span>
-                   {/* subtle ring on hover */}
-                   <span className="absolute inset-0 rounded-full ring-2 ring-white opacity-0 group-hover:opacity-20 transition-opacity"></span>
-                 </div>
- 
-                 {/* Brand name */}
-                 <span className="text-2xl font-extrabold text-gray-900 transition-colors group-hover:text-red-600">
-                   Marbo Global
-                 </span>
-               </a>
-             </div>
- 
- 
-           
+              {/* Brand name */}
+              <span className="text-2xl font-extrabold text-gray-900 transition-colors group-hover:text-red-600">
+                Marbo Global
+              </span>
+            </a>
+          </div>
         </div>
 
         <div className="w-full max-w-md space-y-8 mt-10 md:mt-4">
@@ -191,8 +240,12 @@ const SignupPage = () => {
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
+
+              {/* Password Validation Checklist */}
+              {formData.password.length > 0 && <PasswordChecklist />}
+
               {errors.password && (
-                <p className="text-red-500 text-sm flex items-center">
+                <p className="text-red-500 text-sm flex items-center mt-2">
                   <AlertCircle className="mr-1 h-4 w-4" /> {errors.password}
                 </p>
               )}

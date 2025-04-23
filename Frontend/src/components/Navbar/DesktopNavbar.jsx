@@ -88,8 +88,8 @@ const DesktopNavbar = ({ menuItems, performSearch, isScrolled }) => {
 
     return (
         <>
-            <div className="max-w-7xl mx-auto px-4 sm:px-3 md:px-4 lg:px-3">
-                <div className={`flex justify-between items-center transition-all duration-300 ${isScrolled ? 'h-16' : 'h-20'}`}>
+            <div className="max-w-7xl mx-auto ">
+                <div className={`flex justify-between items-center transition-all duration-300 ${isScrolled ? 'h-20' : 'h-22'}`}>
                     <div className="flex items-center">
                         {/* Logo */}
                         <div className="flex-shrink-0">
@@ -108,7 +108,7 @@ const DesktopNavbar = ({ menuItems, performSearch, isScrolled }) => {
                                 </div>
 
                                 {/* Brand name */}
-                                <span className="text-2xl font-extrabold text-gray-900 transition-colors group-hover:text-red-600">
+                                <span className={` ${isScrolled ? 'text-2xl' : 'text-[1.7rem]'} transition-all duration-300 font-extrabold text-gray-900 group-hover:text-red-600 `}>
                                     Marbo Global
                                 </span>
                             </a>
@@ -126,13 +126,13 @@ const DesktopNavbar = ({ menuItems, performSearch, isScrolled }) => {
                                 >
                                     {item.submenu.length > 0 ? (
                                         <button
-                                            className={`inline-flex items-center px-3 py-2 transition-all duration-300 ${isScrolled ? 'text-sm' : 'text-base'} font-medium text-gray-800 hover:text-red-600`}
+                                            className={`inline-flex items-center px-3 py-2 transition-all duration-300 ${isScrolled ? 'text-base' : 'text-lg'} font-medium text-gray-800 hover:text-red-600`}
                                             aria-haspopup="true"
                                             aria-expanded={hoverItem === index}
                                         >
                                             {item.title}
                                             <ChevronDown
-                                                className={`ml-1 transition-transform duration-400 ease-in-out ${isScrolled ? 'h-3.5 w-3.5' : 'h-4 w-4'}`}
+                                                className={`ml-1 transition-transform duration-400 ease-in-out ${isScrolled ? 'h-4 w-4' : 'h-5 w-5'}`}
                                                 style={{
                                                     transform: hoverItem === index ? 'rotate(180deg)' : 'rotate(0deg)',
                                                 }}
@@ -141,7 +141,7 @@ const DesktopNavbar = ({ menuItems, performSearch, isScrolled }) => {
                                     ) : (
                                         <a
                                             href={item.link}
-                                            className={`inline-flex items-center px-3 py-2 transition-all duration-300 ${isScrolled ? 'text-sm' : 'text-base'} font-medium text-gray-800 hover:text-red-600`}
+                                            className={`inline-flex items-center px-3 py-2 transition-all duration-300 ${isScrolled ? 'text-base' : 'text-lg'} font-medium text-gray-800 hover:text-red-600`}
                                         >
                                             {item.title}
                                         </a>
@@ -158,11 +158,11 @@ const DesktopNavbar = ({ menuItems, performSearch, isScrolled }) => {
                             <form onSubmit={handleSearchSubmit}>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Search className={`transition-all duration-300 ${isScrolled ? 'h-4 w-4' : 'h-5 w-5'} text-gray-400 group-hover:text-red-500`} />
+                                        <Search className={`transition-all duration-300 ${isScrolled ? 'h-5 w-5' : 'h-6 w-6'} text-gray-400 group-hover:text-red-500`} />
                                     </div>
                                     <input
                                         type="text"
-                                        className={`block transition-all duration-300 ${isScrolled ? 'w-44 text-xs py-1.5' : 'w-48 text-sm py-2'} pl-10 pr-3 border border-gray-300 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 group-hover:w-64`}
+                                        className={`block transition-all duration-300 ${isScrolled ? 'w-46 text-sm py-2' : 'w-50 text-base py-2'} pl-10 pr-3 border border-gray-300 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 group-hover:w-64`}
                                         placeholder="Search"
                                         value={searchQuery}
                                         onChange={handleSearchChange}
@@ -208,13 +208,13 @@ const DesktopNavbar = ({ menuItems, performSearch, isScrolled }) => {
                             <>
                                 <a
                                     href="/login"
-                                    className={`cursor-pointer transition-all duration-300 ${isScrolled ? 'px-4 py-1.5 text-xs' : 'px-5 py-2 text-sm'} font-medium text-gray-800 hover:text-red-600`}
+                                    className={`cursor-pointer transition-all duration-300 ${isScrolled ? 'px-5 py-2 text-sm' : 'px-6 py-2.5 text-base'} font-medium text-gray-800 hover:text-red-600`}
                                 >
                                     Log in
                                 </a>
                                 <a
                                     href="/redirect"
-                                    className={`cursor-pointer transition-all duration-300 ${isScrolled ? 'px-5 py-1.5 text-xs' : 'px-6 py-2 text-sm'} font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5`}
+                                    className={`cursor-pointer transition-all duration-300 ${isScrolled ? 'px-5 py-2 text-sm' : 'px-6 py-2.5 text-base'} font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5`}
                                 >
                                     Sign up
                                 </a>
@@ -227,7 +227,7 @@ const DesktopNavbar = ({ menuItems, performSearch, isScrolled }) => {
                             >
                                 <div
                                     className="rounded-full overflow-hidden border-2 border-white shadow-sm bg-red-600 cursor-pointer"
-                                    style={{ width: isScrolled ? 32 : 40, height: isScrolled ? 32 : 40 }}
+                                    style={{ width: isScrolled ? 36 : 44, height: isScrolled ? 36 : 44 }}
                                     aria-haspopup="true"
                                     aria-expanded={showProfileMenu}
                                 >
@@ -264,7 +264,7 @@ const DesktopNavbar = ({ menuItems, performSearch, isScrolled }) => {
                         )}
                     </div>
                 </div>
-            </div>
+            </div >
 
             <Suspense fallback={null}>
                 <MegaMenu

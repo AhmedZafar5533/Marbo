@@ -97,7 +97,7 @@ const MobileNavbar = ({ menuItems, performSearch, isScrolled }) => {
         <>
             <div className="max-w-7xl mx-auto px-4 sm:px-3 md:px-4">
                 <div
-                    className={`flex justify-between items-center transition-all duration-300 ${isScrolled ? 'h-18' : 'h-20'
+                    className={`flex justify-between  items-center transition-all duration-300 ${isScrolled ? 'h-20' : 'h-22'
                         }`}
                 >
                     <div className="flex items-center">
@@ -105,12 +105,12 @@ const MobileNavbar = ({ menuItems, performSearch, isScrolled }) => {
                         <div className="mr-4">
                             <button
                                 onClick={toggleMenu}
-                                className={`inline-flex items-center justify-center rounded-md text-red-600 hover:text-red-500 hover:bg-red-100 focus:outline-none transition-all duration-300 ${isScrolled ? 'p-1.5' : 'p-2'
+                                className={`inline-flex items-center justify-center rounded-md text-red-600 hover:text-red-500 hover:bg-red-100 focus:outline-none transition-all duration-300 ${isScrolled ? 'p-2' : 'p-2.5'
                                     }`}
                                 aria-label="Main menu"
                             >
                                 <Menu
-                                    className={`block transition-all duration-300 ${isScrolled ? 'h-6 w-6' : 'h-7 w-7'
+                                    className={`block transition-all duration-300 ${isScrolled ? 'h-7 w-7' : 'h-8 w-8'
                                         }`}
                                 />
                             </button>
@@ -121,12 +121,12 @@ const MobileNavbar = ({ menuItems, performSearch, isScrolled }) => {
                             <a
                                 href="/"
                                 aria-label="Go to homepage"
-                                className="p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 group"
+                                className="p-5 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 group"
                             >
                                 <div
-                                    className="relative h-8 w-8 rounded-full bg-gradient-to-tr from-red-600 to-red-500 shadow-lg flex items-center justify-center transition-transform transform group-hover:scale-110"
+                                    className="relative h-9 w-9 rounded-full bg-gradient-to-tr from-red-600 to-red-500 shadow-lg flex items-center justify-center transition-transform transform group-hover:scale-110"
                                 >
-                                    <span className="text-white font-extrabold text-xl">M</span>
+                                    <span className="text-white font-extrabold text-2xl">M</span>
                                     <span className="absolute inset-0 rounded-full ring-2 ring-white opacity-0 group-hover:opacity-20 transition-opacity"></span>
                                 </div>
                             </a>
@@ -143,7 +143,7 @@ const MobileNavbar = ({ menuItems, performSearch, isScrolled }) => {
                             aria-label="Search"
                         >
                             <Search
-                                className={`transition-all duration-300 ${isScrolled ? 'h-6 w-6' : 'h-7 w-7'
+                                className={`transition-all duration-300 ${isScrolled ? 'h-7 w-7' : 'h-8 w-8'
                                     }`}
                             />
                         </button>
@@ -152,7 +152,7 @@ const MobileNavbar = ({ menuItems, performSearch, isScrolled }) => {
                             <div className="ml-4 relative">
                                 <button
                                     onClick={toggleProfileMenu}
-                                    className={`rounded-full bg-red-100 border-2 border-red-300 overflow-hidden focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-300 ${isScrolled ? 'h-8 w-8' : 'h-10 w-10'
+                                    className={`rounded-full bg-red-100 border-2 border-red-300 overflow-hidden focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-300 ${isScrolled ? 'h-9 w-9' : 'h-11 w-11'
                                         }`}
                                     aria-label="User profile"
                                     aria-haspopup="true"
@@ -194,9 +194,9 @@ const MobileNavbar = ({ menuItems, performSearch, isScrolled }) => {
                                 )}
                             </div>
                         ) : (
-                            <a href="/redirect" onClick={closeMenu}>
+                            <a href="/signup" onClick={closeMenu}>
                                 <button
-                                    className={`ml-4 font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-sm transition-all duration-300 ${isScrolled ? 'px-4 py-1.5 text-sm' : 'px-5 py-2 text-sm'
+                                    className={`ml-4 font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-sm transition-all duration-300 ${isScrolled ? 'px-4 py-1.5 text-sm' : 'px-5 py-2 text-base'
                                         }`}
                                 >
                                     Sign up

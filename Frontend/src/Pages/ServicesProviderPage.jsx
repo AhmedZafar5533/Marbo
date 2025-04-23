@@ -631,68 +631,45 @@ const ServicesProviders = () => {
     }, [getAllServices]);
 
     // Process services data when it's loaded
+    // Process services data when it's loaded
     useEffect(() => {
         if (allServices && allServices.length > 0) {
+            let categoryServices = [];
+
             if (type === 'home') {
-                setRecommendedServices(mockHomeServices);
-                setDisplayedServices(mockHomeServices.slice(0, itemsPerLoad));
-                setDisplayedRecommended(mockHomeServices.slice(0, Math.min(itemsPerLoad, recommendedServices.length)));
-                return;
-            }
-            if (type === 'payments') {
-                setRecommendedServices(mockPaymentsUtilities);
-                setDisplayedServices(mockPaymentsUtilities.slice(0, itemsPerLoad));
-                setDisplayedRecommended(mockPaymentsUtilities.slice(0, Math.min(itemsPerLoad, recommendedServices.length)));
-                return;
-            }
-            if (type === 'lifestyle') {
-                setRecommendedServices(mockLifestyle);
-                setDisplayedServices(mockLifestyle.slice(0, itemsPerLoad));
-                setDisplayedRecommended(mockLifestyle.slice(0, Math.min(itemsPerLoad, recommendedServices.length)));
-                return;
-            }
-            if (type === 'health') {
-                setRecommendedServices(mockHealthWellness);
-                setDisplayedServices(mockHealthWellness.slice(0, itemsPerLoad));
-                setDisplayedRecommended(mockHealthWellness.slice(0, Math.min(itemsPerLoad, recommendedServices.length)));
-                return;
-            }
-            if (type === 'real-estate') {
-                setRecommendedServices(mockRealEstate);
-                setDisplayedServices(mockRealEstate.slice(0, itemsPerLoad));
-                setDisplayedRecommended(mockRealEstate.slice(0, Math.min(itemsPerLoad, recommendedServices.length)));
-                return;
-            }
-            if (type === 'financial') {
-                setRecommendedServices(mockFinancialServices);
-                setDisplayedServices(mockFinancialServices.slice(0, itemsPerLoad));
-                setDisplayedRecommended(mockFinancialServices.slice(0, Math.min(itemsPerLoad, recommendedServices.length)));
-                return;
-            }
-            if (type === 'technology') {
-                setRecommendedServices(mockTechnology);
-                setDisplayedServices(mockTechnology.slice(0, itemsPerLoad));
-                setDisplayedRecommended(mockTechnology.slice(0, Math.min(itemsPerLoad, recommendedServices.length)));
-                return;
-            }
-            if (type === 'professional') {
-                setRecommendedServices(mockProfessionalServices);
-                setDisplayedServices(mockProfessionalServices.slice(0, itemsPerLoad));
-                setDisplayedRecommended(mockProfessionalServices.slice(0, Math.min(itemsPerLoad, recommendedServices.length)));
-                return;
+                categoryServices = mockHomeServices;
+            } else if (type === 'payments') {
+                categoryServices = mockPaymentsUtilities;
+            } else if (type === 'lifestyle') {
+                categoryServices = mockLifestyle;
+            } else if (type === 'health') {
+                categoryServices = mockHealthWellness;
+            } else if (type === 'real-estate') {
+                categoryServices = mockRealEstate;
+            } else if (type === 'financial') {
+                categoryServices = mockFinancialServices;
+            } else if (type === 'technology') {
+                categoryServices = mockTechnology;
+            } else if (type === 'professional') {
+                categoryServices = mockProfessionalServices;
+            } else {
+                // Default case, use all services
+                categoryServices = allServices;
             }
 
-
-            // // You could apply some logic here to determine which services are "recommended"
-            // // For now, we'll just use the first half of services as recommended
-            // const recommendedCount = Math.ceil(allServices.length / 2);
-            // setRecommendedServices(allServices.slice(0, recommendedCount));
-
-            // // Initial display
-            // setDisplayedServices(allServices.slice(0, itemsPerLoad));
-            // setDisplayedRecommended(allServices.slice(0, Math.min(itemsPerLoad, recommendedCount)));
+            // Set recommended services and initial display
+            setRecommendedServices(categoryServices);
+            setDisplayedServices(categoryServices.slice(0, itemsPerLoad));
+            setDisplayedRecommended(categoryServices.slice(0, Math.min(itemsPerLoad, categoryServices.length)));
         }
     }, [type, allServices]);
+
+    // Fix the loadMoreServices function
+    const loadMoreServices = () => {
+        setDisplayedServices(prev =>
+            recommendedServices.slice(0, prev.length + itemsPerLoad)
+        );
+    };
 
     const loadMoreRecommended = () => {
         setDisplayedRecommended(prev =>
@@ -700,11 +677,6 @@ const ServicesProviders = () => {
         );
     };
 
-    const loadMoreServices = () => {
-        setDisplayedServices(prev =>
-            services.slice(0, prev.length + itemsPerLoad)
-        );
-    };
 
     const toggleFilters = () => setShowFilters(!showFilters);
 

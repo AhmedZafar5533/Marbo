@@ -20,9 +20,10 @@ const VendorLandingSection = () => {
       <div className="flex flex-col md:flex-row min-h-[600px] overflow-hidden md:rounded-md font-inter lg:shadow-md lg:w-[95%]">
         <div className="w-full md:w-1/2 bg-[#FFFFFF]">
           <img
-            src="https://images.pexels.com/photos/6592746/pexels-photo-6592746.jpeg"
+            src="pricing.jpg"
             alt="Vendor working on business growth"
             className="w-full h-full object-cover"
+            loading="lazy"
           />
         </div>
 

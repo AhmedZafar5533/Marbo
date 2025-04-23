@@ -87,17 +87,18 @@ export const useAuthStore = create((set, get) => ({
                     "User registered successfully. Please verify yourself"
                 );
             }
-            if (!response.ok) {
-                const data = await response.json();
-                toast.error(data.message);
-            }
             const data = await response.json();
-            if (data.message) {
-                set({ returnedMessages: data.message });
+
+            if (!response.ok) {
+                if (data.errorMessages) {
+                    set({ returnedMessages: data.errorMessages });
+                    return;
+                }
+                toast.error(data.message);
             }
         } catch (err) {
             toast.error("Registration failed");
-            console.log(err);
+  
         } finally {
             set({ loading: false });
         }

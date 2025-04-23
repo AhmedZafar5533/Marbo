@@ -16,9 +16,10 @@ const AboutSection = () => {
         <div className="w-full lg:w-1/2 h-80 lg:h-[80vh] relative bg-white">
           <div className="absolute inset-0 bg-gradient-to-tr from-red-700/30 to-yellow-400/30 z-10 mix-blend-overlay"></div>
           <img
-            src="https://images.pexels.com/photos/3810792/pexels-photo-3810792.jpeg"
+            src="pexels-photo-3810792.jpeg"
             alt="Business team collaborating"
-            className="absolute inset-0 w-full h-full object-cover filter grayscale-[15%] brightness-95"
+            className="absolute inset-0 w-full h-full object-cover filter grayscale-[15%] brightness-95 transition-all duration-500 ease-in-out"
+            loading="lazy"
           />
         </div>
 
