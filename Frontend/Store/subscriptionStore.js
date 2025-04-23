@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { toast } from "sonner";
 
-const baseUrl = "http://localhost:3000/api";
+const baseUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
 
 const STORAGE_KEY = "sentSubscriptionInfo";
 
@@ -12,7 +12,7 @@ export const useSubscriptionStore = create((set, get) => ({
     sentSubscriptionInfo: JSON.parse(localStorage.getItem(STORAGE_KEY)) || null,
 
     setSubscriptionInfo: (info) => {
-        console.log(info);
+     
         localStorage.setItem(STORAGE_KEY, JSON.stringify(info));
         set({ sentSubscriptionInfo: info });
     },

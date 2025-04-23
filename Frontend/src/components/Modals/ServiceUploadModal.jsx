@@ -77,7 +77,6 @@ const UploadModal = ({ showUploadModal, setShowUploadModal }) => {
         setServices(prev => [...prev, newService]);
         setShowUploadModal(false);
         setShowSuccessMessage(true);
-        console.log(newService)
         setTimeout(() => setShowSuccessMessage(false), 3000);
     };
 

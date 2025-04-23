@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { toast } from "sonner";
 
-const baseUrl = "http://localhost:3000/api";
+const baseUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
 export const useForgetPasswordStore = create((set) => ({
     loading: false,
     resetSuccess: false,
@@ -27,7 +27,6 @@ export const useForgetPasswordStore = create((set) => ({
             }
         } catch (err) {
             toast.error("Password reset failed");
-            console.log(err);
         } finally {
             set({ loading: false });
         }
@@ -36,7 +35,7 @@ export const useForgetPasswordStore = create((set) => ({
     sendResetPasswordRequest: async (info) => {
         try {
             set({ loading: true });
-            console.log(info);
+
             const response = await fetch(baseUrl + "/forget-password/reset", {
                 method: "POST",
                 headers: {
@@ -54,7 +53,6 @@ export const useForgetPasswordStore = create((set) => ({
             }
         } catch (err) {
             toast.error("Password reset failed");
-            console.log(err);
         } finally {
             set({ loading: false });
         }

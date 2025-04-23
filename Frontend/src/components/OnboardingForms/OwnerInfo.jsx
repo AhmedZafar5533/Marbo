@@ -190,7 +190,7 @@ const OwnerInformation = ({ nextStep, prevStep, currentStep, totalSteps }) => {
         if (vendor && vendor.length > 0) {
             try {
                 const data = vendor[0]?.ownerDetails
-              
+
                 const vendorData = {
                     name: data.name || "",
                     dateOfBirth: data.dateOfBirth.split("T")[0] || "",
@@ -204,7 +204,7 @@ const OwnerInformation = ({ nextStep, prevStep, currentStep, totalSteps }) => {
                 setInitialFormData(vendorData);
                 setIsFormModified(false);
             } catch (error) {
-                console.log()
+                toast.error("Error fetching vendor data: " + error.message);
             }
         }
     }, [vendor]);

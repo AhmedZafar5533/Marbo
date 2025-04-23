@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { toast } from "sonner";
 
-const baseUrl = "http://localhost:3000/api";
+const baseUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
 
 export const useAdminStore = create((set, get) => ({
     pendingVendors: [],
@@ -36,7 +36,6 @@ export const useAdminStore = create((set, get) => ({
             }
         } catch (error) {
             toast.error("Failed to fetch pending vendors");
-            console.log(error);
         } finally {
             set({ loading: false });
         }
@@ -68,7 +67,6 @@ export const useAdminStore = create((set, get) => ({
             }
         } catch (error) {
             toast.error("Failed to fetch pending vendors");
-            console.log(error);
         } finally {
             set({ loading: false });
         }
@@ -90,7 +88,6 @@ export const useAdminStore = create((set, get) => ({
 
             if (!response.ok) toast.error(data.message);
         } catch (error) {
-            console.log(error);
             toast.error("Something went wrong");
         } finally {
             set({ loading: false });

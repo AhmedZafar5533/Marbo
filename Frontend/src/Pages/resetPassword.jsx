@@ -113,8 +113,8 @@ export default function ResetPasswordForm() {
             setConfirmPasswordError(""); // Clear mismatch error
         }
         try {
-            console.log({token, newPassword, confirmPassword});
-            await sendResetPasswordRequest({token, newPassword, confirmPassword});
+
+            await sendResetPasswordRequest({ token, newPassword, confirmPassword });
 
         } catch (error) {
             // Handle errors from the API call if your store doesn't handle them globally

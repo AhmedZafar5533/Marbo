@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { toast } from "sonner";
 
-const baseUrl = "http://localhost:3000/api";
+const baseUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
 
 // Helper function for API requests with error handling
 const fetchData = async (url, options) => {
@@ -11,6 +11,7 @@ const fetchData = async (url, options) => {
         throw new Error(result.message || "Something went wrong");
     }
     return result;
+ 
 };
 
 export const useServiceStore = create((set, get) => ({
@@ -95,7 +96,6 @@ export const useServiceStore = create((set, get) => ({
     },
     deleteService: async (serviceId) => {
         set({ loading: true });
-        console.log("Deleting service with ID:", serviceId);
         try {
             const result = await fetch(
                 `${baseUrl}/service-page/service/${serviceId}/delete`,
@@ -147,13 +147,10 @@ export const useServiceStore = create((set, get) => ({
     initializeServicePage: async (id) => {
         set({ loading: true });
         try {
-            const result = await fetch(
-                `${baseUrl}/service-page/initialize`,
-                {
-                    method: "POST",
-                    credentials: "include",
-                }
-            );
+            const result = await fetch(`${baseUrl}/service-page/initialize`, {
+                method: "POST",
+                credentials: "include",
+            });
             const data = await result.json();
 
             if (data.pageIsInitialized) {
@@ -176,7 +173,6 @@ export const useServiceStore = create((set, get) => ({
 
     getPageData: async (pageId) => {
         set({ loading: true });
-        console.log(pageId)
         try {
             const result = await fetchData(
                 `${baseUrl}/service-page/${pageId}`,

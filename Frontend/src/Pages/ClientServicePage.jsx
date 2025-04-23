@@ -65,7 +65,7 @@ function UserViewPage() {
     const servicePage = useServiceStore(state => state.servicePage);
     const isLoading = !servicePage || Object.keys(servicePage).length === 0;
 
-    console.log("rendering")
+
 
     useEffect(() => {
         getPageData(id);

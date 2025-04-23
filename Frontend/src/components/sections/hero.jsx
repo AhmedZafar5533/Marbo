@@ -69,7 +69,7 @@ const HeroSection = () => {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    console.log("Searching for:", searchValue);
+
   };
 
   const renderFloatingProfiles = () => {

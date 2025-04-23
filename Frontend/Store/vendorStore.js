@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { toast } from "sonner";
 
-const baseUrl = "http://localhost:3000/api";
+const baseUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
 
 export const useVendorStore = create((set) => ({
     vendor: [],
@@ -20,7 +20,11 @@ export const useVendorStore = create((set) => ({
             });
             const data = await response.json();
 
-            if (data.isInititialized && data.vendorData.status !== 'Pending' && data.vendorData.status !== 'Approved') {
+            if (
+                data.isInititialized &&
+                data.vendorData.status !== "Pending" &&
+                data.vendorData.status !== "Approved"
+            ) {
                 toast.success("Continue Onboarding");
                 set((state) => ({
                     vendor: [...state.vendor, data.vendorData],
@@ -38,7 +42,6 @@ export const useVendorStore = create((set) => ({
                 toast.error(data.message);
             }
         } catch (error) {
-            console.log(error);
             toast.error("Error initializing onboarding");
         } finally {
             set({ loading: false });
@@ -70,7 +73,6 @@ export const useVendorStore = create((set) => ({
                 set({ goToNextStep: false });
             }
         } catch (error) {
-            console.log(error);
             toast.error(error.data.message || "Error saving business details");
         } finally {
             set({ loading: false });
@@ -104,7 +106,6 @@ export const useVendorStore = create((set) => ({
                 set({ goToNextStep: false });
             }
         } catch (error) {
-            console.log(error);
             toast.error("Error saving business contact details");
         } finally {
             set({ loading: false });
@@ -136,7 +137,6 @@ export const useVendorStore = create((set) => ({
                 set({ goToNextStep: false });
             }
         } catch (error) {
-            console.log(error);
             toast.error("Error saving owner details");
         } finally {
             set({ loading: false });
@@ -169,7 +169,6 @@ export const useVendorStore = create((set) => ({
                 set({ goToNextStep: false });
             }
         } catch (error) {
-            console.log(error);
             toast.error("Error saving contact person details");
         } finally {
             set({ loading: false });
@@ -200,7 +199,6 @@ export const useVendorStore = create((set) => ({
                 set({ goToNextStep: false });
             }
         } catch (error) {
-            console.log(error);
             toast.error("Error saving address details");
         } finally {
             set({ loading: false });

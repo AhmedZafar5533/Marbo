@@ -32,7 +32,7 @@ const ContactForm = () => {
             setErrors(prev => ({ ...prev, email: 'Please enter a valid email address.' }));
             return;
         }
-        console.log('Form submitted:', formData);
+
         setIsSubmitted(true);
     };
 

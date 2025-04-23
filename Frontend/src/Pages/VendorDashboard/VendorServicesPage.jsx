@@ -42,7 +42,8 @@ const VendorDashboardServicesSection = () => {
 
     const handleDelete = (id, e) => {
         e.stopPropagation();
-        console.log(id)
+
+
         deleteService(id);
         setServices(services.filter(service => service._id !== id));
     };
@@ -66,7 +67,7 @@ const VendorDashboardServicesSection = () => {
             service._id === editFormData._id ? editFormData : service
         ));
 
-        console.log(editFormData);
+
         setEditMode(false);
         setShowServiceDetails(editFormData);
         setEditFormData(null);
@@ -702,8 +703,8 @@ const VendorDashboardServicesSection = () => {
                                 <div className="absolute top-4 right-4">
                                     <div
                                         className={`px-3 py-1 rounded-full text-xs font-medium ${service.status === 'Available'
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-red-100 text-red-800'
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-red-100 text-red-800'
                                             }`}
                                     >
                                         {service.status}

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { toast } from "sonner";
 
-const baseUrl = "http://localhost:3000/api";
+const baseUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
 
 export const useAuthStore = create((set, get) => ({
     user: null,
@@ -46,7 +46,6 @@ export const useAuthStore = create((set, get) => ({
                 });
             }
         } catch (error) {
-            console.log(error);
             set({
                 authenticationState: false,
                 redirectToOtp: false,
@@ -97,6 +96,7 @@ export const useAuthStore = create((set, get) => ({
                 set({ returnedMessages: data.message });
             }
         } catch (err) {
+            toast.error("Registration failed");
             console.log(err);
         } finally {
             set({ loading: false });
@@ -121,7 +121,6 @@ export const useAuthStore = create((set, get) => ({
             }
         } catch (err) {
             toast.error("Login failed");
-            console.log(err);
         } finally {
             set({ loading: false });
         }
@@ -143,7 +142,6 @@ export const useAuthStore = create((set, get) => ({
         } catch (err) {
             toast.error("OTP generation failed");
             set({ authenticationState: false });
-            console.log(err);
         }
     },
     verifyOtp: async (otp) => {
@@ -169,7 +167,6 @@ export const useAuthStore = create((set, get) => ({
         } catch (err) {
             toast.error("OTP verification failed");
             set({ authenticationState: false });
-            console.log(err);
         } finally {
             set({ loading: false });
         }
@@ -195,7 +192,6 @@ export const useAuthStore = create((set, get) => ({
             }
         } catch (err) {
             toast.error("Logout failed");
-            console.log(err);
         } finally {
             set({ loading: false });
         }
