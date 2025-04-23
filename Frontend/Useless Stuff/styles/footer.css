@@ -1,0 +1,75 @@
+.footer {
+    background: #1B1642;
+    color: #fff;
+    padding-top: 300px;
+    padding-right: 10%;
+    padding-left: 10%;
+  }
+  .line{
+    margin-top: 10%;
+    height: .1px;
+  }
+  .footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 5%;
+  }
+  
+  .footer-brand h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-family: 'playfair';
+  }
+  
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    font-family: alergy;
+  }
+  
+  .footer-column h3 {
+    font-size: 1rem;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  
+  .footer-column a {
+    display: block;
+    color: #ccc;
+    text-decoration: none;
+    margin-bottom: 6px;
+    transition: color 0.3s;
+    text-align: left;
+    margin-left: 15px;
+  }
+  
+  .footer-column a:hover {
+    color: #fff;
+  }
+  
+
+
+  @font-face {
+    font-family: 'alergy';
+    src: url('/public/assests/fonts/fonts/Alegreya_Sans/AlegreyaSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'playfair';
+    src: url('/public/assests/fonts/fonts/Playfair_Display/static/PlayfairDisplay-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'nuninto';
+    src: url('/public/assests/fonts/fonts/Nunito_Sans/static/NunitoSans_7pt-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  

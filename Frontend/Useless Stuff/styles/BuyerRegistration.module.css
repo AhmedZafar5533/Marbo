@@ -1,0 +1,98 @@
+.buyerRegistration {
+  max-width: 600px;
+  margin: 80px auto;
+  padding: 30px;
+  text-align: center;
+  background: #f5f5f5; /* Light gray background */
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+
+.buyerRegistration h1 {
+  font-size: 38px;
+  font-weight: 700;
+  color: #2c3e50; /* Dark blue text */
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  display: inline-block;
+}
+
+.buyerRegistration h1::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: #b87333; /* Warm brown */
+  border-radius: 2px;
+}
+
+.buyerRegistration input {
+  width: 80%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #8c7b75; /* Muted brown border */
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: #fff; /* White background */
+  transition: all 0.3s ease-in-out;
+  color: #2c3e50; /* Dark blue text */
+}
+
+.buyerRegistration input::placeholder {
+  color: #8c7b75; /* Muted brown placeholder */
+}
+
+.buyerRegistration input:focus {
+  border-color: #b87333; /* Warm brown border on focus */
+  outline: none;
+  background-color: #f5f5f5; /* Light gray background on focus */
+  box-shadow: 0 0 8px rgba(184, 115, 51, 0.5); /* Warm brown glow */
+}
+
+.buyerRegistration button {
+  padding: 12px 24px;
+  background: #b87333; /* Warm brown */
+  color: #fff; /* White text */
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.buyerRegistration button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: rgba(255, 255, 255, 0.15);
+  transform: translate(-50%, -50%) rotate(45deg);
+  transition: all 0.5s ease-in-out;
+  opacity: 0;
+}
+
+.buyerRegistration button:hover::before {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.buyerRegistration button:hover {
+  background: #8c7b75; /* Muted brown on hover */
+  box-shadow: 0 4px 12px rgba(140, 123, 117, 0.3); /* Subtle shadow */
+}
+
+.buyerRegistration button:active {
+  transform: scale(0.95);
+}

@@ -1,0 +1,189 @@
+.pricing-section {
+    text-align: center;
+    padding: 0rem 2rem;
+    color: #2c3e50;
+    position: relative;
+}
+
+/* Background Overlay for Effect */
+.pricing-section::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    z-index: -1;
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+}
+
+.pricing-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: #1b1642;
+    font-family: playfair;
+    position: relative;
+    top: 200px;
+    display: inline-block;
+}
+
+/* Underline Effect */
+.pricing-title::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: #ffcc5c;
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 5px;
+}
+
+.pricing-subtitle {
+    font-size: 1.2rem;
+    color: #6c757d;
+    margin-bottom: 3rem;
+    font-family: alergy;
+    position: relative;
+    top: 200px;
+}
+
+.pricing-grid {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+/* Pricing Card Design */
+.pricing-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    transition: 0.3s ease-in-out;
+    width: 320px;
+
+    /* Restoring Original Border Radius */
+    border-top-left-radius: 15%;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0%;
+    border-bottom-right-radius: 15%;
+
+    position: relative;
+    top: 200px;
+}
+
+.pricing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px #1b1642;
+}
+
+/* Adjusted Heights for Pricing Cards */
+.pricing-card:nth-child(1) {
+    height: 350px;
+}
+
+.pricing-card:nth-child(2) {
+    position: relative;
+    top: 240px;
+    height: 400px;
+    box-shadow: 0 10px 30px rgba(76, 95, 213, 0.2);
+}
+
+.pricing-card:nth-child(3) {
+    position: relative;
+    top: 285px;
+    height: 450px;
+}
+
+/* Tier Name */
+.tier-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffac42;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0px;
+    text-align: center;
+    font-family: alergy;
+}
+
+/* Price */
+.tier-price {
+    font-size: 2.5rem;
+    font-weight: 800;
+    font-family: playfair;
+    color: #1b1642;
+    margin-bottom: 20px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Features */
+.tier-features {
+    list-style: none;
+    padding: 0;
+    margin: 1.2rem 0;
+    margin-left: 10%;
+    font-family: nuninto;
+}
+
+/* Left-Aligned Features */
+.feature {
+    font-size: 1rem;
+    margin: 1.5rem 20px;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+}
+
+/* Feature Checkmark */
+.feature::before {
+    content: "✔";
+    color: #ffac42;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+/* Button */
+.btn-purchase {
+    background: #6657e9;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: 600;
+    display: inline-block;
+    width: 80%;
+    margin-top: 10%;
+    margin-left: 10%;
+    position: relative;
+    bottom: 20px;
+}
+
+.btn-purchase:hover {
+    background: #1b1642;
+}
+
+/* Button Variation for Disabled Look */
+.pricing-card:not(:nth-child(2)) .btn-purchase {
+    background: #dcdffb;
+    color: #888;
+}
+
+/* Increased button padding for better proportion */
+.btn-purchase {
+    padding: 1rem 1.8rem;
+    font-size: 1.1rem;
+    border-radius: 10px;
+}
