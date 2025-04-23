@@ -146,7 +146,7 @@ const HeroSection = () => {
 
           <h1
             ref={titleRef}
-            className="inline-block text-4xl sm:text-5xl md:text-6xl font-bold font-['Playfair_Display'] tracking-wider leading-tight text-gray-900 opacity-0"
+            className="inline-block text-4xl sm:text-5xl md:text-6xl font-bold font-['Inter'] tracking-wider leading-tight text-gray-900 opacity-0"
           >
             Global Connections, Local Trust
           </h1>
