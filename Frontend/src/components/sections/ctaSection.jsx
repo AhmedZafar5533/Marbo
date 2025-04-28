@@ -17,7 +17,9 @@ export default function CtaSection() {
         </div>
         <div className="pt-4">
           <Link to={'/signup'}>
-            <button className="px-10 py-5 bg-white text-[#1c3144] rounded-full text-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <button
+              name="signup"
+              className="px-10 py-5 bg-white text-[#1c3144] rounded-full text-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
               Get Started Today
             </button>
           </Link>

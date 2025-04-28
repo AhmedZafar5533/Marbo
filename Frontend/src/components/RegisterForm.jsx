@@ -12,7 +12,13 @@ const SignupPage = () => {
     password: '',
     confirmPassword: ''
   });
-  const [errors, setErrors] = useState({});
+  const [errorMessages, setErrorMessages] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    general: ''
+  });
   const [passwordValidation, setPasswordValidation] = useState({
     isString: false,
     notEmpty: false,
@@ -33,13 +39,42 @@ const SignupPage = () => {
     authenticationState
   } = useAuthStore();
 
+  // Handle returned messages from auth store
   useEffect(() => {
-    if (returnedMessages) {
-      setErrors(prev => ({
-        ...prev,
-        ...returnedMessages
-      }));
+    if (!returnedMessages) return;
+
+    const newErrorMessages = { ...errorMessages };
+
+    try {
+      // Process each field in returnedMessages
+      if (typeof returnedMessages === 'object' && returnedMessages !== null) {
+        Object.keys(returnedMessages).forEach(key => {
+          if (key in errorMessages) {
+            // Safe string conversion
+            if (returnedMessages[key] === null || returnedMessages[key] === undefined) {
+              newErrorMessages[key] = '';
+            } else if (typeof returnedMessages[key] === 'string') {
+              newErrorMessages[key] = returnedMessages[key];
+            } else {
+              // Handle objects/arrays by setting a generic message
+              newErrorMessages[key] = `Error with ${key}`;
+            }
+          } else {
+            // For any keys not in our error state, add to general error
+            newErrorMessages.general = 'There was a problem with your submission.';
+          }
+        });
+      } else if (typeof returnedMessages === 'string') {
+        // Handle if returnedMessages is just a string
+        newErrorMessages.general = returnedMessages;
+      }
+    } catch (e) {
+      // Fallback for any parsing issues
+      newErrorMessages.general = 'An error occurred. Please try again.';
+      console.error('Error processing returned messages', e);
     }
+
+    setErrorMessages(newErrorMessages);
   }, [returnedMessages]);
 
   useEffect(() => {
@@ -78,11 +113,19 @@ const SignupPage = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    setErrors(prev => ({ ...prev, [name]: undefined }));
+    // Clear error when field is edited
+    setErrorMessages(prev => ({ ...prev, [name]: '' }));
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors = {
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      general: ''
+    };
+
     const usernameRegex = /^[a-zA-Z0-9\s]+$/;
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
@@ -96,8 +139,8 @@ const SignupPage = () => {
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = 'Passwords do not match.';
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrorMessages(newErrors);
+    return !Object.values(newErrors).some(error => error !== '');
   };
 
   const handleSubmit = (e) => {
@@ -132,6 +175,17 @@ const SignupPage = () => {
           </div>
         ))}
       </div>
+    );
+  };
+
+  // Simple error message component
+  const ErrorMessage = ({ message }) => {
+    if (!message) return null;
+
+    return (
+      <p className="text-red-500 text-sm flex items-center">
+        <AlertCircle className="mr-1 h-4 w-4" /> {message}
+      </p>
     );
   };
 
@@ -170,6 +224,16 @@ const SignupPage = () => {
             <p className="text-red-600 text-lg">Create your account in minutes</p>
           </div>
 
+          {/* General error message at the top of the form */}
+          {errorMessages.general && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              <p className="flex items-center">
+                <AlertCircle className="mr-2 h-5 w-5" />
+                {errorMessages.general}
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
@@ -186,11 +250,7 @@ const SignupPage = () => {
                 required
                 className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 placeholder-gray-400"
               />
-              {errors.username && (
-                <p className="text-red-500 text-sm flex items-center">
-                  <AlertCircle className="mr-1 h-4 w-4" /> {errors.username}
-                </p>
-              )}
+              <ErrorMessage message={errorMessages.username} />
             </div>
 
             <div className="space-y-2">
@@ -208,11 +268,7 @@ const SignupPage = () => {
                 required
                 className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 placeholder-gray-400"
               />
-              {errors.email && (
-                <p className="text-red-500 text-sm flex items-center">
-                  <AlertCircle className="mr-1 h-4 w-4" /> {errors.email}
-                </p>
-              )}
+              <ErrorMessage message={errorMessages.email} />
             </div>
 
             <div className="space-y-2">
@@ -244,11 +300,7 @@ const SignupPage = () => {
               {/* Password Validation Checklist */}
               {formData.password.length > 0 && <PasswordChecklist />}
 
-              {errors.password && (
-                <p className="text-red-500 text-sm flex items-center mt-2">
-                  <AlertCircle className="mr-1 h-4 w-4" /> {errors.password}
-                </p>
-              )}
+              <ErrorMessage message={errorMessages.password} />
             </div>
 
             <div className="space-y-2">
@@ -276,11 +328,7 @@ const SignupPage = () => {
                   {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
-              {errors.confirmPassword && (
-                <p className="text-red-500 text-sm flex items-center">
-                  <AlertCircle className="mr-1 h-4 w-4" /> {errors.confirmPassword}
-                </p>
-              )}
+              <ErrorMessage message={errorMessages.confirmPassword} />
             </div>
 
             <button

@@ -210,6 +210,7 @@ const HowItWorks = () => {
             <div className="relative z-10 flex justify-between items-center">
               {steps.map((step, index) => (
                 <motion.button
+                  name="step-button"
                   key={index}
                   className="relative group"
                   onClick={() => goToStep(index)}
@@ -371,6 +372,7 @@ const HowItWorks = () => {
                   <div className="flex items-center gap-4">
                     <a href="/signup" >
                       <motion.button
+                        name="signup"
                         className="px-6 py-3 rounded-lg font-medium text-sm"
                         style={{
                           background: colors.primary,
@@ -478,6 +480,7 @@ const HowItWorks = () => {
                   {/* Bottom Navigation */}
                   <div className="absolute bottom-0 left-0 right-0 flex justify-between px-6 py-4">
                     <motion.button
+                      name="previous"
                       className="w-10 h-10 rounded-full flex items-center justify-center"
                       style={{
                         background: colors.light,
@@ -493,6 +496,7 @@ const HowItWorks = () => {
                     </motion.button>
 
                     <motion.button
+                      name="next"
                       className="w-10 h-10 rounded-full flex items-center justify-center"
                       style={{
                         background: colors.light,
@@ -515,6 +519,7 @@ const HowItWorks = () => {
             <div className="flex justify-center mt-10">
               {steps.map((_, index) => (
                 <motion.button
+                  name="step-indicator"
                   key={index}
                   onClick={() => goToStep(index)}
                   className="mx-1 flex flex-col items-center group"
@@ -552,6 +557,7 @@ const HowItWorks = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.button
+                name="get-started"
                 className="px-8 py-4 rounded-lg font-medium"
                 style={{
                   background: colors.primary,
@@ -695,6 +701,7 @@ const HowItWorks = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.button
+                name="get-started"
                 className="px-8 py-4 rounded-lg font-medium"
                 style={{
                   background: colors.primary,
@@ -710,6 +717,7 @@ const HowItWorks = () => {
               </motion.button>
 
               <motion.button
+                name="learn-more"
                 className="px-8 py-4 rounded-lg font-medium"
                 style={{
                   background: colors.light,

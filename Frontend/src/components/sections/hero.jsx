@@ -170,6 +170,7 @@ const HeroSection = () => {
               />
               <button
                 type="submit"
+                name="search"
                 className="bg-red-600 text-white px-8 py-3.5 mt-2 sm:mt-0 rounded-xl flex items-center justify-center gap-2 font-semibold hover:bg-red-700 transition-colors w-full sm:w-auto shadow-md"
               >
                 <svg

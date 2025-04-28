@@ -292,6 +292,7 @@ const CategoriesAndServices = () => {
 
                   <Link to={`/providers/${service.type}`} >
                     <button
+                      name={service.type}
                       className="inline-flex items-center text-center text-sm font-medium group cursor-pointer"
                       style={{ color: service.color }}
                     >
@@ -328,6 +329,7 @@ const CategoriesAndServices = () => {
 
             <div className="flex items-center space-x-2 mt-6 md:mt-0">
               <button
+                name='prev'
                 onClick={() => moveToSlide(slideIndex > 0 ? slideIndex - 1 : categories.length - 1)}
                 className="p-3 rounded-full hover:bg-neutral-100 transition-colors"
                 aria-label="Previous slide"
@@ -335,6 +337,7 @@ const CategoriesAndServices = () => {
                 <ArrowLeft size={20} color={colors.neutral.black} />
               </button>
               <button
+                name='next'
                 onClick={() => moveToSlide((slideIndex + 1) % categories.length)}
                 className="p-3 rounded-full text-white transition-colors"
                 style={{ background: colors.primary.main }}
@@ -382,6 +385,7 @@ const CategoriesAndServices = () => {
                         </p>
 
                         <button
+                          name={category.type}
                           className="px-4 py-2 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 translate-y-8 group-hover:translate-y-0 transition-all duration-300 cursor-pointer"
                           style={{
                             background: category.color,
@@ -403,6 +407,7 @@ const CategoriesAndServices = () => {
               {categories.map((_, index) => (
                 <button
                   key={index}
+                  name={`dot-${index}`}
                   onClick={() => moveToSlide(index)}
                   className={`h-2 rounded-full transition-all ${slideIndex === index ? 'w-8' : 'w-2'}`}
                   style={{
@@ -441,14 +446,16 @@ const CategoriesAndServices = () => {
               </p>
 
               <div className={`flex flex-wrap justify-center gap-4 ${fadeInAnimation} opacity-0 translate-y-4 animate-fade-in-delay-2`}>
-                <Link to="/redirect">
-                  <button className="px-8 py-4 bg-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all hover:translate-y-1"
+                <Link to="/signup">
+                  <button name='signup' className="px-8 py-4 bg-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all hover:translate-y-1"
                     style={{ color: colors.primary.main }}>
                     Join Now
                   </button>
                 </Link>
                 <Link to="/contact-us">
-                  <button className="px-8 py-4 rounded-xl font-semibold text-lg border-2 hover:bg-white/10 transition-all"
+                  <button
+                    name='contact'
+                    className="px-8 py-4 rounded-xl font-semibold text-lg border-2 hover:bg-white/10 transition-all"
                     style={{ borderColor: colors.neutral.white, color: colors.neutral.white }}>
                     Contact Us
                   </button>

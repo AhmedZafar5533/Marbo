@@ -71,7 +71,9 @@ const VendorLandingSection = () => {
                 <div className="mr-3 flex items-center">
                   <ArrowRight className="w-5 h-5" />
                 </div>
-                <button className="bg-transparent border-0 text-[#FFFFFF] font-semibold cursor-pointer">
+                <button
+                  name="onboard"
+                  className="bg-transparent border-0 text-[#FFFFFF] font-semibold cursor-pointer">
                   Onboard Your Business
                 </button>
               </div>

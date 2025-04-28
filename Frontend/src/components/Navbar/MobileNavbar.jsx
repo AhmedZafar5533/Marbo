@@ -266,7 +266,7 @@ const MobileNavbar = ({ menuItems, performSearch, isScrolled }) => {
                                     </div>
                                 ) : (
                                     <div className="px-4 py-8 text-center">
-                                        <p className="text-gray-500">No results found for “{searchQuery}”</p>
+                                        <p className="text-gray-500">No results found for "{searchQuery}"</p>
                                         <p className="mt-1 text-sm text-gray-400">
                                             Try different keywords or check spelling
                                         </p>
@@ -303,7 +303,7 @@ const MobileNavbar = ({ menuItems, performSearch, isScrolled }) => {
 
             {/* Slide-in Menu */}
             <div
-                className="fixed inset-y-0 left-0 z-50 w-full max-w-sm h-full bg-white shadow-xl transition-transform duration-400 ease-in-out transform"
+                className="fixed inset-y-0 left-0 z-50 w-full max-w-sm h-full bg-white shadow-xl transition-transform duration-400 ease-in-out transform mobile-menu"
                 style={{
                     transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
                     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',

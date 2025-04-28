@@ -50,7 +50,7 @@ const Navbar = () => {
             ]
         },
         {
-            title: 'Boost your Business',
+            title: 'Boost now',
             link: '/pricing',
             submenu: [],
         },

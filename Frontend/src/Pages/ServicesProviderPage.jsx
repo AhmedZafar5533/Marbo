@@ -10,8 +10,8 @@ import {
     ArrowRight,
     Sliders
 } from "lucide-react";
-import { useServiceStore } from '../../Store/servicesStore';
-import LoadingSpinner from '../components/LoadingSpinner';
+// import { useServiceStore } from '../../Store/servicesStore';
+// import LoadingSpinner from '../components/LoadingSpinner';
 import { Link, useParams } from 'react-router-dom';
 import { FaHeadset } from 'react-icons/fa';
 
@@ -612,12 +612,13 @@ const FilterPill = ({ label, active, onClick }) => (
     </button>
 );
 
-const ServicesProviders = () => {
-    // Retrieve the store functions and state
-    const { allServices, loading, getAllServices } = useServiceStore();
-    const { type } = useParams()
 
-    // Local state for the component
+
+
+
+const ServicesProviders = () => {
+    const { type } = useParams();
+
     const [recommendedServices, setRecommendedServices] = useState([]);
     const [displayedServices, setDisplayedServices] = useState([]);
     const [displayedRecommended, setDisplayedRecommended] = useState([]);
@@ -625,71 +626,61 @@ const ServicesProviders = () => {
     const [showFilters, setShowFilters] = useState(false);
     const itemsPerLoad = 6;
 
-    // Load services when component mounts
     useEffect(() => {
-        getAllServices();
-    }, [getAllServices]);
+        let categoryServices = [];
 
-    // Process services data when it's loaded
-    // Process services data when it's loaded
-    useEffect(() => {
-        if (allServices && allServices.length > 0) {
-            let categoryServices = [];
-
-            if (type === 'home') {
+        switch (type) {
+            case "home":
                 categoryServices = mockHomeServices;
-            } else if (type === 'payments') {
+                break;
+            case "payments":
                 categoryServices = mockPaymentsUtilities;
-            } else if (type === 'lifestyle') {
+                break;
+            case "lifestyle":
                 categoryServices = mockLifestyle;
-            } else if (type === 'health') {
+                break;
+            case "health":
                 categoryServices = mockHealthWellness;
-            } else if (type === 'real-estate') {
+                break;
+            case "real-estate":
                 categoryServices = mockRealEstate;
-            } else if (type === 'financial') {
+                break;
+            case "financial":
                 categoryServices = mockFinancialServices;
-            } else if (type === 'technology') {
+                break;
+            case "technology":
                 categoryServices = mockTechnology;
-            } else if (type === 'professional') {
+                break;
+            case "professional":
                 categoryServices = mockProfessionalServices;
-            } else {
-                // Default case, use all services
-                categoryServices = allServices;
-            }
-
-            // Set recommended services and initial display
-            setRecommendedServices(categoryServices);
-            setDisplayedServices(categoryServices.slice(0, itemsPerLoad));
-            setDisplayedRecommended(categoryServices.slice(0, Math.min(itemsPerLoad, categoryServices.length)));
+                break;
+            default:
+                categoryServices = []; // Optionally use mockAllServices or similar
         }
-    }, [type, allServices]);
 
-    // Fix the loadMoreServices function
+        setRecommendedServices(categoryServices);
+        setDisplayedServices(categoryServices.slice(0, itemsPerLoad));
+        setDisplayedRecommended(categoryServices.slice(0, itemsPerLoad));
+    }, [type]);
+
     const loadMoreServices = () => {
-        setDisplayedServices(prev =>
+        setDisplayedServices((prev) =>
             recommendedServices.slice(0, prev.length + itemsPerLoad)
         );
     };
 
     const loadMoreRecommended = () => {
-        setDisplayedRecommended(prev =>
+        setDisplayedRecommended((prev) =>
             recommendedServices.slice(0, prev.length + itemsPerLoad)
         );
     };
 
-
     const toggleFilters = () => setShowFilters(!showFilters);
-
-    if (loading) return (
-        <div className="min-h-screen flex items-center justify-center">
-            <LoadingSpinner />
-        </div>
-    );
 
     return (
         <div className="min-h-screen bg-gray-50 pb-16 pt-10">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Recommended Services Section */}
+                {/* Recommended Services */}
                 <section className="mb-12">
                     <div className="flex items-center justify-between mb-5">
                         <h2 className="text-xl font-bold text-gray-900 flex items-center">
@@ -700,7 +691,7 @@ const ServicesProviders = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {displayedRecommended.map((service) => (
-                            <ServiceCard key={service._id} service={service} highlighted={true} />
+                            <ServiceCard key={service._id} service={service} highlighted />
                         ))}
                     </div>
 
@@ -716,7 +707,7 @@ const ServicesProviders = () => {
                     )}
                 </section>
 
-                {/* Popular Services Section - Keep using mock data */}
+                {/* Popular Services */}
                 <section className="mb-12">
                     <div className="flex items-center justify-between mb-5">
                         <h2 className="text-xl font-bold text-gray-900 flex items-center">
@@ -734,9 +725,8 @@ const ServicesProviders = () => {
                     </div>
                 </section>
 
-                {/* All Services Section */}
+                {/* All Services */}
                 <section>
-                    {/* Simplified Filter Section */}
                     <div className="max-w-6xl mx-auto py-6">
                         <div className="flex items-center justify-between mb-2">
                             <button
@@ -748,46 +738,32 @@ const ServicesProviders = () => {
                             </button>
                         </div>
 
-                        {/* Collapsible Filter Section */}
                         {showFilters && (
                             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 mt-3">
-                                {/* <div className="mb-4">
-                                    <p className="text-sm font-medium text-gray-700 mb-2">Categories</p>
-                                    <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                                        {categories.slice(0, 8).map((category) => (
-                                            <FilterPill
-                                                key={category}
-                                                label={category}
-                                                active={selectedCategory === category}
-                                                onClick={() => setSelectedCategory(category)}
-                                            />
-                                        ))}
-                                    </div>
-                                </div> */}
-
                                 <div className="flex flex-wrap gap-4">
                                     <div>
                                         <p className="text-sm font-medium text-gray-700 mb-2">Price Range</p>
                                         <div className="flex gap-2">
-                                            <FilterPill label="Any Price" active={true} />
-                                            <FilterPill label="$0-$100" active={false} />
-                                            <FilterPill label="$100-$300" active={false} />
-                                            <FilterPill label="$300+" active={false} />
+                                            <FilterPill label="Any Price" active />
+                                            <FilterPill label="$0-$100" />
+                                            <FilterPill label="$100-$300" />
+                                            <FilterPill label="$300+" />
                                         </div>
                                     </div>
 
                                     <div>
                                         <p className="text-sm font-medium text-gray-700 mb-2">Sort By</p>
                                         <div className="flex gap-2">
-                                            <FilterPill label="Recommended" active={true} />
-                                            <FilterPill label="Newest" active={false} />
-                                            <FilterPill label="Popular" active={false} />
+                                            <FilterPill label="Recommended" active />
+                                            <FilterPill label="Newest" />
+                                            <FilterPill label="Popular" />
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         )}
                     </div>
+
                     <div className="flex items-center justify-between mb-5">
                         <h2 className="text-xl font-bold text-gray-900">All Services</h2>
                         <div className="flex items-center text-sm text-gray-500">
@@ -802,7 +778,7 @@ const ServicesProviders = () => {
                         ))}
                     </div>
 
-                    {displayedServices.length < allServices.length && (
+                    {displayedServices.length < recommendedServices.length && (
                         <div className="flex justify-center mt-8">
                             <button
                                 onClick={loadMoreServices}
@@ -813,9 +789,9 @@ const ServicesProviders = () => {
                         </div>
                     )}
                 </section>
-                <div
-                    className="mt-24 bg-white p-8 rounded-2xl shadow-md border border-slate-100 max-w-3xl mx-auto"
-                >
+
+                {/* Support CTA */}
+                <div className="mt-24 bg-white p-8 rounded-2xl shadow-md border border-slate-100 max-w-3xl mx-auto">
                     <div className="flex flex-col md:flex-row items-center gap-8">
                         <div className="md:w-1/3 flex justify-center">
                             <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center">
@@ -824,7 +800,7 @@ const ServicesProviders = () => {
                         </div>
                         <div className="md:w-2/3 text-center md:text-left">
                             <h3 className="text-xl font-bold text-slate-800 mb-2">Need help?</h3>
-                            <p className="text-slate-600 mb-4">We're are here 24/7 to help you. </p>
+                            <p className="text-slate-600 mb-4">We're here 24/7 to help you.</p>
                             <button className="px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg text-sm font-medium hover:shadow-lg transition-all">
                                 Contact Us
                             </button>
@@ -837,3 +813,5 @@ const ServicesProviders = () => {
 };
 
 export default ServicesProviders;
+
+

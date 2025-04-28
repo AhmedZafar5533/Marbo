@@ -98,7 +98,6 @@ export const useAuthStore = create((set, get) => ({
             }
         } catch (err) {
             toast.error("Registration failed");
-  
         } finally {
             set({ loading: false });
         }
@@ -115,8 +114,14 @@ export const useAuthStore = create((set, get) => ({
                 credentials: "include",
             });
             const data = await response.json();
-            if (response.status === 200 && data.otpRequired) {
+            if (response.status === 403) {
                 set({ redirectToOtp: true, authenticationState: false });
+                toast.info(data.message);
+                return;
+            }
+            if (response.status === 200) {
+                set({ authenticationState: true, user: data.user });
+                toast.success("Login Successfull");
             } else {
                 toast.error(data.message);
             }

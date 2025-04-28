@@ -123,6 +123,8 @@ const Testimonials = () => {
               {/* Navigation Buttons */}
               <div className="flex justify-center mt-6 gap-4">
                 <button
+                
+                name="prev"
                   onClick={prevSlide}
                   disabled={isTransitioning}
                   className="w-12 h-12 rounded-full bg-gradient-to-r from-[#FD1A03] to-[#ec5f4f] text-white flex items-center justify-center shadow-md hover:bg-[#FD1A03]/80 transition-colors focus:outline-none focus:ring-2 focus:ring-[#FD1A03]/40 focus:ring-offset-2 disabled:opacity-50"
@@ -132,6 +134,7 @@ const Testimonials = () => {
                   </svg>
                 </button>
                 <button
+                name="next"
                   onClick={nextSlide}
                   disabled={isTransitioning}
                   className="w-12 h-12 rounded-full bg-gradient-to-r from-[#FD1A03] to-[#ec5f4f] text-white flex items-center justify-center shadow-md hover:bg-[#FD1A03]/80 transition-colors focus:outline-none focus:ring-2 focus:ring-[#FD1A03]/40 focus:ring-offset-2 disabled:opacity-50"
@@ -146,6 +149,7 @@ const Testimonials = () => {
               <div className="flex justify-center gap-2 mt-4">
                 {testimonialsData.map((_, index) => (
                   <button
+                    name="pagination"
                     key={index}
                     onClick={() => goToSlide(index)}
                     className={`h-2 rounded-full transition-all duration-300 ${currentIndex === index ? "bg-[#FD1A03] w-6" : "bg-[#FD1A03]/30 w-2"
@@ -164,8 +168,8 @@ const Testimonials = () => {
             </h2>
 
             <p className="text-[#646965] text-lg">
-            At Marbo Global, we empower diasporans, their families and friends, and service providers
-            with seamless, secure transactions. Whether supporting loved ones or offering services, we make shopping effortless and stress-free.
+              At Marbo Global, we empower diasporans, their families and friends, and service providers
+              with seamless, secure transactions. Whether supporting loved ones or offering services, we make shopping effortless and stress-free.
             </p>
 
             <div className="space-y-4 mt-6">
@@ -184,11 +188,11 @@ const Testimonials = () => {
                 </div>
               ))}
             </div>
-            <a to="/signup">
-              <button className="mt-8 px-6 py-3 bg-gradient-to-r from-[#FD1A03] to-[#ec5f4f] text-white font-medium rounded-lg shadow-md hover:bg-[#FD1A03]/80 transition-colors focus:outline-none focus:ring-2 focus:ring-[#FD1A03]/50 focus:ring-offset-2">
-                Join us Now
-              </button>
+            {/* <a to="/signup"> */}
+            <a href="/signup" className="mt-8 px-6 py-3 bg-gradient-to-r from-[#FD1A03] to-[#ec5f4f] text-white font-medium rounded-lg shadow-md hover:bg-[#FD1A03]/80 transition-colors focus:outline-none focus:ring-2 focus:ring-[#FD1A03]/50 focus:ring-offset-2">
+              Join us Now
             </a>
+
           </div>
         </div>
       </div>

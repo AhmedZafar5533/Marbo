@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../Store/authStore';
 
@@ -26,10 +26,10 @@ const LoginPage = () => {
     }
   }, [authenticationState, redirectToOtp, navigate]);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    sendLoginRequest({ email, password });
+    await sendLoginRequest({ email, password });
     setIsLoading(false);
   };
   return (
@@ -131,7 +131,10 @@ const LoginPage = () => {
                 className="w-full cursor-pointer flex justify-center items-center px-4 py-3 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all disabled:opacity-70"
               >
                 {isLoading ? (
-                  <LoadingSpinner />
+                  <>
+                    <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                    Signing in...
+                  </>
                 ) : (
                   <>
                     Sign in
@@ -139,6 +142,7 @@ const LoginPage = () => {
                   </>
                 )}
               </button>
+
             </div>
           </form>
         </div>
@@ -152,8 +156,8 @@ const LoginPage = () => {
             </Link>
           </p>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 
