@@ -27,6 +27,10 @@ const UserSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        signedOtp: {
+            type: Boolean,
+            default: false,
+        },
         onboardingDone: {
             type: String,
             enum: ["yes", "pending", "no"],

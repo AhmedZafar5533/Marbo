@@ -131,7 +131,10 @@ router.post("/verify-otp", async (req, res) => {
                 .json({ message: "Invalid OTP", authenticationStatus: false });
         }
 
-        await User.findByIdAndUpdate(userId, { otpVerified: true });
+        await User.findByIdAndUpdate(userId, {
+            otpVerified: true,
+            signedOtp: true,
+        });
 
         await Otp.deleteOne({ userId });
         delete req.session.otpBlocked;

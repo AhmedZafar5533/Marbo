@@ -4,16 +4,16 @@ const User = require("../models/User");
 const checkAuthetication = require("../middlewares/checkAuthetication");
 const checkAdmin = require("../middlewares/checkAdmin");
 
-
 const {
     signupSchema,
     loginSchema,
 } = require("../Validations/loginSignUpSchema");
 
-
 const router = express.Router();
 
-router.get("/check", checkAuthetication, (req, res) => {
+router.get("/check", checkAuthetication, async (req, res) => {
+    const users = await User.find({});
+    console.log(users);
     const { password, ...safeUser } = req.user.toObject();
 
     res.status(200).json({
@@ -64,7 +64,7 @@ router.post("/signup", async (req, res) => {
             if (usernameExists) messages.username = "Username already in use";
             if (emailExists) messages.email = "Email already registered";
             console.log(messages);
-            return res.status(400).json({ message: messages });
+            return res.status(400).json({ errorMessages: messages });
         }
         let user;
         console.log("here we are");
@@ -139,24 +139,40 @@ router.post("/login", (req, res, next) => {
             req.logIn(user, async (err) => {
                 if (err) return next(err);
                 req.session._id = user._id;
-                await User.findByIdAndUpdate(user._id, { otpVerified: false });
-                res.cookie("redirectToOtp", "true", {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: "Strict",
-                    maxAge: 7 * 60 * 1000,
-                });
+                if (!user.signedOtp) {
+                    await User.findByIdAndUpdate(user._id, {
+                        otpVerified: false,
+                    });
+                    res.cookie("redirectToOtp", "true", {
+                        httpOnly: true,
+                        secure: true,
+                        sameSite: "Strict",
+                        maxAge: 7 * 60 * 1000,
+                    });
+
+                    return res.status(403).json({
+                        otpRequired: true,
+                        authenticationStatus: false,
+                        message: "Account not verified",
+                    });
+                }
+                await User.findByIdAndUpdate(user._id, { otpVerified: true });
 
                 res.status(200).json({
-                    otpRequired: true,
-                    authenticationStatus: "pending",
+                    otpRequired: false,
+                    authenticationStatus: true,
+                    user: {
+                        _id: user._id,
+                        username: user.username,
+                        email: user.email,
+                        role: user.role,
+                        prfilePic: user.prfilePic,
+                    },
                 });
             });
         })(req, res, next);
     });
 });
-
-
 
 router.get("/logout", async (req, res) => {
     if (!req.user) {

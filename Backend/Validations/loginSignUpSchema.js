@@ -41,7 +41,7 @@ const signupSchema = Joi.object({
             "string.min": "Password must be at least 8 characters long",
             "string.max": "Password must be at most 128 characters long",
             "string.pattern.base":
-                "Password must include uppercase, lowercase, number, and special character",
+                "Password must include uppercase, lowercase, and a number",
             "any.required": "Password is required",
         }),
 
