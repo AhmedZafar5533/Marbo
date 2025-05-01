@@ -91,7 +91,13 @@ export const useAuthStore = create((set, get) => ({
 
             if (!response.ok) {
                 if (data.errorMessages) {
-                    set({ returnedMessages: data.errorMessages });
+                    if (data.errorMessages.username) {
+                        toast.error(data.errorMessages.username);
+                        return;
+                    }
+                    if (data.errorMessages.email) {
+                        toast.error(data.errorMessages.email);
+                    }
                     return;
                 }
                 toast.error(data.message);
