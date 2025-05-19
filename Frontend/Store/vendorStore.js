@@ -21,31 +21,34 @@ export const useVendorStore = create((set) => ({
             });
 
             const data = await response.json();
+            console.log(data);
 
             if (!response.ok) {
                 toast.error(data.message || "Initialization failed.");
                 return;
             }
+            if (!data.newVendor) {
+                const { isInititialized, vendorData } = data;
+                const isValidStatus =
+                    vendorData.status === "Approved" ||
+                    vendorData.status === "Pending";
 
-            const { isInititialized, vendorData } = data;
+                if (isInititialized && isValidStatus) {
+                    set((state) => ({
+                        vendor: [...state.vendor, vendorData],
+                        isInitialized: true,
+                    }));
 
-            const isValidStatus =
-                vendorData.status === "Approved" ||
-                vendorData.status === "Pending";
-
-            if (isInititialized && isValidStatus) {
-                set((state) => ({
-                    vendor: [...state.vendor, vendorData],
-                    isInitialized: true,
-                }));
-
-                if (response.status === 201) {
-                    toast.success(data.message || "Vendor initialized.");
+                    console.log("Vendor data:", vendorData);
+                } else {
+                    toast.error(
+                        "Vendor status is not valid for initialization."
+                    );
                 }
+            }
 
-                console.log("Vendor data:", vendorData);
-            } else {
-                toast.error("Vendor status is not valid for initialization.");
+            if (response.status === 201) {
+                toast.success(data.message || "Vendor initialized.");
             }
         } catch (error) {
             toast.error("Error initializing onboarding");
@@ -141,6 +144,7 @@ export const useVendorStore = create((set) => ({
                 }));
                 set({ goToNextStep: true });
             } else if (!response.ok) {
+                console.log("ber")
                 toast.error(data.message);
                 set({ goToNextStep: false });
             }

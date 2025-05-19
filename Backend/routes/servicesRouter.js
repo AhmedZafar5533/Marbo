@@ -18,11 +18,13 @@ router.get("/services/get", auth, checkVendor, async (req, res) => {
         const user = await User.findById(id);
         if (user && user.onboardingDone === "no")
             return res.status(400).json({
-                message: "User must complete the onboarding process!",
+                onboardingDone: "pending",
+                message: "Please complete the onboarding process first before proceeding!",
             });
         if (user && user.onboardingDone === "pending")
             return res.status(400).json({
-                message: "Application under review!",
+                onboardingDone: "pending",
+                message: "Your application is under review!",
             });
         const vendor = await Vendor.findOne({ userId: req.user._id });
         if (!vendor) {
@@ -252,7 +254,7 @@ router.post("/services/initialize", auth, checkVendor, async (req, res) => {
             description,
             image,
             status,
-            tier: 'basic',
+            tier: "basic",
             vendorName: existingVendor.businessDetails.businessName,
         });
         await newService.save();

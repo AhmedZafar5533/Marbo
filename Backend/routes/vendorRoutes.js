@@ -11,14 +11,14 @@ const User = require("../models/User");
 router.post("/initialize", checkAuthetication, async (req, res) => {
     try {
         const existingVendor = await Vendor.findOne({ userId: req.user.id });
-        console.log("Existing Vendor", existingVendor);
+
         if (existingVendor) {
             return res.json({
                 isInititialized: true,
+                newVendor: false,
                 vendorData: existingVendor,
             });
         }
-        console.log("New Vendor", existingVendor);
         const newVendor = new Vendor({
             userId: req.user.id,
         });
@@ -27,6 +27,7 @@ router.post("/initialize", checkAuthetication, async (req, res) => {
 
         res.status(201).json({
             success: true,
+            newVendor: true,
             message: "Vendor onboarding initialized",
         });
     } catch (error) {
@@ -153,102 +154,126 @@ router.post("/business-contact", checkAuthetication, async (req, res) => {
     }
 });
 
-router.post(
-    "/owner-details",
-    checkAuthetication,
+router.post("/owner-details", checkAuthetication, async (req, res) => {
+    try {
+        const {
+            name,
+            dateOfBirth,
+            nationality,
+            identificationType,
+            identificationNumber,
+            // ownerDocumentPhoto,
+            // ownerPhoto,
+        } = req.body;
 
-    async (req, res) => {
-        try {
-            const {
-                name,
-                dateOfBirth,
-                nationality,
-                identificationType,
-                identificationNumber,
-                ownerDocumentPhoto,
-                ownerPhoto,
-            } = req.body;
-
-            if (
-                !name ||
-                !dateOfBirth ||
-                !nationality ||
-                !identificationType ||
-                !identificationNumber ||
-                !ownerPhoto ||
-                !ownerDocumentPhoto
-            ) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Please provide all required owner details",
-                });
-            }
-
-            let base64Data = ownerPhoto;
-            if (ownerPhoto.startsWith("data:")) {
-                base64Data = ownerPhoto.split(",")[1];
-            }
-            const buffer = Buffer.from(base64Data, "base64");
-            const compressedBuffer = await sharp(buffer)
-                .resize({ width: 800 })
-                .jpeg({ quality: 80 })
-                .toBuffer();
-
-            const ownerImageUpload = await uploadFromBuffer(compressedBuffer);
-
-            let base64DocumentData = ownerDocumentPhoto;
-            if (ownerDocumentPhoto.startsWith("data:")) {
-                base64DocumentData = ownerDocumentPhoto.split(",")[1];
-            }
-            const documentBuffer = Buffer.from(base64DocumentData, "base64");
-            const compressedDocumentBuffer = await sharp(documentBuffer)
-                .resize({ width: 800 })
-                .jpeg({ quality: 80 })
-                .toBuffer();
-
-            const ownerDocumentImageUpload = await uploadFromBuffer(
-                compressedDocumentBuffer
-            );
-
-            const vendor = await Vendor.findOneAndUpdate(
-                { userId: req.user.id },
-                {
-                    ownerDetails: {
-                        name,
-                        dateOfBirth,
-                        nationality,
-                        identificationType,
-                        identificationNumber,
-                        ownerPhoto: ownerImageUpload.secure_url,
-                        ownerDocumentPhoto: ownerDocumentImageUpload.secure_url,
-                    },
-                },
-                { new: true }
-            );
-
-            if (!vendor) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Vendor profile not found",
-                });
-            }
-
-            res.status(200).json({
-                success: true,
-                message: "Owner details saved successfully",
-                nextStep: "contactPerson",
-                vendor,
-            });
-        } catch (error) {
-            console.error("Error saving owner details:", error);
-            res.status(500).json({
+        if (
+            !name ||
+            !dateOfBirth ||
+            !nationality ||
+            !identificationType ||
+            !identificationNumber
+            // ||
+            // !ownerPhoto ||
+            // !ownerDocumentPhoto
+        ) {
+            return res.status(400).json({
                 success: false,
-                message: "Server error",
-                error: error.message,
+                message: "Please provide all required owner details",
             });
         }
+
+        // Handle owner photo
+        // let ownerPhotoUrl;
+        // // Check if the photo is already a URL (not starting with data:)
+        // if (
+        //     ownerPhoto.startsWith("http://") ||
+        //     ownerPhoto.startsWith("https://")
+        // ) {
+        //     // If it's already a URL, use it directly
+        //     ownerPhotoUrl = ownerPhoto;
+        // } else {
+        //     // Process and upload the image
+        //     let base64Data = ownerPhoto;
+        //     if (ownerPhoto.startsWith("data:")) {
+        //         base64Data = ownerPhoto.split(",")[1];
+        //     }
+        //     const buffer = Buffer.from(base64Data, "base64");
+        //     const compressedBuffer = await sharp(buffer)
+        //         .resize({ width: 800 })
+        //         .jpeg({ quality: 80 })
+        //         .toBuffer();
+
+        //     const ownerImageUpload = await uploadFromBuffer(compressedBuffer);
+        //     ownerPhotoUrl = ownerImageUpload.secure_url;
+        // }
+
+        // // Handle owner document photo
+        // let ownerDocumentPhotoUrl;
+        // // Check if the document photo is already a URL
+        // if (
+        //     ownerDocumentPhoto.startsWith("http://") ||
+        //     ownerDocumentPhoto.startsWith("https://")
+        // ) {
+        //     // If it's already a URL, use it directly
+        //     ownerDocumentPhotoUrl = ownerDocumentPhoto;
+        // } else {
+        //     // Process and upload the document image
+        //     let base64DocumentData = ownerDocumentPhoto;
+        //     if (ownerDocumentPhoto.startsWith("data:")) {
+        //         base64DocumentData = ownerDocumentPhoto.split(",")[1];
+        //     }
+        //     const documentBuffer = Buffer.from(base64DocumentData, "base64");
+        //     const compressedDocumentBuffer = await sharp(documentBuffer)
+        //         .resize({ width: 800 })
+        //         .jpeg({ quality: 80 })
+        //         .toBuffer();
+
+        //     const ownerDocumentImageUpload = await uploadFromBuffer(
+        //         compressedDocumentBuffer
+        //     );
+        //     ownerDocumentPhotoUrl = ownerDocumentImageUpload.secure_url;
+        // }
+
+        const vendor = await Vendor.findOneAndUpdate(
+            { userId: req.user.id },
+            {
+                ownerDetails: {
+                    name,
+                    dateOfBirth,
+                    nationality,
+                    identificationType,
+                    identificationNumber,
+                    ownerPhoto: "jssdkfjsdfl",
+                    ownerDocumentPhoto: "sfuousdosdk",
+                    // ownerPhoto: ownerPhotoUrl,
+                    // ownerDocumentPhoto: ownerDocumentPhotoUrl,
+                },
+            },
+            { new: true }
+        );
+
+        if (!vendor) {
+            return res.status(404).json({
+                success: false,
+                message: "Vendor profile not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Owner details saved successfully",
+            nextStep: "contactPerson",
+            vendor,
+        });
+    } catch (error) {
+        console.error("Error saving owner details:", error);
+        res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: error.message,
+        });
     }
-);
+});
 
 router.post("/contact-person", auth, async (req, res) => {
     try {

@@ -87,6 +87,7 @@ router.post("/change-vendor-status/:id", auth, checkAdmin, async (req, res) => {
                 message: "Invalid status value",
             });
         }
+
         const vendor = await Vendor.findByIdAndUpdate(
             vendorId,
             {
@@ -94,6 +95,7 @@ router.post("/change-vendor-status/:id", auth, checkAdmin, async (req, res) => {
             },
             { new: true }
         );
+
         if (!vendor) {
             return res.status(404).json({
                 success: false,
@@ -103,9 +105,15 @@ router.post("/change-vendor-status/:id", auth, checkAdmin, async (req, res) => {
 
         if (status === "Rejected") {
             await User.findByIdAndUpdate(vendor.userId, {
-                onboardingDone: false,
+                onboardingDone: "no",
             });
         }
+        if (status === "Approved") {
+            await User.findByIdAndUpdate(vendor.userId, {
+                onboardingDone: "yes",
+            });
+        }
+
         res.status(200).json({
             success: true,
             message: `Vendor status updated to ${status}`,

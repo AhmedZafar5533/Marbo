@@ -70,7 +70,7 @@ const vendorSchema = new mongoose.Schema(
             type: String,
             enum: ["Pending", "Approved", "Rejected"],
             default: "Pending",
-        },
+        },  
     },
     { timestamps: true }
 );

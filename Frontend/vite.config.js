@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-const isProduction = false;
+const isProduction = true;
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -11,16 +11,14 @@ export default defineConfig({
         pure: isProduction ? ["console.log"] : [],
         // drop: isProduction ? ['console', 'debugger'] : [], // More aggressive
     },
+    build: {
+        minify: "terser",
+        terserOptions: {
+            compress: {
+                drop_console: true, // Remove console logs in production
+            },
+        },
+    },
     plugins: [tailwindcss(), react()],
 });
-// vite.config.js
-// export default {
-//     build: {
-//       minify: 'terser',
-//       terserOptions: {
-//         compress: {
-//           drop_console: true,  // Remove console logs in production
-//         },
-//       },
-//     },
-//   }
+

@@ -187,9 +187,10 @@ const OwnerInformation = ({ nextStep, prevStep, currentStep, totalSteps }) => {
     };
     useEffect(() => {
 
-        if (vendor && vendor.length > 0) {
+        if (vendor && vendor.length > 0 && vendor[0]?.ownerDetails) {
             try {
                 const data = vendor[0]?.ownerDetails
+                console.log(vendor[0])
 
                 const vendorData = {
                     name: data.name || "",
@@ -204,7 +205,7 @@ const OwnerInformation = ({ nextStep, prevStep, currentStep, totalSteps }) => {
                 setInitialFormData(vendorData);
                 setIsFormModified(false);
             } catch (error) {
-                toast.error("Error fetching vendor data: " + error.message);
+                toast.error("Errer fetching details!")
             }
         }
     }, [vendor]);
