@@ -29,6 +29,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 const ServiceCard = ({ service }) => {
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -70,7 +71,7 @@ const ServiceCard = ({ service }) => {
 
         {/* CTA button with improved interaction */}
         <div className="mt-auto">
-          <Link to={'/providers'}  >
+          <Link to={`/providers${service.url}`}  >
             <button className="inline-flex items-center cursor-pointer text-red-600 hover:text-red-800 font-medium transition-all group/cta">
               <span className="border-b border-transparent group-hover/cta:border-red-600 transition-all">
                 View Providers
@@ -93,9 +94,11 @@ const ServicesSection = () => {
     [
       {
         name: "Home Services",
+
         services: [
           {
             title: "Groceries",
+            url: '/home',
             description: "Authentic fresh produce sourced directly from local markets",
             icon: <FaStore className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-500 to-red-600",
@@ -104,6 +107,7 @@ const ServicesSection = () => {
 
           {
             title: "Interior Design",
+            url: '/home',
             description: "Inspired home design and decoration services",
             icon: <FaCouch className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-400 to-orange-500",
@@ -111,6 +115,7 @@ const ServicesSection = () => {
           },
           {
             title: "Domestic Staffing",
+            url: '/home',
             description: "Verified house helps, cleaners, and domestic workers",
             icon: <FaUsers className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-600 to-red-700",
@@ -120,9 +125,11 @@ const ServicesSection = () => {
       },
       {
         name: "Payments & Utilities",
+
         services: [
           {
             title: "Utility Payments",
+            url: '/payments',
             description: "Pay electricity and water bills for your properties",
             icon: <FaBolt className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-500 to-red-600",
@@ -130,6 +137,7 @@ const ServicesSection = () => {
           },
           {
             title: "Water Bill Payments",
+            url: '/payments',
             description: "Convenient payment solutions for water services",
             icon: <FaTint className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-400 to-red-500",
@@ -137,6 +145,7 @@ const ServicesSection = () => {
           },
           {
             title: "School Fee Payments",
+            url: '/payments',
             description: "Seamless school fee payments and support for students",
             icon: <FaGraduationCap className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-500 to-orange-500",
@@ -146,9 +155,11 @@ const ServicesSection = () => {
       },
       {
         name: "Lifestyle",
+
         services: [
           {
             title: "Traditional Clothing",
+            url: '/lifestyle',
             description: "Authentic Gomesi, Kanzu, and cultural attire",
             icon: <FaTshirt className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-600 to-red-700",
@@ -156,6 +167,7 @@ const ServicesSection = () => {
           },
           {
             title: "Holiday Lets",
+            url: '/lifestyle',
             description: "Book vacation homes and short-term rentals",
             icon: <FaUmbrellaBeach className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-500 to-orange-400",
@@ -163,6 +175,7 @@ const ServicesSection = () => {
           },
           {
             title: "Arts & Crafts",
+            url: '/lifestyle',
             description: "Authentic handmade products and artifacts",
             icon: <FaPalette className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-400 to-red-500",
@@ -170,6 +183,7 @@ const ServicesSection = () => {
           },
           {
             title: "Fashion Services",
+            url: '/lifestyle',
             description: "Contemporary and traditional fashion",
             icon: <FaShoppingBag className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-500 to-red-600",
@@ -177,6 +191,7 @@ const ServicesSection = () => {
           },
           {
             title: "Hotel Booking",
+            url: '/lifestyle',
             description: "Premium accommodation options",
             icon: <FaHotel className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-600 to-red-700",
@@ -186,9 +201,11 @@ const ServicesSection = () => {
       },
       {
         name: "Health & Wellness",
+
         services: [
           {
             title: "Medical Care",
+            url: '/health',
             description: "Access trusted medical professionals and healthcare facilities",
             icon: <FaHeartbeat className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-500 to-red-600",
@@ -196,6 +213,7 @@ const ServicesSection = () => {
           },
           {
             title: "Health Insurance",
+            url: '/health',
             description: "Secure health coverage plans from trusted providers back home",
             icon: <FaShieldAlt className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-400 to-red-500",
@@ -205,9 +223,11 @@ const ServicesSection = () => {
       },
       {
         name: "Real Estate & Property",
+
         services: [
           {
             title: "Properties for Sale",
+            url: '/real-estate',
             description: "Premium real estate listings",
             icon: <FaHome className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-500 to-red-600",
@@ -215,6 +235,7 @@ const ServicesSection = () => {
           },
           {
             title: "Rental Properties",
+            url: '/real-estate',
             description: "Find verified rental properties and rent-to-own options",
             icon: <FaKey className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-600 to-red-700",
@@ -222,6 +243,7 @@ const ServicesSection = () => {
           },
           {
             title: "Land Acquisition",
+            url: '/real-estate',
             description: "Verified land listings with secure transaction support",
             icon: <FaTree className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-400 to-orange-500",
@@ -229,6 +251,7 @@ const ServicesSection = () => {
           },
           {
             title: "Property Management",
+            url: '/real-estate',
             description: "Professional property maintenance and tenant management",
             icon: <FaUserTie className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-500 to-red-600",
@@ -238,9 +261,11 @@ const ServicesSection = () => {
       },
       {
         name: "Financial Services",
+
         services: [
           {
             title: "Money Transfer Services",
+            url: '/financial',
             description: "Get best rates for sending money internationally",
             icon: <FaMoneyBillWave className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-500 to-red-600",
@@ -248,6 +273,7 @@ const ServicesSection = () => {
           },
           {
             title: "Mortgage Services",
+            url: '/financial',
             description: "Mortgage solutions for diaspora investors",
             icon: <FaHandshake className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-600 to-red-700",
@@ -255,6 +281,7 @@ const ServicesSection = () => {
           },
           {
             title: "Banking Services",
+            url: '/financial',
             description: "Diaspora-focused banking solutions",
             icon: <FaPiggyBank className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-400 to-red-500",
@@ -262,6 +289,7 @@ const ServicesSection = () => {
           },
           {
             title: "Rent Collection",
+            url: '/financial',
             description: "Secure and reliable rent collection services",
             icon: <FaMoneyCheckAlt className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-500 to-orange-500",
@@ -271,9 +299,11 @@ const ServicesSection = () => {
       },
       {
         name: "Technology & Communication",
+
         services: [
           {
             title: "Tech Supplies",
+            url: '/technology',
             description: "Computers, phones, and telecom equipment from trusted vendors",
             icon: <FaLaptop className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-500 to-red-600",
@@ -281,6 +311,7 @@ const ServicesSection = () => {
           },
           {
             title: "Telecom Services",
+            url: '/technology',
             description: "Mobile money and internet services",
             icon: <FaPhoneAlt className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-600 to-red-700",
@@ -290,9 +321,11 @@ const ServicesSection = () => {
       },
       {
         name: "Professional Services",
+
         services: [
           {
             title: "Construction Services",
+            url: '/professional',
             description: "Connect with certified building professionals and contractors",
             icon: <FaBuilding className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-500 to-red-600",
@@ -300,6 +333,7 @@ const ServicesSection = () => {
           },
           {
             title: "Hardware Suppliers",
+            url: '/professional',
             description: "Source construction materials directly from trusted suppliers",
             icon: <FaTools className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-400 to-red-500",
@@ -307,6 +341,7 @@ const ServicesSection = () => {
           },
           {
             title: "Agricultural Services",
+            url: '/professional',
             description: "Farming equipment and professional farm management",
             icon: <FaTractor className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-600 to-red-700",
@@ -314,6 +349,7 @@ const ServicesSection = () => {
           },
           {
             title: "Event Management",
+            url: '/professional',
             description: "Complete event planning including traditional Mikolo services",
             icon: <FaCalendarCheck className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-500 to-orange-500",
@@ -321,6 +357,7 @@ const ServicesSection = () => {
           },
           {
             title: "Advertising Services",
+            url: '/professional',
             description: "Targeted marketing solutions",
             icon: <FaBullhorn className="w-8 h-8" />,
             color: "bg-gradient-to-br from-red-500 to-red-600",
@@ -603,12 +640,14 @@ const ServicesCarousel = () => {
       id: 1,
       title: "Custom Artwork",
       category: "Art",
+      url: '/providers/lifestyle',
       description: "Bespoke paintings and handcrafted designs.",
       link: "https://plus.unsplash.com/premium_photo-1671527298459-cea23635bd5b?auto=format&fit=crop&w=800&q=80",
     },
     {
       id: 2,
       title: "Medical Consultation",
+      url: '/providers/health',
       category: "Health",
       description: "Expert medical advice and online consultations.",
       link: "https://images.pexels.com/photos/5452232/pexels-photo-5452232.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=2",
@@ -616,6 +655,7 @@ const ServicesCarousel = () => {
     {
       id: 4,
       title: "Home Renovation",
+      url: '/providers/home',
       category: "Construction",
       description: "High-quality home remodeling services.",
       link: "https://images.pexels.com/photos/7092358/pexels-photo-7092358.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=2",
@@ -623,6 +663,7 @@ const ServicesCarousel = () => {
     {
       id: 5,
       title: "Grocery Delivery",
+      url: '/providers/home',
       category: "Groceries",
       description: "Get your daily essentials delivered fast.",
       link: "https://images.pexels.com/photos/7457217/pexels-photo-7457217.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=2",
@@ -630,6 +671,7 @@ const ServicesCarousel = () => {
     {
       id: 6,
       title: "Property Listings",
+      url: '/providers/real-estate',
       category: "Real Estate",
       description: "Find your dream home with ease.",
       link: "https://images.pexels.com/photos/7578890/pexels-photo-7578890.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=2",
@@ -788,9 +830,12 @@ const ServicesCarousel = () => {
                   </p>
 
                   <div className="flex gap-2 md:gap-3 lg:gap-5 mt-2 md:mt-4">
-                    <button className="rounded-full py-2 md:py-3 px-4 md:px-6 lg:px-8 font-semibold text-sm md:text-base cursor-pointer flex items-center transition duration-300 bg-white/10 text-white border border-white/15 hover:bg-white/15 hover:transform hover:-translate-y-0.5 hover:shadow-lg backdrop-blur-sm">
-                      Get a Quote <span className="ml-1 md:ml-2 transition-transform duration-300 group-hover:translate-x-0.5">→</span>
-                    </button>
+                    <Link to={`${service.url}`}>
+                      <button className="rounded-full py-2 md:py-3 px-4 md:px-6 lg:px-8 font-semibold text-sm md:text-base cursor-pointer flex items-center transition duration-300 bg-white/10 text-white border border-white/15 hover:bg-white/15 hover:transform hover:-translate-y-0.5 hover:shadow-lg backdrop-blur-sm">
+                        Get a Quote <span className="ml-1 md:ml-2 transition-transform duration-300 group-hover:translate-x-0.5">→</span>
+
+                      </button>
+                    </Link>
                   </div>
                 </div>
 

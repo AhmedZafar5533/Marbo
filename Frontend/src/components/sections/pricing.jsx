@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const VendorLandingSection = () => {
   // Updated color palette consistent with previous component
@@ -71,11 +72,13 @@ const VendorLandingSection = () => {
                 <div className="mr-3 flex items-center">
                   <ArrowRight className="w-5 h-5" />
                 </div>
-                <button
-                  name="onboard"
-                  className="bg-transparent border-0 text-[#FFFFFF] font-semibold cursor-pointer">
-                  Onboard Your Business
-                </button>
+                <Link to="/signup">
+                  <button
+                    name="onboard"
+                    className="bg-transparent border-0 text-[#FFFFFF] font-semibold cursor-pointer">
+                    Onboard Your Business
+                  </button>
+                </Link>
               </div>
             </div>
 

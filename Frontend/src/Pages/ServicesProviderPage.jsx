@@ -557,9 +557,9 @@ const ServiceCard = ({ service, highlighted = false }) => {
                         ${service.price}
                     </div>
 
-                    <Link to={`/view/${service._id}`}>
+                    <Link to={`/services/${service._id}`}>
                         <button className="bg-red-500 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-red-600 transition-colors flex items-center">
-                            Book
+                            View
                             <ArrowRight size={14} className="ml-1.5" />
                         </button>
                     </Link>
@@ -801,9 +801,11 @@ const ServicesProviders = () => {
                         <div className="md:w-2/3 text-center md:text-left">
                             <h3 className="text-xl font-bold text-slate-800 mb-2">Need help?</h3>
                             <p className="text-slate-600 mb-4">We're here 24/7 to help you.</p>
-                            <button className="px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg text-sm font-medium hover:shadow-lg transition-all">
-                                Contact Us
-                            </button>
+                            <Link to={'/contact-us'} >
+                                <button className="px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg text-sm font-medium hover:shadow-lg transition-all">
+                                    Contact Us
+                                </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

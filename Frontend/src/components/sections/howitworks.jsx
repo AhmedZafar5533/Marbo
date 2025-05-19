@@ -235,7 +235,7 @@ const HowItWorks = () => {
 
                   {/* Animated tooltip */}
                   <div
-                    className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 whitespace-nowrap px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-all duration-300"
+                    className="absolute -bottom-10 left-27 transform -translate-x-1/2 whitespace-nowrap px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-all duration-300"
                     style={{
                       backgroundColor: index <= activeStep ? colors.primary : colors.dark,
                       color: colors.light,
@@ -558,7 +558,7 @@ const HowItWorks = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.button
                 name="get-started"
-                className="px-8 py-4 rounded-lg font-medium"
+                className="px-8 py-4 rounded-lg font-medium cursor-pointer"
                 style={{
                   background: colors.primary,
                   color: colors.light
@@ -569,7 +569,7 @@ const HowItWorks = () => {
                 }}
                 whileTap={{ scale: 0.97 }}
               >
-                Start Now
+                Start now
               </motion.button>
 
 

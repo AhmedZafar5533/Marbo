@@ -11,13 +11,14 @@ const User = require("../models/User");
 router.post("/initialize", checkAuthetication, async (req, res) => {
     try {
         const existingVendor = await Vendor.findOne({ userId: req.user.id });
-
+        console.log("Existing Vendor", existingVendor);
         if (existingVendor) {
             return res.json({
                 isInititialized: true,
                 vendorData: existingVendor,
             });
         }
+        console.log("New Vendor", existingVendor);
         const newVendor = new Vendor({
             userId: req.user.id,
         });

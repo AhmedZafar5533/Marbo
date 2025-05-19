@@ -7,6 +7,7 @@ import {
     MapPin,
     Clock,
     FileText,
+    X
 } from 'lucide-react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAdminStore } from '../../Store/adminStore';
@@ -61,15 +62,11 @@ const RejectionModal = ({ isOpen, onClose, onSend }) => {
 const VendorDetailPage = () => {
     const mode = useSearchParams()[0].get("mode");
     const [vendor, setVendor] = useState(null);
-    // const [isModalOpen, setModalOpen] = useState(false);
+    const [isDocumentModalOpen, setDocumentModalOpen] = useState(false);
     const navigate = useNavigate()
 
     const { id } = useParams();
     const { vendorData, getVendorDetails, setVendorApproval, loading, success } = useAdminStore();
-
-
-
-
 
     useEffect(() => {
         if (id) {
@@ -91,7 +88,6 @@ const VendorDetailPage = () => {
         setVendorApproval({ status: 'Rejected', vendorId: id });
         navigate('/admin')
     }
-
 
     if (!vendor) {
         return (
@@ -356,9 +352,12 @@ const VendorDetailPage = () => {
                                             <h3 className="text-sm font-medium text-gray-500">ID Document</h3>
                                             <div className="mt-1 flex items-center">
                                                 <FileText className="h-5 w-5 text-gray-400" />
-                                                <span className="ml-1 text-sm text-indigo-600">
+                                                <button
+                                                    className="ml-1 text-sm text-indigo-600 hover:text-indigo-800"
+                                                    onClick={() => setDocumentModalOpen(true)}
+                                                >
                                                     Document uploaded
-                                                </span>
+                                                </button>
                                             </div>
                                         </div>
                                     )}
@@ -422,16 +421,94 @@ const VendorDetailPage = () => {
                     </div>
                 </div>
             </div>
-            {/* <RejectionModal
-                isOpen={isModalOpen}
-                onClose={() => setModalOpen(false)}
-                onSend={(reason) => {
-                    console.log("Rejection reason:", reason);
-                    setModalOpen(false);
-                }}
-            /> */}
+
+            {/* Document Modal */}
+            {isDocumentModalOpen && (
+                <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full mx-4 md:mx-auto">
+                        <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                            <h3 className="text-lg font-medium text-gray-900">ID Document</h3>
+                            <button
+                                className="text-gray-400 hover:text-gray-500"
+                                onClick={() => setDocumentModalOpen(false)}
+                            >
+                                <X className="h-6 w-6" />
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <div className="flex items-center justify-center">
+                                {ownerDetails.ownerDocumentPhoto ? (
+                                    <img
+                                        src={ownerDetails.ownerDocumentPhoto}
+                                        alt="ID Document"
+                                        className="max-w-full max-h-96 object-contain"
+                                    />
+                                ) : (
+                                    <div className="text-center text-gray-500">
+                                        <FileX className="h-12 w-12 mx-auto text-gray-400" />
+                                        <p className="mt-2">Document not available</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end">
+                            <button
+                                className="bg-indigo-700 hover:bg-indigo-800 text-white py-2 px-4 rounded-md"
+                                onClick={() => setDocumentModalOpen(false)}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
+
+// Example DocumentModal component you could also use instead of inline modal
+// const DocumentModal = ({ isOpen, onClose, documentUrl }) => {
+//     if (!isOpen) return null;
+
+//     return (
+//         <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
+//             <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full mx-4 md:mx-auto">
+//                 <div className="flex justify-between items-center p-6 border-b border-gray-200">
+//                     <h3 className="text-lg font-medium text-gray-900">ID Document</h3>
+//                     <button
+//                         className="text-gray-400 hover:text-gray-500"
+//                         onClick={onClose}
+//                     >
+//                         <X className="h-6 w-6" />
+//                     </button>
+//                 </div>
+//                 <div className="p-6">
+//                     <div className="flex items-center justify-center">
+//                         {documentUrl ? (
+//                             <img
+//                                 src={documentUrl}
+//                                 alt="ID Document"
+//                                 className="max-w-full max-h-96 object-contain"
+//                             />
+//                         ) : (
+//                             <div className="text-center text-gray-500">
+//                                 <FileX className="h-12 w-12 mx-auto text-gray-400" />
+//                                 <p className="mt-2">Document not available</p>
+//                             </div>
+//                         )}
+//                     </div>
+//                 </div>
+//                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end">
+//                     <button
+//                         className="bg-indigo-700 hover:bg-indigo-800 text-white py-2 px-4 rounded-md"
+//                         onClick={onClose}
+//                     >
+//                         Close
+//                     </button>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
 
 export default VendorDetailPage;

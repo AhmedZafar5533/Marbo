@@ -14,39 +14,47 @@ export const useVendorStore = create((set) => ({
     initializeOnboarding: async () => {
         try {
             set({ loading: true });
-            const response = await fetch(baseUrl + "/vendor/initialize", {
+
+            const response = await fetch(`${baseUrl}/vendor/initialize`, {
                 method: "POST",
                 credentials: "include",
             });
+
             const data = await response.json();
 
-            if (
-                data.isInititialized &&
-                data.vendorData.status !== "Pending" &&
-                data.vendorData.status !== "Approved"
-            ) {
-                toast.success("Continue Onboarding");
-                set((state) => ({
-                    vendor: [...state.vendor, data.vendorData],
-                }));
-                set({ isInitialized: true });
+            if (!response.ok) {
+                toast.error(data.message || "Initialization failed.");
                 return;
             }
-            if (response.status === 201) {
-                toast.success(data.message);
+
+            const { isInititialized, vendorData } = data;
+
+            const isValidStatus =
+                vendorData.status === "Approved" ||
+                vendorData.status === "Pending";
+
+            if (isInititialized && isValidStatus) {
                 set((state) => ({
-                    vendor: [...state.vendor, data.vendorData],
+                    vendor: [...state.vendor, vendorData],
+                    isInitialized: true,
                 }));
-                set({ isInitialized: true });
-            } else if (!response.ok) {
-                toast.error(data.message);
+
+                if (response.status === 201) {
+                    toast.success(data.message || "Vendor initialized.");
+                }
+
+                console.log("Vendor data:", vendorData);
+            } else {
+                toast.error("Vendor status is not valid for initialization.");
             }
         } catch (error) {
             toast.error("Error initializing onboarding");
+            console.error("Initialization error:", error);
         } finally {
             set({ loading: false });
         }
     },
+
     sendBusinessDetails: async (businessDetails) => {
         try {
             set({ loading: true });

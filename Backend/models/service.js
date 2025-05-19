@@ -22,6 +22,11 @@ const serviceSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    tier: {
+        type: String,
+        required: true,
+        enum: ["basic", "premium", "diamond"],
+    },
     image: {
         url: {
             type: String,

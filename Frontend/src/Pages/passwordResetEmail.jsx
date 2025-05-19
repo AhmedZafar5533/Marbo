@@ -58,7 +58,7 @@ export default function ForgotPasswordForm() {
                     Forgot Password
                 </h2>
                 <p className="text-center text-gray-600 text-base">
-                    Enter your registered email to receive a reset code.
+                    Enter your registered email to receive a reset link.
                 </p>
 
                 <div className="space-y-2">
@@ -91,7 +91,7 @@ export default function ForgotPasswordForm() {
                         </>
                     ) : (
                         // Show original text when not loading
-                        "Send Reset Code"
+                        "Send Reset Link"
                     )}
                 </button>
             </form>

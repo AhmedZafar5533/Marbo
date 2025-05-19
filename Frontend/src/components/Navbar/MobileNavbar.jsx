@@ -172,7 +172,7 @@ const MobileNavbar = ({ menuItems, performSearch, isScrolled }) => {
                                     >
                                         <div className="py-1">
                                             <a
-                                                href={user.role === 'admin' ? '/admin' : '/dashboard/profile'}
+                                                href={user?.role === 'admin' ? '/admin' : `/dashboard/${user?.role}/profile`}
                                                 className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-red-50 transition-colors duration-200"
                                                 onClick={() => setShowProfileMenu(false)}
                                             >

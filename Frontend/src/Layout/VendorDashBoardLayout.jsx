@@ -44,12 +44,12 @@ const DashboardLayout = () => {
             path: '/dashboard/vendor/services',
             className: 'text-indigo-600 hover:bg-indigo-50',
         },
-        {
-            name: 'Your Page',
-            icon: <SquareParking size={20} />,
-            path: '/dashboard/vendor/edit/page',
-            className: 'text-indigo-600 hover:bg-indigo-50',
-        },
+        // {
+        //     name: 'Your Page',
+        //     icon: <SquareParking size={20} />,
+        //     path: '/dashboard/vendor/edit/page',
+        //     className: 'text-indigo-600 hover:bg-indigo-50',
+        // },
         {
             name: 'Subscriptions',
             icon: <CreditCard size={20} />,

@@ -40,7 +40,6 @@ const ContactForm = () => {
         { value: '', label: 'Select a reason' },
         { value: 'support', label: 'Technical Support' },
         { value: 'billing', label: 'Billing Inquiry' },
-        { value: 'feedback', label: 'Product Feedback' },
         { value: 'partnership', label: 'Partnership Opportunity' },
         { value: 'other', label: 'Other' }
     ];

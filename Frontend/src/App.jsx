@@ -9,6 +9,8 @@ import { useAuthStore } from "../Store/authStore";
 
 // Components
 import LoadingSpinner from "./components/LoadingSpinner";
+import AppointmentForm from "./Pages/med/docProfileDetails";
+import RegistrationLookup from "./Pages/UtilityPage";
 
 
 // Password Forget Pages
@@ -118,6 +120,9 @@ const App = () => {
         <Routes>
           {/* ---------- PUBLIC ROUTES ---------- */}
           <Route element={<MainLayout />}>
+            <Route path="/medical" element={<AppointmentForm />} />
+            <Route path="/loookup" element={<RegistrationLookup />} />
+            <Route path="/insurance" element={<PlansMarketplace />} />
             <Route path="/" element={<Home />} />
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/medical" element={<DoctorsListingPage />} />

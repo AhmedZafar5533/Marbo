@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect } from "react";
 import { useServiceStore } from "../../Store/servicesStore";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuthStore } from "../../Store/authStore";
 
 // Define initial state
@@ -195,6 +195,15 @@ function EditablePage() {
     const [state, dispatch] = useReducer(pageReducer, initialState);
     const { id } = useParams();
     const { user } = useAuthStore()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (user.onboardingDone == 'no') {
+            navigate("/goto/onboarding");
+        }
+        if (user.onboardingDone === 'pending')
+            navigate("/vendor/wait/review");
+    }, [user, navigate]);
 
     const {
         getPageData,

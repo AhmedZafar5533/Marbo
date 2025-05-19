@@ -16,7 +16,8 @@ import {
   Users,
   Settings as SettingsIcon,
 
-  Home
+  Home,
+  Link
 } from 'lucide-react';
 
 const Dashboard = lazy(() => import('../components/Admin/DashboardOverview'));
@@ -174,6 +175,7 @@ function AdminDashboard() {
 }
 /* eslint-disable react/prop-types */
 
+
 const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }) => {
   const { sendLogoutRequest } = useAuthStore()
   const primaryNavItems = [
@@ -194,7 +196,10 @@ const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed, isMobil
       lg:translate-x-0 
       ${isCollapsed ? 'lg:w-20' : 'lg:w-64'}`}>
       <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-        {!isCollapsed && <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400">Admin Panel</h1>}
+
+        {!isCollapsed &&
+          <a href='/'>
+            <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400">Marbo Global</h1></a>}
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -248,7 +253,7 @@ const Sidebar = ({ activeTab, setActiveTab, isCollapsed, setIsCollapsed, isMobil
         <div className="absolute bottom-0 w-full p-4 border-t border-gray-200 dark:border-gray-700">
 
           <button className="mt-4 w-full flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 justify-center py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            onClick={() => sendLogoutRequest}>
+            onClick={() => sendLogoutRequest()}>
             <LogOut size={18} />
             <span>Sign Out</span>
           </button>

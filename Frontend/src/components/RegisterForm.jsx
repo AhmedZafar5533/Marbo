@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LogIn, Eye, EyeOff, AlertCircle, Loader2, X, Check } from 'lucide-react';
+import { LogIn, Eye, EyeOff, AlertCircle, Loader2, X, Check, ArrowRight } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../Store/authStore';
 
@@ -190,9 +190,10 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col lg:flex-row">
-      <div className="w-full h-full flex items-center justify-center p-6 sm:p-12">
-        <div className="absolute top-6 left-6 flex items-center text-red-600 font-bold">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="mb-10 flex justify-center">
           <div className="flex-shrink-0">
             <a
               href="/"
@@ -216,27 +217,25 @@ const SignupPage = () => {
           </div>
         </div>
 
-        <div className="w-full max-w-md space-y-8 mt-10 md:mt-4">
-          <div className="text-center">
-            <h1 className="text-4xl font-extrabold text-gray-900 mb-2 bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
-              Get Started
-            </h1>
-            <p className="text-red-600 text-lg">Create your account in minutes</p>
+        {/* Signup Card */}
+        <div className="bg-white shadow-lg border border-gray-100 rounded-2xl p-8 md:p-10">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">Create an account</h2>
+            <p className="text-gray-500 mt-2">Sign up to get started</p>
           </div>
 
-          {/* General error message at the top of the form */}
+          {/* General error message */}
           {errorMessages.general && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              <p className="flex items-center">
-                <AlertCircle className="mr-2 h-5 w-5" />
-                {errorMessages.general}
-              </p>
+            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center">
+              <AlertCircle className="mr-2 h-5 w-5" />
+              <p>{errorMessages.general}</p>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+            {/* Username Input */}
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
                 Username
               </label>
               <input
@@ -245,17 +244,18 @@ const SignupPage = () => {
                 type="text"
                 value={formData.username}
                 onChange={handleInputChange}
-                disabled={loading}
-                placeholder="Your username"
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 placeholder-gray-400"
+                disabled={loading}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-colors"
+                placeholder="Choose a username"
               />
               <ErrorMessage message={errorMessages.username} />
             </div>
 
-            <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
+            {/* Email Input */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email address
               </label>
               <input
                 id="email"
@@ -263,67 +263,68 @@ const SignupPage = () => {
                 type="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                disabled={loading}
-                placeholder="hello@example.com"
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 placeholder-gray-400"
+                disabled={loading}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-colors"
+                placeholder="Enter your email"
               />
               <ErrorMessage message={errorMessages.email} />
             </div>
 
-            <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            {/* Password Input */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
               <div className="relative">
                 <input
                   id="password"
                   name="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleInputChange}
-                  disabled={loading}
-                  placeholder="••••••••"
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 placeholder-gray-400"
+                  disabled={loading}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-colors"
+                  placeholder="Create a password"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(s => !s)}
+                  onClick={() => setShowPassword(!showPassword)}
                   disabled={loading}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
+              <ErrorMessage message={errorMessages.password} />
 
               {/* Password Validation Checklist */}
               {formData.password.length > 0 && <PasswordChecklist />}
-
-              <ErrorMessage message={errorMessages.password} />
             </div>
 
-            <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+            {/* Confirm Password Input */}
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
                 Confirm Password
               </label>
               <div className="relative">
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
+                  type={showConfirmPassword ? "text" : "password"}
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  disabled={loading}
-                  placeholder="••••••••"
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 placeholder-gray-400"
+                  disabled={loading}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-colors"
+                  placeholder="Confirm your password"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowConfirmPassword(s => !s)}
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   disabled={loading}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
                 >
                   {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -331,38 +332,37 @@ const SignupPage = () => {
               <ErrorMessage message={errorMessages.confirmPassword} />
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-[1.01] shadow-lg hover:shadow-xl flex items-center justify-center disabled:opacity-70"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="animate-spin h-5 w-5 mr-2" />
-                  Signing Up...
-                </>
-              ) : (
-                'Create Account'
-              )}
-            </button>
-
-            <p className="text-center text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link to="/login" className="text-red-600 hover:text-red-700 font-medium">
-                Log in
-              </Link>
-            </p>
-            <p className="text-center text-sm text-gray-500">
-              By creating an account, you agree to our<br />
-              <Link to="/terms" className="text-red-600 hover:text-red-700 font-medium">
-                Terms of Service
-              </Link>{' '}
-              and{' '}
-              <Link to="/privacy" className="text-red-600 hover:text-red-700 font-medium">
-                Privacy Policy
-              </Link>
-            </p>
+            {/* Signup Button */}
+            <div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full cursor-pointer flex justify-center items-center px-4 py-3 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all disabled:opacity-70"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    Create Account
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </button>
+            </div>
           </form>
+        </div>
+
+        {/* Login prompt */}
+        <div className="text-center mt-6">
+          <p className="text-sm text-gray-600">
+            Already have an account?{' '}
+            <Link to="/login" className="font-medium text-red-600 hover:text-red-500">
+              Sign in
+            </Link>
+          </p>
         </div>
       </div>
     </div>

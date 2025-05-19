@@ -4,6 +4,10 @@
     font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
         sans-serif;
 }
+button {
+    @apply cursor-pointer;
+}
+
 body {
     padding: 0;
     margin: 0;

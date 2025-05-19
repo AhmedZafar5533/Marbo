@@ -22,12 +22,17 @@ const VendorOnboardingForm = () => {
 
     useEffect(() => {
 
-        if (!isInitialized)
+        if (!isInitialized) {
+            console.log("hello")
+            console.log(isInitialized)
             initializeOnboarding();
+        }
     }, [initializeOnboarding, isInitialized]);
     useEffect(() => {
-        if (vendor.lenght > 0 && vendor.status !== 'Appproved' || vendor.status !== 'Pending') {
-            navigate('/');
+        console.log(vendor[0])
+        if (vendor.lenght > 0) {
+            if (vendor[0].status !== 'Appproved' || vendor[0].status !== 'Pending')
+                navigate('/');
         }
     })
 

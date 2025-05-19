@@ -80,7 +80,7 @@ router.post("/reset", async (req, res) => {
         if (!token) {
             return res
                 .status(400)
-                .json({ message: "Token not found or expired" });
+                .json({ message: "Reset Link expired." });
         }
 
         // Verify the token
@@ -102,7 +102,7 @@ router.post("/reset", async (req, res) => {
         res.status(200).json({ message: "Password reset successful." });
     } catch (error) {
         console.error("Reset Password Error:", error);
-        return res.status(400).json({ message: "Invalid or expired token" });
+        return res.status(400).json({ message: "Link hass expired. Please generate a new one." });
     }
 });
 
