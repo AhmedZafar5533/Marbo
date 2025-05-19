@@ -41,7 +41,7 @@ router.post("/send/reset/link", async (req, res) => {
         );
 
         // Create reset URL (adjust frontend URL as needed)
-        const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+        const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
         // Send password reset email with reset link
         await sendPasswordResetEmail(user, resetLink, RESET_TOKEN_EXPIRY);
@@ -76,11 +76,9 @@ router.post("/reset", async (req, res) => {
     try {
         // Get JWT from cookie
         const token = req.cookies.resetToken;
-        console.log(token)
+        console.log(token);
         if (!token) {
-            return res
-                .status(400)
-                .json({ message: "Reset Link expired." });
+            return res.status(400).json({ message: "Reset Link expired." });
         }
 
         // Verify the token
@@ -102,7 +100,9 @@ router.post("/reset", async (req, res) => {
         res.status(200).json({ message: "Password reset successful." });
     } catch (error) {
         console.error("Reset Password Error:", error);
-        return res.status(400).json({ message: "Link hass expired. Please generate a new one." });
+        return res
+            .status(400)
+            .json({ message: "Link hass expired. Please generate a new one." });
     }
 });
 
