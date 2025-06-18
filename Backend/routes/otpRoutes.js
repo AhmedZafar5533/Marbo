@@ -88,14 +88,9 @@ router.post("/verify-otp", async (req, res) => {
             return res.status(400).json({ message: error.details[0].message });
         }
         const { _id: userId } = req.user;
-
         const { otp } = req.body;
-        console.log(otp);
-        console.log(typeof otp);
-        console.log(userId);
         const otpDoc = await Otp.findOne({ userId: userId });
-        console.log("here in verify route");
-        console.log(otpDoc);
+
         if (!otpDoc) {
             return res.status(400).json({
                 message: "OTP not generated or expired",
@@ -121,7 +116,7 @@ router.post("/verify-otp", async (req, res) => {
             });
         }
 
-        const isMatch = bcrypt.compare(otp, otpDoc.otp);
+        const isMatch = await bcrypt.compare(otp, otpDoc.otp);
         console.log(isMatch);
         if (!isMatch) {
             otpDoc.attempts += 1;

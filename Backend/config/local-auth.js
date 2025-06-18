@@ -9,9 +9,8 @@ module.exports = function (passport) {
                 try {
                     // console.log("Received:", email.toLowerCase(), password);
                     const lowerCasedEmail = email.toLowerCase();
-                    console.log();
                     const user = await User.findOne({ email: lowerCasedEmail });
-                    console.log(user);
+
                     if (!user)
                         return done(null, false, {
                             message: "Invalid email or password",

@@ -3,6 +3,7 @@ const passport = require("passport");
 const User = require("../models/User");
 const checkAuthetication = require("../middlewares/checkAuthetication");
 const checkAdmin = require("../middlewares/checkAdmin");
+const checkVendor = require("../middlewares/checkVendor");
 
 const {
     signupSchema,
@@ -12,10 +13,7 @@ const {
 const router = express.Router();
 
 router.get("/check", checkAuthetication, async (req, res) => {
-    const users = await User.find({});
-    console.log(users);
     const { password, ...safeUser } = req.user.toObject();
-
     res.status(200).json({
         user: safeUser,
         isAuthenticated: true,
@@ -23,7 +21,22 @@ router.get("/check", checkAuthetication, async (req, res) => {
     });
 });
 
+router.get(
+    "/check-vendor",
+    checkAuthetication,
+    checkVendor,
+    async (req, res) => {
+        const { password, ...safeUser } = req.user.toObject();
+        res.status(200).json({
+            user: safeUser,
+            isAuthenticated: true,
+            otpRequired: false,
+        });
+    }
+);
+
 router.get("/check-admin", checkAuthetication, checkAdmin, (req, res) => {
+    const { password, ...safeUser } = req.user.toObject();
     res.status(200).json({
         user: safeUser,
         isAuthenticated: true,

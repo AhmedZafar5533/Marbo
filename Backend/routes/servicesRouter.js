@@ -8,7 +8,7 @@ const sharp = require("sharp");
 const cloudinary = require("../config/cloudinary");
 
 const Vendor = require("../models/vendors");
-const uploadFromBuffer = require("../config/imageCompress");
+const uploadFromBuffer = require("../Utils/imageCompress");
 const service = require("../models/service");
 const User = require("../models/User");
 
@@ -19,7 +19,8 @@ router.get("/services/get", auth, checkVendor, async (req, res) => {
         if (user && user.onboardingDone === "no")
             return res.status(400).json({
                 onboardingDone: "pending",
-                message: "Please complete the onboarding process first before proceeding!",
+                message:
+                    "Please complete the onboarding process first before proceeding!",
             });
         if (user && user.onboardingDone === "pending")
             return res.status(400).json({
@@ -55,9 +56,78 @@ router.get("/services/get", auth, checkVendor, async (req, res) => {
     }
 });
 
-router.get("/services/all", async (req, res) => {
+// todo: Have to validate the category params later on
+
+//todo: apply this more efficient method for feching later
+
+// router.get("/services/all/:category", async (req, res) => {
+//     try {
+//         const { category } = req.params;
+//         const {
+//             recommendedCursor,
+//             basicCursor,
+//             recommendedLimit = 6,
+//             basicLimit = 6,
+//         } = req.query;
+
+//         const buildCursorQuery = (cursor) =>
+//             cursor ? { _id: { $gt: new mongoose.Types.ObjectId(cursor) } } : {};
+
+//         let recommendedServices = [];
+//         let recommendedQuery = buildCursorQuery(recommendedCursor);
+//         const tiers = ["Diamond", "Premium", "Silver"];
+
+//         for (const tier of tiers) {
+//             if (recommendedServices.length >= recommendedLimit) break;
+
+//             const remaining = recommendedLimit - recommendedServices.length;
+//             const tierServices = await Service.find({
+//                 category,
+//                 tier,
+//                 ...recommendedQuery,
+//             })
+//                 .sort({ _id: 1 }) // Ensure order
+//                 .limit(remaining);
+
+//             recommendedServices = recommendedServices.concat(tierServices);
+
+//             // If we got some services, update the cursor query
+//             if (tierServices.length > 0) {
+//                 recommendedQuery._id = {
+//                     $gt: tierServices[tierServices.length - 1]._id,
+//                 };
+//             }
+//         }
+
+//         // Step 2: Basic Services
+//         const basicServices = await Service.find({
+//             category,
+//             tier: "Basic",
+//             ...buildCursorQuery(basicCursor),
+//         })
+//             .sort({ _id: 1 })
+//             .limit(Number(basicLimit));
+
+//         return res.status(200).json({
+//             recommended: recommendedServices,
+//             basic: basicServices,
+//         });
+//     } catch (error) {
+//         console.error("Error fetching services:", error);
+//         return res.status(500).json({
+//             success: false,
+//             message: "Failed to fetch services",
+//         });
+//     }
+// });
+
+router.get("/services/all/:category", async (req, res) => {
     try {
-        const services = await service.find({});
+        console.log(req.params.category);
+        const services = await service.find({
+            category: req.params.category,
+        });
+        console.log(services);
 
         if (services.length > 0)
             return res.status(200).json({
@@ -79,11 +149,10 @@ router.put("/service/:id/edit", auth, checkVendor, async (req, res) => {
     try {
         const { id } = req.params;
         const {
-            category,
             price,
             description,
             image: newImage,
-            name,
+            serviceName,
             status,
         } = req.body;
 
@@ -95,15 +164,13 @@ router.put("/service/:id/edit", auth, checkVendor, async (req, res) => {
             });
         }
 
-        // Update any provided fields
-        if (category) existingService.category = category;
         if (price) existingService.price = price;
         if (description) existingService.description = description;
-        if (name) existingService.name = name;
+        if (serviceName) existingService.serviceName = serviceName;
         if (status) existingService.status = status;
 
         // Handle image update
-        if (newImage && !newImage.startsWith("https")) {
+        if (newImage && !newImage.url.startsWith("https")) {
             // Delete old image from Cloudinary
             if (existingService.image?.publicId) {
                 await cloudinary.uploader.destroy(
@@ -111,14 +178,20 @@ router.put("/service/:id/edit", auth, checkVendor, async (req, res) => {
                 );
             }
 
-            // Compress and upload new image
-            const uploadedImage = await uploadFromBuffer(newImage);
-            if (uploadedImage) {
-                existingService.image = {
-                    url: uploadedImage.secure_url,
-                    publicId: uploadedImage.public_id,
-                };
+            let image = newImage.url;
+            if (image.startsWith("data:")) {
+                image = image.split(",")[1];
             }
+            const buffer = Buffer.from(image, "base64");
+            const compressedImage = await sharp(buffer)
+                .resize({ width: 800 })
+                .jpeg({ quality: 80 })
+                .toBuffer();
+            const uploadedImage = await uploadFromBuffer(compressedImage);
+            existingService.image = {
+                publicId: uploadedImage.public_id,
+                url: uploadedImage.secure_url,
+            };
         }
 
         await existingService.save();
@@ -244,7 +317,7 @@ router.post("/services/initialize", auth, checkVendor, async (req, res) => {
             publicId: imageUpload.public_id,
             url: imageUpload.secure_url,
         };
-
+        const formateedCategory = category.toLowerCase().trim();
         const newService = new service({
             vendorId,
             serviceName: name,

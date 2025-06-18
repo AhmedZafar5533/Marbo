@@ -11,6 +11,10 @@ const orderSchema = new mongoose.Schema({
         ref: "Vendor",
         required: true,
     },
+    serviceType: {
+        type: String,
+        enum: ["Product", "Standard"],
+    },
     serviceName: {
         type: String,
         required: true,
@@ -28,9 +32,20 @@ const orderSchema = new mongoose.Schema({
         enum: ["Processing", "Completed", "Cancelled"],
         default: "Processing",
     },
+    isPaid: {
+        type: Boolean,
+        default: false,
+        required: true,
+    },
     createdAt: {
         type: Date,
         default: Date.now,
+    },
+    startingDate: {
+        type: String,
+    },
+    endingDate: {
+        type: String,
     },
 });
 const Order = mongoose.model("Order", orderSchema);

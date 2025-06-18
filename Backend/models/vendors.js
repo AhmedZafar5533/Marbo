@@ -8,7 +8,7 @@ const businessDetailsSchema = new mongoose.Schema(
         businessIndustry: { type: String, required: true },
         registrationNumber: { type: String, required: true, unique: true },
     },
-    { _id: false } 
+    { _id: false }
 );
 
 const businessContactSchema = new mongoose.Schema(
@@ -64,13 +64,13 @@ const vendorSchema = new mongoose.Schema(
         businessDetails: businessDetailsSchema,
         businessContact: businessContactSchema,
         ownerDetails: ownerDetailsSchema,
-        contactPerson: contactPersonSchema, 
+        contactPerson: contactPersonSchema,
         businessAddress: businessAddressSchema,
         status: {
             type: String,
-            enum: ["Pending", "Approved", "Rejected"],
-            default: "Pending",
-        },  
+            enum: ["Pending", "Approved", "Rejected", "Onboarding"],
+            default: "Onboarding",
+        },
     },
     { timestamps: true }
 );

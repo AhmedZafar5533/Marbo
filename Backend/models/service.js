@@ -6,6 +6,11 @@ const serviceSchema = new mongoose.Schema({
         ref: "Vendor",
         required: true,
     },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
     serviceName: {
         type: String,
         required: true,
@@ -22,6 +27,7 @@ const serviceSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+
     tier: {
         type: String,
         required: true,
@@ -43,6 +49,15 @@ const serviceSchema = new mongoose.Schema({
     },
     vendorName: {
         type: String,
+        required: true,
+    },
+    rating: {
+        type: Number,
+        default: 0,
+    },
+    isPublished: {
+        type: Boolean,
+        default: false,
         required: true,
     },
 });

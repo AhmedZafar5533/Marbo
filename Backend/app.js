@@ -16,6 +16,11 @@ const adminRoutes = require("./routes/adminRoutes");
 const servicePageRouter = require("./routes/servicesRouter");
 const subscriptionRouter = require("./routes/subscriptionRoutes");
 const passwordResetRouter = require("./routes/forgetPasswordRoute");
+const contactUsRoutes = require("./routes/contactUsRoutes");
+const addProductsRouter = require("./routes/productroutes");
+const moneyTransferRoutes = require("./routes/moneyTransfer");
+const domesticStaffingRoutes = require("./routes/domesticStaffingRoutes");
+
 require("./config/local-auth");
 
 dotenv.config();
@@ -35,7 +40,7 @@ app.use(cookieParser());
 
 app.use(
     cors({
-        origin:  "http://localhost:5173",
+        origin: "http://localhost:5173",
         credentials: true,
     })
 );
@@ -93,6 +98,15 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/subscription", subscriptionRouter);
 app.use("/api/service-page", servicePageRouter);
 app.use("/api/forget-password", passwordResetRouter);
+app.use("/api/contact-us", contactUsRoutes);
+app.use("/api/products", addProductsRouter);
+app.use("/api/money", moneyTransferRoutes);
+app.use("/api/domestic-staffing", domesticStaffingRoutes);
+app.use("/api/holiday-lets", require("./routes/holidayLetsRoutes"));
+app.use("/api/hotel-rooms", require("./routes/hotelRoutes"));
+app.use("/api/clothing", require("./routes/clothingRoutes"));
+app.use("/api/medical", require("./routes/medicalRoutes"));
+app.use("/api/orders", require("./routes/orderRoutes"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

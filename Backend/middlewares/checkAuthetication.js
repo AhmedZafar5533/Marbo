@@ -2,6 +2,7 @@ const User = require("../models/User");
 
 module.exports = async (req, res, next) => {
     try {
+
         if (!req.isAuthenticated()) {
             return res.status(401).json({
                 isAuthenticated: false,

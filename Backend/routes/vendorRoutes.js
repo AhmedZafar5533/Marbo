@@ -4,12 +4,19 @@ const Vendor = require("../models/vendors");
 const auth = require("../middlewares/checkAuthetication");
 const path = require("path");
 const checkAuthetication = require("../middlewares/checkAuthetication");
-const uploadFromBuffer = require("../config/imageCompress");
+const uploadFromBuffer = require("../Utils/imageCompress");
 const sharp = require("sharp");
 const User = require("../models/User");
 
 router.post("/initialize", checkAuthetication, async (req, res) => {
     try {
+        const isVendor = await User.findById(req.user.id);
+        console.log(isVendor);
+        if (isVendor.role !== "vendor") {
+            return res.status(400).json({
+                message: "User is not a vendor",
+            });
+        }
         const existingVendor = await Vendor.findOne({ userId: req.user.id });
 
         if (existingVendor) {
@@ -19,6 +26,7 @@ router.post("/initialize", checkAuthetication, async (req, res) => {
                 vendorData: existingVendor,
             });
         }
+
         const newVendor = new Vendor({
             userId: req.user.id,
         });
@@ -40,8 +48,6 @@ router.post("/initialize", checkAuthetication, async (req, res) => {
 });
 
 router.post("/business-details", checkAuthetication, async (req, res) => {
-    console.log("Here we are");
-    console.log(req.body);
     try {
         const {
             businessName,
@@ -119,6 +125,18 @@ router.post("/business-contact", checkAuthetication, async (req, res) => {
                 success: false,
                 message: "Please provide all required owner details",
             });
+
+        const duplicateEmail = await Vendor.findOne({
+            "businessContact.businessEmail": businessEmail,
+            userId: { $ne: req.user.id },
+        });
+
+        if (duplicateEmail) {
+            return res.status(400).json({
+                message:
+                    "Business email already registered. Please use a different email.",
+            });
+        }
         // Find and update vendor
         const vendor = await Vendor.findOneAndUpdate(
             { userId: req.user.id },
@@ -162,8 +180,8 @@ router.post("/owner-details", checkAuthetication, async (req, res) => {
             nationality,
             identificationType,
             identificationNumber,
-            // ownerDocumentPhoto,
-            // ownerPhoto,
+            ownerDocumentPhoto,
+            ownerPhoto,
         } = req.body;
 
         if (
@@ -171,10 +189,9 @@ router.post("/owner-details", checkAuthetication, async (req, res) => {
             !dateOfBirth ||
             !nationality ||
             !identificationType ||
-            !identificationNumber
-            // ||
-            // !ownerPhoto ||
-            // !ownerDocumentPhoto
+            !identificationNumber ||
+            !ownerPhoto ||
+            !ownerDocumentPhoto
         ) {
             return res.status(400).json({
                 success: false,
@@ -185,54 +202,54 @@ router.post("/owner-details", checkAuthetication, async (req, res) => {
         // Handle owner photo
         // let ownerPhotoUrl;
         // // Check if the photo is already a URL (not starting with data:)
-        // if (
-        //     ownerPhoto.startsWith("http://") ||
-        //     ownerPhoto.startsWith("https://")
-        // ) {
-        //     // If it's already a URL, use it directly
-        //     ownerPhotoUrl = ownerPhoto;
-        // } else {
-        //     // Process and upload the image
-        //     let base64Data = ownerPhoto;
-        //     if (ownerPhoto.startsWith("data:")) {
-        //         base64Data = ownerPhoto.split(",")[1];
-        //     }
-        //     const buffer = Buffer.from(base64Data, "base64");
-        //     const compressedBuffer = await sharp(buffer)
-        //         .resize({ width: 800 })
-        //         .jpeg({ quality: 80 })
-        //         .toBuffer();
+        if (
+            ownerPhoto.startsWith("http://") ||
+            ownerPhoto.startsWith("https://")
+        ) {
+            // If it's already a URL, use it directly
+            ownerPhotoUrl = ownerPhoto;
+        } else {
+            // Process and upload the image
+            let base64Data = ownerPhoto;
+            if (ownerPhoto.startsWith("data:")) {
+                base64Data = ownerPhoto.split(",")[1];
+            }
+            const buffer = Buffer.from(base64Data, "base64");
+            const compressedBuffer = await sharp(buffer)
+                .resize({ width: 800 })
+                .jpeg({ quality: 80 })
+                .toBuffer();
 
-        //     const ownerImageUpload = await uploadFromBuffer(compressedBuffer);
-        //     ownerPhotoUrl = ownerImageUpload.secure_url;
-        // }
+            const ownerImageUpload = await uploadFromBuffer(compressedBuffer);
+            ownerPhotoUrl = ownerImageUpload.secure_url;
+        }
 
-        // // Handle owner document photo
-        // let ownerDocumentPhotoUrl;
-        // // Check if the document photo is already a URL
-        // if (
-        //     ownerDocumentPhoto.startsWith("http://") ||
-        //     ownerDocumentPhoto.startsWith("https://")
-        // ) {
-        //     // If it's already a URL, use it directly
-        //     ownerDocumentPhotoUrl = ownerDocumentPhoto;
-        // } else {
-        //     // Process and upload the document image
-        //     let base64DocumentData = ownerDocumentPhoto;
-        //     if (ownerDocumentPhoto.startsWith("data:")) {
-        //         base64DocumentData = ownerDocumentPhoto.split(",")[1];
-        //     }
-        //     const documentBuffer = Buffer.from(base64DocumentData, "base64");
-        //     const compressedDocumentBuffer = await sharp(documentBuffer)
-        //         .resize({ width: 800 })
-        //         .jpeg({ quality: 80 })
-        //         .toBuffer();
+        // Handle owner document photo
+        let ownerDocumentPhotoUrl;
+        // Check if the document photo is already a URL
+        if (
+            ownerDocumentPhoto.startsWith("http://") ||
+            ownerDocumentPhoto.startsWith("https://")
+        ) {
+            // If it's already a URL, use it directly
+            ownerDocumentPhotoUrl = ownerDocumentPhoto;
+        } else {
+            // Process and upload the document image
+            let base64DocumentData = ownerDocumentPhoto;
+            if (ownerDocumentPhoto.startsWith("data:")) {
+                base64DocumentData = ownerDocumentPhoto.split(",")[1];
+            }
+            const documentBuffer = Buffer.from(base64DocumentData, "base64");
+            const compressedDocumentBuffer = await sharp(documentBuffer)
+                .resize({ width: 800 })
+                .jpeg({ quality: 80 })
+                .toBuffer();
 
-        //     const ownerDocumentImageUpload = await uploadFromBuffer(
-        //         compressedDocumentBuffer
-        //     );
-        //     ownerDocumentPhotoUrl = ownerDocumentImageUpload.secure_url;
-        // }
+            const ownerDocumentImageUpload = await uploadFromBuffer(
+                compressedDocumentBuffer
+            );
+            ownerDocumentPhotoUrl = ownerDocumentImageUpload.secure_url;
+        }
 
         const vendor = await Vendor.findOneAndUpdate(
             { userId: req.user.id },
@@ -243,10 +260,10 @@ router.post("/owner-details", checkAuthetication, async (req, res) => {
                     nationality,
                     identificationType,
                     identificationNumber,
-                    ownerPhoto: "jssdkfjsdfl",
-                    ownerDocumentPhoto: "sfuousdosdk",
-                    // ownerPhoto: ownerPhotoUrl,
-                    // ownerDocumentPhoto: ownerDocumentPhotoUrl,
+                    // ownerPhoto: "jssdkfjsdfl",
+                    // ownerDocumentPhoto: "sfuousdosdk",
+                    ownerPhoto: ownerPhotoUrl,
+                    ownerDocumentPhoto: ownerDocumentPhotoUrl,
                 },
             },
             { new: true }
