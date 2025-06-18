@@ -17,6 +17,7 @@ import {
 import isEqual from 'lodash/isEqual';
 import { useMedicalStore } from '../../../Store/medicalStore';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { Link } from 'react-router-dom';
 
 const MedicalStaffingDashboard = () => {
     const [staffingData, setStaffingData] = useState([]);
@@ -368,12 +369,26 @@ const MedicalStaffingDashboard = () => {
                     <div className="text-center">
                         <h1 className="text-2xl sm:text-4xl font-bold text-indigo-700 mb-2 flex items-center justify-center">
                             <Users className="w-6 h-6 sm:w-8 sm:h-8 mr-2" />
-                            Domestic Staff Dashboard
+                            Medical Staff Dashboard
                         </h1>
-                        <p className="text-indigo-600 text-sm sm:text-base">Manage your domestic staff services and schedules</p>
+                        <p className="text-indigo-600 text-sm sm:text-base mb-4">
+                            Manage your domestic staff services and schedules
+                        </p>
+                        {/* Add Staff Button */}
+                        <Link to={"/dashboard/vendor/add/medical/doctors"} >
+                            <div className="flex justify-center">
+                                <button
+
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm sm:text-base font-medium py-2 px-4 rounded-lg shadow-md transition-all duration-200"
+                                >
+                                    + Add Staff
+                                </button>
+                            </div>
+                        </Link>
                     </div>
                 </div>
             </div>
+
             {/* Stats Panel */}
             <div className=" bg-white shadow-xl p-4 sm:p-6 border border-indigo-100">
                 <h3 className="text-lg sm:text-xl font-bold text-indigo-800 mb-4">Dashboard Stats</h3>

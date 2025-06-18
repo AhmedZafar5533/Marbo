@@ -408,7 +408,7 @@ const InventoryPage = () => {
                     <p className="text-gray-600">Manage your product catalog and inventory</p>
                 </div>
 
-                {/* Stats Cards */}
+                {/* Stats Cards
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     <div className="bg-white p-6 rounded-lg shadow-md">
                         <div className="flex items-center">
@@ -450,7 +450,7 @@ const InventoryPage = () => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
 
                 {/* Search and Filter Bar */}
                 <div className="bg-white p-6 rounded-lg shadow-md mb-8">

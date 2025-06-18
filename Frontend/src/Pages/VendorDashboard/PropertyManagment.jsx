@@ -23,83 +23,12 @@ import {
     Clock,
     Star
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useHolidayLetsStore } from '../../../Store/holidayLetsStore';
+
 
 const PropertyManagementDashboard = () => {
-    const [properties, setProperties] = useState([
-        {
-            _id: '1',
-            title: 'Luxury Villa in Mirpur Hills',
-            propertyType: 'villa',
-            pricePerNight: 250,
-            availability: 'available',
-            maxGuests: 8,
-            bedrooms: 4,
-            bathrooms: 3,
-            propertySize: 2500,
-            sizeUnit: 'sqft',
-            description: 'Beautiful luxury villa with stunning mountain views and modern amenities. Perfect for families and groups looking for a premium stay experience.',
-            features: ['Wi-Fi', 'AC', 'Parking', 'Pool', 'Mountain View'],
-            images: [
-                { imageUrl: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400', publicId: 'villa1' },
-                { imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400', publicId: 'villa2' }
-            ],
-            addressLine1: '123 Hills Road',
-            city: 'Mirpur',
-            stateRegion: 'Azad Jammu and Kashmir',
-            country: 'Pakistan',
-            checkinTime: '15:00',
-            checkoutTime: '11:00',
-            createdAt: '2024-01-15T10:00:00Z'
-        },
-        {
-            _id: '2',
-            title: 'Cozy Apartment Downtown',
-            propertyType: 'apartment',
-            pricePerNight: 120,
-            availability: 'available',
-            maxGuests: 4,
-            bedrooms: 2,
-            bathrooms: 2,
-            propertySize: 1200,
-            sizeUnit: 'sqft',
-            description: 'Modern apartment in the heart of the city with easy access to shopping and dining. Fully furnished with contemporary amenities.',
-            features: ['Wi-Fi', 'AC', 'Heater', 'Kitchen'],
-            images: [
-                { imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400', publicId: 'apt1' }
-            ],
-            addressLine1: '456 Main Street',
-            city: 'Mirpur',
-            stateRegion: 'Azad Jammu and Kashmir',
-            country: 'Pakistan',
-            checkinTime: '14:00',
-            checkoutTime: '10:00',
-            createdAt: '2024-02-01T08:30:00Z'
-        },
-        {
-            _id: '3',
-            title: 'Riverside Cabin Retreat',
-            propertyType: 'cabin',
-            pricePerNight: 180,
-            availability: 'draft',
-            maxGuests: 6,
-            bedrooms: 3,
-            bathrooms: 2,
-            propertySize: 1800,
-            sizeUnit: 'sqft',
-            description: 'Peaceful cabin by the river offering tranquility and natural beauty. Perfect for nature lovers and those seeking a quiet getaway.',
-            features: ['Wi-Fi', 'Fireplace', 'Parking', 'River View'],
-            images: [
-                { imageUrl: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400', publicId: 'cabin1' }
-            ],
-            addressLine1: '789 River Road',
-            city: 'Mirpur',
-            stateRegion: 'Azad Jammu and Kashmir',
-            country: 'Pakistan',
-            checkinTime: '16:00',
-            checkoutTime: '11:00',
-            createdAt: '2024-02-10T14:15:00Z'
-        }
-    ]);
+    const [properties, setProperties] = useState([]);
 
     const [viewMode, setViewMode] = useState('grid');
     const [searchTerm, setSearchTerm] = useState('');
@@ -111,6 +40,24 @@ const PropertyManagementDashboard = () => {
 
     const propertyTypes = ['house', 'apartment', 'villa', 'condo', 'cabin', 'loft', 'bungalow', 'other'];
     const availabilityOptions = ['available', 'unavailable', 'draft'];
+
+
+
+    const { getDashboardData, dashboardData, loading } = useHolidayLetsStore()
+
+    useEffect(() => {
+        getDashboardData()
+    }, [getDashboardData])
+
+    useEffect(() => {
+        if (dashboardData.length > 0) {
+            setProperties(dashboardData);
+        }
+    }, [dashboardData]);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     const filteredProperties = properties.filter(property => {
         const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -402,11 +349,12 @@ const PropertyManagementDashboard = () => {
                                     <List className="w-5 h-5" />
                                 </button>
                             </div>
-
-                            <button className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-lg hover:from-indigo-600 hover:to-indigo-700 transition-all shadow-lg flex items-center">
-                                <Plus className="w-5 h-5 mr-2" />
-                                Add Property
-                            </button>
+                            <Link to={"/dashboard/vendor/add/holiday/property"}>
+                                <button className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-lg hover:from-indigo-600 hover:to-indigo-700 transition-all shadow-lg flex items-center">
+                                    <Plus className="w-5 h-5 mr-2" />
+                                    Add Property
+                                </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

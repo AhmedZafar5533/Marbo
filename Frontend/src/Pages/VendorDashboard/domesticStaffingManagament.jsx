@@ -17,6 +17,7 @@ import {
 import isEqual from 'lodash/isEqual';
 import { useDomesticStaffingStore } from '../../../Store/domesticStaffingStore';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { Link } from 'react-router-dom';
 
 const DomesticStaffingDashboard = () => {
     const [staffingData, setStaffingData] = useState([]);
@@ -369,7 +370,21 @@ const DomesticStaffingDashboard = () => {
                             <Users className="w-6 h-6 sm:w-8 sm:h-8 mr-2" />
                             Domestic Staff Dashboard
                         </h1>
-                        <p className="text-indigo-600 text-sm sm:text-base">Manage your domestic staff services and schedules</p>
+                        <p className="text-indigo-600 text-sm sm:text-base mb-4">
+                            Manage your domestic staff services and schedules
+                        </p>
+                        {/* Add Staff Button */}
+                        <Link to={"/dashboard/vendor/add/staff"} >
+                            <div className="flex justify-center">
+                                <button
+
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm sm:text-base font-medium py-2 px-4 rounded-lg shadow-md transition-all duration-200"
+                                >
+                                    + Add Staff
+                                </button>
+
+                            </div>
+                        </Link>
                     </div>
                 </div>
             </div>

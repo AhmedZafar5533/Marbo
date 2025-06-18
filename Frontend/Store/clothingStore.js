@@ -7,6 +7,32 @@ export const useClothingStore = create((set) => ({
     clothing: [],
     fetchedClothing: null,
     loading: false,
+    dashboardData: [],
+
+    getDashboardData: async () => {
+        set({ loading: true });
+        try {
+            const response = await fetch(`${baseUrl}/clothing/get/dashboard`, {
+                method: "GET",
+                credentials: "include",
+            });
+            if (response.status === 200 || response.status === 304) {
+                const data = await response.json();
+                console.log(data);
+                set({ dashboardData: data.clothing });
+            }
+            if (!response.ok) {
+                const data = await response.json();
+                toast.error(data.message || "Failed to get dashboard data");
+                return;
+            }
+        } catch (error) {
+            toast.error("Error getting dashboard data:", error);
+            set({ dashboardData: [] });
+        } finally {
+            set({ loading: false });
+        }
+    },
     addClothes: async (clothingData) => {
         try {
             set({ loading: true });

@@ -5,8 +5,37 @@ const baseUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
 
 export const useHotelRoomStore = create((set) => ({
     hotelRooms: [],
+    dashboardData: [],
     roomDetails: null,
     loading: false,
+
+    getDashboardData: async () => {
+        set({ loading: true });
+        try {
+            const response = await fetch(
+                `${baseUrl}/hotel-rooms/get/dashboard`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                }
+            );
+            if (response.status === 200 || response.status === 304) {
+                const data = await response.json();
+                console.log(data);
+                set({ dashboardData: data.rooms });
+            }
+            if (!response.ok) {
+                const data = await response.json();
+                toast.error(data.message || "Failed to get dashboard data");
+                return;
+            }
+        } catch (error) {
+            toast.error("Error getting dashboard data:", error);
+            set({ dashboardData: [] });
+        } finally {
+            set({ loading: false });
+        }
+    },
     getAllRooms: async (serviceId) => {
         try {
             set({ loading: true });

@@ -18,8 +18,10 @@ import {
     Upload,
     Camera
 } from 'lucide-react';
-import { useHolidayLetsStore } from '../../../Store/holidayLetsStore';
+
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { Link } from 'react-router-dom';
+import { useHotelRoomStore } from '../../../Store/hotelRoomStore';
 
 const HotelDashboard = () => {
     const [hotels, setHotels] = useState([]);
@@ -31,7 +33,7 @@ const HotelDashboard = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [hotelToDelete, setHotelToDelete] = useState(null);
 
-    const { getDashboardData, dashboardData, loading } = useHolidayLetsStore();
+    const { getDashboardData, dashboardData, loading } = useHotelRoomStore();
 
     // Fetch data on component mount
     useEffect(() => {
@@ -126,10 +128,12 @@ const HotelDashboard = () => {
                             </h1>
                             <p className="text-indigo-600 mt-1">Manage your hotel rooms and bookings</p>
                         </div>
-                        <button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg flex items-center transform hover:scale-105">
-                            <Plus className="w-5 h-5 mr-2" />
-                            Add New Room
-                        </button>
+                        <Link to={"/dashboard/vendor/add/hotel/rooms"}>
+                            <button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg flex items-center transform hover:scale-105">
+                                <Plus className="w-5 h-5 mr-2" />
+                                Add New Room
+                            </button>
+                        </Link>
                     </div>
                 </div>
             </div>

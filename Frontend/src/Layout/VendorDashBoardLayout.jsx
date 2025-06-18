@@ -86,24 +86,13 @@ const DashboardLayout = () => {
             className: 'text-indigo-600 hover:bg-indigo-50',
         },
         {
-            name: "Add Staff",
-            icon: <PlusSquare size={20} />,
-            path: '/dashboard/vendor/add/staff',
+            name: "Clothes Inventory",
+            icon: <Warehouse size={20} />,
+            path: '/dashboard/vendor/manage/clothes',
             className: 'text-indigo-600 hover:bg-indigo-50',
         },
 
-        {
-            name: "Add property",
-            icon: <PlusSquare size={20} />,
-            path: '/dashboard/vendor/add/holiday/property',
-            className: 'text-indigo-600 hover:bg-indigo-50',
-        },
-        {
-            name: "Add Doctors",
-            icon: <PlusSquare size={20} />,
-            path: '/dashboard/vendor/add/medical/doctors',
-            className: 'text-indigo-600 hover:bg-indigo-50',
-        },
+
         // {
         //     name: 'Your Page',
         //     icon: <SquareParking size={20} />,
@@ -111,13 +100,7 @@ const DashboardLayout = () => {
         //     className: 'text-indigo-600 hover:bg-indigo-50',
         // },
 
-        {
-            name: 'Add Clothes',
-            icon: <PlusSquare size={20} />,
-            path: '/dashboard/vendor/add/clothing/clothes',
-            className: 'text-indigo-600 hover:bg-indigo-50',
-        },
-
+       
         {
             name: 'Subscriptions',
             icon: <CreditCard size={20} />,

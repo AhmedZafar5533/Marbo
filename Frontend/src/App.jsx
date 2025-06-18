@@ -42,6 +42,7 @@ import DomesticStaffingDashboard from "./Pages/VendorDashboard/domesticStaffingM
 import HotelDashboard from "./Pages/VendorDashboard/hotelManagement";
 import MedicalStaffingDashboard from "./Pages/VendorDashboard/medicalStaffMangament";
 import PropertyManagementDashboard from "./Pages/VendorDashboard/PropertyManagment";
+import ClothingManagement from "./Pages/VendorDashboard/ClothingMangemnet";
 
 // Lazy Layouts
 const MainLayout = lazy(() => import("./Layout/MainlLayout"));
@@ -189,6 +190,7 @@ const App = () => {
             <Route path="/dashboard/vendor/domestic-staffing-management" element={<DomesticStaffingDashboard />} />
             <Route path="/dashboard/vendor/hotel-managment" element={<HotelDashboard />} />
             <Route path="/dashboard/vendor/manage/medical-staff" element={<MedicalStaffingDashboard />} />
+            <Route path="/dashboard/vendor/manage/clothes" element={<ClothingManagement />} />
             <Route path="/dashboard/vendor/manage/holiday-lets" element={<PropertyManagementDashboard />} />
             <Route path="/dashboard/vendor/add/staff" element={<StaffTypeCreationForm />} />
             <Route path="/dashboard/vendor/add/holiday/property" element={<HolidayLetForm />} />
