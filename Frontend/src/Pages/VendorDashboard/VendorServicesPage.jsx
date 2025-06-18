@@ -1,9 +1,196 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Plus, Trash2, Eye, AlertCircle, Upload, X, Edit, DollarSign, Tag, Save, CheckCircle } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useServiceStore } from '../../../Store/servicesStore';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { useAuthStore } from '../../../Store/authStore';
+
+// Move EditServiceModal outside of the main component
+const EditServiceModal = ({
+    editFormData,
+    handleCancelEdit,
+    handleEditInputChange,
+    handleEditImageUpload,
+    handleCancelEditImage,
+    handleSaveEdit
+}) => {
+    if (!editFormData) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm overflow-y-auto">
+            <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto mx-2">
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold text-indigo-700">Edit Service</h2>
+                    <button
+                        onClick={handleCancelEdit}
+                        className="text-gray-500 hover:text-gray-700 transition-colors"
+                    >
+                        <X className="h-6 w-6" />
+                    </button>
+                </div>
+
+                <div className="space-y-5">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Service Name
+                        </label>
+                        <input
+                            type="text"
+                            name="serviceName"
+                            value={editFormData.serviceName || ''}
+                            onChange={handleEditInputChange}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        {/* <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Category
+                            </label>
+                            <select
+                                name="category"
+                                value={editFormData.category || ''}
+                                onChange={handleEditInputChange}
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                            >
+                                <option value="Agricultural Services">Agricultural Services</option>
+                                <option value="Arts & Crafts">Arts & Crafts</option>
+                                <option value="Banking Services">Banking Services</option>
+                                <option value="Construction">Construction</option>
+                                <option value="Construction Services">Construction Services</option>
+                                <option value="Domestic Staffing">Domestic Staffing</option>
+                                <option value="Education">Education</option>
+                                <option value="Event Management">Event Management</option>
+                                <option value="Fashion Services">Fashion Services</option>
+                                <option value="Financial Services">Financial Services</option>
+                                <option value="Groceries">Groceries</option>
+                                <option value="Hardware Suppliers">Hardware Suppliers</option>
+                                <option value="Health & Wellness">Health & Wellness</option>
+                                <option value="Health Insurance">Health Insurance</option>
+                                <option value="Holiday Lets">Holiday Lets</option>
+                                <option value="Home Services">Home Services</option>
+                                <option value="Hotel Booking">Hotel Booking</option>
+                                <option value="Interior Design">Interior Design</option>
+                                <option value="Land Acquisition">Land Acquisition</option>
+                                <option value="Lifestyle">Lifestyle</option>
+                                <option value="Medical Care">Medical Care</option>
+                                <option value="Money Transfer Services">Money Transfer Services</option>
+                                <option value="Mortgage Services">Mortgage Services</option>
+                                <option value="Payments & Utilities">Payments & Utilities</option>
+                                <option value="Professional Services">Professional Services</option>
+                                <option value="Properties for Sale">Properties for Sale</option>
+                                <option value="Property Management">Property Management</option>
+                                <option value="Real Estate & Property">Real Estate & Property</option>
+                                <option value="Rent Collection">Rent Collection</option>
+                                <option value="Rental Properties">Rental Properties</option>
+                                <option value="School Fee Payments">School Fee Payments</option>
+                                <option value="Tech Supplies">Tech Supplies</option>
+                                <option value="Technology & Communication">Technology & Communication</option>
+                                <option value="Telecom Services">Telecom Services</option>
+                                <option value="Traditional Clothing">Traditional Clothing</option>
+                                <option value="Utility Payments">Utility Payments</option>
+                                <option value="Water Bill Payments">Water Bill Payments</option>
+                            </select>
+                        </div> */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Status
+                            </label>
+                            <select
+                                name="status"
+                                value={editFormData.status || 'Available'}
+                                onChange={handleEditInputChange}
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                            >
+                                <option value="Available">Available</option>
+                                <option value="Unavailable">Unavailable</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Price ($)
+                            </label>
+                            <div className="relative">
+                                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <input
+                                    type="number"
+                                    name="price"
+                                    value={editFormData.price || ''}
+                                    onChange={handleEditInputChange}
+                                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Service Image
+                        </label>
+                        <div className="relative rounded-lg overflow-hidden">
+                            <img
+                                src={editFormData.image?.url || ''}
+                                alt="Service preview"
+                                className="w-full h-40 object-cover rounded-lg"
+                            />
+                            <div className="absolute bottom-2 right-2 flex space-x-2">
+                                <label className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 transition-colors cursor-pointer">
+                                    <Upload className="h-4 w-4" />
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={handleEditImageUpload}
+                                    />
+                                </label>
+                                {editFormData.image !== editFormData.originalImage && (
+                                    <button
+                                        onClick={handleCancelEditImage}
+                                        className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Description
+                        </label>
+                        <textarea
+                            name="description"
+                            value={editFormData.description || ''}
+                            onChange={handleEditInputChange}
+                            rows="3"
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                        ></textarea>
+                    </div>
+
+                    <div className="flex justify-end space-x-3 pt-4">
+                        <button
+                            onClick={handleCancelEdit}
+                            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleSaveEdit}
+                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center shadow-md"
+                        >
+                            <Save className="h-4 w-4 mr-2" />
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const VendorDashboardServicesSection = () => {
     const [services, setServices] = useState([]);
@@ -12,11 +199,10 @@ const VendorDashboardServicesSection = () => {
     const [showServiceDetails, setShowServiceDetails] = useState(null);
     const [editMode, setEditMode] = useState(false);
     const [editFormData, setEditFormData] = useState(null);
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const navigate = useNavigate();
 
     const { user } = useAuthStore();
-    const { initializeService, loading, getServicesData, servicesData, deleteService, successfullyCreated } = useServiceStore();
+    const { initializeService, loading, getServicesData, servicesData, deleteService, successfullyCreated, editService } = useServiceStore();
 
     useEffect(() => {
         if (user.onboardingDone == 'no') {
@@ -42,17 +228,13 @@ const VendorDashboardServicesSection = () => {
 
     const handleDelete = (id, e) => {
         e.stopPropagation();
-
-
         deleteService(id);
-        setServices(services.filter(service => service._id !== id));
     };
 
     const handleEnableEdit = (service) => {
         setEditMode(true);
         setEditFormData({
-            ...service,
-            originalImage: service.image
+            ...service, image: { ...service.image.url ? service.image : { url: '' } },
         });
     };
 
@@ -62,18 +244,39 @@ const VendorDashboardServicesSection = () => {
     };
 
     const handleSaveEdit = () => {
-        // Here you would typically call an API to update the service
+        const original = services.find(service => service._id === editFormData._id);
+        const updatedFields = {};
+
+        for (const key in editFormData) {
+            const newValue = editFormData[key];
+            const originalValue = original[key];
+
+            // Handle nested image objects
+            if (typeof newValue === "object" && newValue !== null && originalValue !== null) {
+                if (JSON.stringify(newValue) !== JSON.stringify(originalValue)) {
+                    updatedFields[key] = newValue;
+                }
+            } else {
+                if (newValue !== originalValue) {
+                    updatedFields[key] = newValue;
+                }
+            }
+        }
+
+        // Only call the API if there are changes
+        if (Object.keys(updatedFields).length > 0) {
+            editService(editFormData._id, updatedFields);
+        }
+
+        // Update local state regardless
         setServices(services.map(service =>
             service._id === editFormData._id ? editFormData : service
         ));
-
-
         setEditMode(false);
         setShowServiceDetails(editFormData);
         setEditFormData(null);
-        setShowSuccessMessage(true);
-        setTimeout(() => setShowSuccessMessage(false), 3000);
     };
+
 
     const handleEditInputChange = (e) => {
         const { name, value } = e.target;
@@ -162,10 +365,9 @@ const VendorDashboardServicesSection = () => {
 
         useEffect(() => {
             if (successfullyCreated) {
-                resetForm(); // Reset the form when service is successfully created
+                resetForm();
             }
         }, [successfullyCreated]);
-
 
         const handleImageUpload = async (e) => {
             const file = e.target.files[0];
@@ -506,196 +708,6 @@ const VendorDashboardServicesSection = () => {
         );
     };
 
-    const EditServiceModal = () => {
-        // Use refs to maintain focus across renders
-        const nameInputRef = useRef(null);
-        const categorySelectRef = useRef(null);
-        const statusSelectRef = useRef(null);
-        const priceInputRef = useRef(null);
-        const descriptionTextareaRef = useRef(null);
-
-        if (!editFormData) return null;
-
-        return (
-            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm overflow-y-auto">
-                <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto mx-2">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-bold text-indigo-700">Edit Service</h2>
-                        <button
-                            onClick={handleCancelEdit}
-                            className="text-gray-500 hover:text-gray-700 transition-colors"
-                        >
-                            <X className="h-6 w-6" />
-                        </button>
-                    </div>
-
-                    <div className="space-y-5">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Service Name
-                            </label>
-                            <input
-                                ref={nameInputRef}
-                                type="text"
-                                name="serviceName"
-                                value={editFormData.serviceName || ''}
-                                onChange={handleEditInputChange}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Category
-                                </label>
-                                <select
-                                    ref={categorySelectRef}
-                                    name="category"
-                                    value={editFormData.category || ''}
-                                    onChange={handleEditInputChange}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                                >
-                                    <option value="Agricultural Services">Agricultural Services</option>
-                                    <option value="Arts & Crafts">Arts & Crafts</option>
-                                    <option value="Banking Services">Banking Services</option>
-                                    <option value="Construction">Construction</option>
-                                    <option value="Construction Services">Construction Services</option>
-                                    <option value="Domestic Staffing">Domestic Staffing</option>
-                                    <option value="Education">Education</option>
-                                    <option value="Event Management">Event Management</option>
-                                    <option value="Fashion Services">Fashion Services</option>
-                                    <option value="Financial Services">Financial Services</option>
-                                    <option value="Groceries">Groceries</option>
-                                    <option value="Hardware Suppliers">Hardware Suppliers</option>
-                                    <option value="Health & Wellness">Health & Wellness</option>
-                                    <option value="Health Insurance">Health Insurance</option>
-                                    <option value="Holiday Lets">Holiday Lets</option>
-                                    <option value="Home Services">Home Services</option>
-                                    <option value="Hotel Booking">Hotel Booking</option>
-                                    <option value="Interior Design">Interior Design</option>
-                                    <option value="Land Acquisition">Land Acquisition</option>
-                                    <option value="Lifestyle">Lifestyle</option>
-                                    <option value="Medical Care">Medical Care</option>
-                                    <option value="Money Transfer Services">Money Transfer Services</option>
-                                    <option value="Mortgage Services">Mortgage Services</option>
-                                    <option value="Payments & Utilities">Payments & Utilities</option>
-                                    <option value="Professional Services">Professional Services</option>
-                                    <option value="Properties for Sale">Properties for Sale</option>
-                                    <option value="Property Management">Property Management</option>
-                                    <option value="Real Estate & Property">Real Estate & Property</option>
-                                    <option value="Rent Collection">Rent Collection</option>
-                                    <option value="Rental Properties">Rental Properties</option>
-                                    <option value="School Fee Payments">School Fee Payments</option>
-                                    <option value="Tech Supplies">Tech Supplies</option>
-                                    <option value="Technology & Communication">Technology & Communication</option>
-                                    <option value="Telecom Services">Telecom Services</option>
-                                    <option value="Traditional Clothing">Traditional Clothing</option>
-                                    <option value="Utility Payments">Utility Payments</option>
-                                    <option value="Water Bill Payments">Water Bill Payments</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Status
-                                </label>
-                                <select
-                                    ref={statusSelectRef}
-                                    name="status"
-                                    value={editFormData.status || 'Available'}
-                                    onChange={handleEditInputChange}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                                >
-                                    <option value="Available">Available</option>
-                                    <option value="Unavailable">Unavailable</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Price ($)
-                            </label>
-                            <div className="relative">
-                                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                <input
-                                    ref={priceInputRef}
-                                    type="number"
-                                    name="price"
-                                    value={editFormData.price || ''}
-                                    onChange={handleEditInputChange}
-                                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Service Image
-                            </label>
-                            <div className="relative rounded-lg overflow-hidden">
-                                <img
-                                    src={editFormData.image?.url || ''}
-                                    alt="Service preview"
-                                    className="w-full h-40 object-cover rounded-lg"
-                                />
-                                <div className="absolute bottom-2 right-2 flex space-x-2">
-                                    <label className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 transition-colors cursor-pointer">
-                                        <Upload className="h-4 w-4" />
-                                        <input
-                                            type="file"
-                                            className="hidden"
-                                            accept="image/*"
-                                            onChange={handleEditImageUpload}
-                                        />
-                                    </label>
-                                    {editFormData.image !== editFormData.originalImage && (
-                                        <button
-                                            onClick={handleCancelEditImage}
-                                            className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Description
-                            </label>
-                            <textarea
-                                ref={descriptionTextareaRef}
-                                name="description"
-                                value={editFormData.description || ''}
-                                onChange={handleEditInputChange}
-                                rows="3"
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                            ></textarea>
-                        </div>
-
-                        <div className="flex justify-end space-x-3 pt-4">
-                            <button
-                                onClick={handleCancelEdit}
-                                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleSaveEdit}
-                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center shadow-md"
-                            >
-                                <Save className="h-4 w-4 mr-2" />
-                                Save Changes
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
     return (
         <div className="bg-gradient-to-b from-indigo-50 to-blue-50 min-h-screen">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -705,13 +717,7 @@ const VendorDashboardServicesSection = () => {
                     <p className="text-gray-600">Manage and organize all your services in one place</p>
                 </div>
 
-                {/* Success Message */}
-                {showSuccessMessage && (
-                    <div className="fixed top-6 right-6 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg flex items-center z-50 animate-fade-in-out">
-                        <CheckCircle className="h-5 w-5 mr-2" />
-                        <span>Service updated successfully!</span>
-                    </div>
-                )}
+
 
                 {/* Action Bar */}
                 <div className="bg-white rounded-2xl shadow-md mb-8 p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -738,69 +744,70 @@ const VendorDashboardServicesSection = () => {
                     {services.map((service) => (
                         <div
                             key={service._id}
-                            onClick={() => setShowServiceDetails(service)}
-                            className={`bg-white rounded-2xl shadow-md overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1 ${activeServiceId === service._id ? 'ring-2 ring-indigo-500' : ''
-                                }`}
+                            className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                         >
-                            <div className="relative h-56">
+                            <div className="relative h-48">
                                 <img
-                                    src={service.image.url}
+                                    src={service.image?.url || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'}
                                     alt={service.serviceName}
                                     className="w-full h-full object-cover"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity flex items-end justify-start p-4">
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleEnableEdit(service);
-                                        }}
-                                        className="text-white flex items-center bg-indigo-600 hover:bg-indigo-700 transition-colors p-2 rounded-lg mr-2 shadow-lg"
-                                    >
-                                        <Edit className="h-4 w-4 mr-1" />
-                                        Edit
-                                    </button>
-                                    <button
-                                        onClick={(e) => handleDelete(service._id, e)}
-                                        className="text-white flex items-center bg-red-600 hover:bg-red-700 transition-colors p-2 rounded-lg shadow-lg">
-                                        <Trash2 className="h-4 w-4 mr-1" />
-                                        Delete
-                                    </button>
-                                </div>
-                                <div className="absolute top-4 right-4">
-                                    <div
-                                        className={`px-3 py-1 rounded-full text-xs font-medium ${service.status === 'Available'
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-red-100 text-red-800'
-                                            }`}
-                                    >
+                                <div className="absolute top-3 right-3">
+                                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${service.status === 'Available'
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-red-100 text-red-800'
+                                        }`}>
                                         {service.status}
                                     </div>
                                 </div>
                             </div>
-                            <div className="p-5">
-                                <div className="flex justify-between items-center mb-3">
-                                    <h3 className="text-lg font-semibold text-gray-800 truncate">
+
+                            <div className="p-6">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className="text-xl font-bold text-gray-800 truncate">
                                         {service.serviceName}
                                     </h3>
-                                    <span className="text-indigo-600 font-bold">${service.price}</span>
+                                    <div className="flex items-center text-emerald-600 font-semibold">
+                                        <DollarSign className="h-4 w-4" />
+                                        {service.price}
+                                    </div>
                                 </div>
+
                                 <div className="flex items-center mb-3">
-                                    <Tag className="h-4 w-4 text-gray-500 mr-1" />
-                                    <span className="text-sm text-gray-500">{service.category}</span>
+                                    <Tag className="h-4 w-4 text-indigo-500 mr-2" />
+                                    <span className="text-sm text-indigo-600 font-medium">
+                                        {service.category}
+                                    </span>
                                 </div>
-                                <p className="text-gray-600 text-sm line-clamp-2">
-                                    {service.description || 'No description available.'}
+
+                                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                                    {service.description || 'No description available'}
                                 </p>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setShowServiceDetails(service);
-                                    }}
-                                    className="mt-4 text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors flex items-center"
-                                >
-                                    <Eye className="h-4 w-4 mr-1" />
-                                    View Details
-                                </button>
+
+                                <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                                    <button
+                                        onClick={() => setShowServiceDetails(service)}
+                                        className="flex items-center text-indigo-600 hover:text-indigo-700 transition-colors"
+                                    >
+                                        <Eye className="h-5 w-5 mr-1" />
+                                        View Details
+                                    </button>
+
+                                    <div className="flex space-x-2">
+                                        <button
+                                            onClick={() => handleEnableEdit(service)}
+                                            className="p-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                        >
+                                            <Edit className="h-5 w-5" />
+                                        </button>
+                                        <button
+                                            onClick={(e) => handleDelete(service._id, e)}
+                                            className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                        >
+                                            <Trash2 className="h-5 w-5" />
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -829,7 +836,16 @@ const VendorDashboardServicesSection = () => {
                 {/* Modals */}
                 {showUploadModal && <UploadModal />}
                 {showServiceDetails && <ServiceDetailModal service={showServiceDetails} />}
-                {editMode && <EditServiceModal />}
+                {editMode && (
+                    <EditServiceModal
+                        editFormData={editFormData}
+                        handleCancelEdit={handleCancelEdit}
+                        handleEditInputChange={handleEditInputChange}
+                        handleEditImageUpload={handleEditImageUpload}
+                        handleCancelEditImage={handleCancelEditImage}
+                        handleSaveEdit={handleSaveEdit}
+                    />
+                )}
             </div>
         </div>
     );

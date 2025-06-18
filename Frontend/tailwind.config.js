@@ -9,6 +9,8 @@ module.exports = {
             },
             animation: {
                 float: "float 3s ease-in-out infinite",
+                "spin-slow": "spin 2s linear infinite",
+                "spin-reverse-slow": "spin 2s linear infinite reverse",
             },
             keyframes: {
                 float: {

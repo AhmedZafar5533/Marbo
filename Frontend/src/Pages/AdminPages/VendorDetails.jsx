@@ -10,9 +10,9 @@ import {
     X
 } from 'lucide-react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { useAdminStore } from '../../Store/adminStore';
+import { useAdminStore } from '../../../Store/adminStore';
 import { useEffect, useState } from 'react';
-import LoadingSpinner from '../components/LoadingSpinner';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 // RejectionModal Component
 const RejectionModal = ({ isOpen, onClose, onSend }) => {

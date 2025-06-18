@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSubscriptionStore } from '../../../Store/subscriptionStore';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { useAuthStore } from '../../../Store/authStore';
+
 import { useNavigate } from 'react-router-dom';
 
 const SubscriptionPage = () => {
@@ -64,9 +65,9 @@ const SubscriptionPage = () => {
 
 
     useEffect(() => {
-   
+
         fetchSubscriptions();
-    }, []); 
+    }, []);
 
     // Process subscription data separately
     useEffect(() => {

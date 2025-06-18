@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
-import Footer from "../components/layout/footer";
+import Footer from "../components/footer";
 import { ChevronUp } from "lucide-react";
 import { useState, useEffect } from "react";
 

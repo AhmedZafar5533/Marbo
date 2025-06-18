@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
-    Menu,
-    X,
+
     User,
+    PlusSquare,
     LogOut,
-    Home,
+    X,
+    Menu,
     Briefcase,
     CreditCard,
-    SquareParking,
+    Package,
+    Warehouse,
+    Users
 } from 'lucide-react';
 import { useAuthStore } from '../../Store/authStore';
 
@@ -37,11 +40,68 @@ const DashboardLayout = () => {
     };
 
     const navItems = [
-        { name: 'Profile', icon: <User size={20} />, path: '/dashboard/vendor/profile' },
+        { name: 'Profile', icon: <User size={20} />, path: '/dashboard/vendor/profile', className: 'text-indigo-600 hover:bg-indigo-50', },
         {
             name: 'Services',
             icon: <Briefcase size={20} />,
             path: '/dashboard/vendor/services',
+            className: 'text-indigo-600 hover:bg-indigo-50',
+        },
+        {
+            name: 'Orders',
+            icon: <Package size={20} />,
+            path: '/dashboard/vendor/orders',
+            className: 'text-indigo-600 hover:bg-indigo-50',
+        },
+        {
+            name: 'Manage Staff',
+            icon: <Users size={20} />,
+            path: '/dashboard/vendor/domestic-staffing-management',
+            className: 'text-indigo-600 hover:bg-indigo-50',
+        },
+        {
+            name: 'Manage Hotel',
+            icon: <Users size={20} />,
+            path: '/dashboard/vendor/hotel-managment',
+            className: 'text-indigo-600 hover:bg-indigo-50',
+        },
+        {
+            name: 'Manage Holiday Spots',
+            icon: <Users size={20} />,
+            path: '/dashboard/vendor/manage/holiday-lets',
+            className: 'text-indigo-600 hover:bg-indigo-50',
+        },
+
+        {
+            name: 'Manage Medical Staff',
+            icon: <Users size={20} />,
+            path: '/dashboard/vendor/manage/medical-staff',
+            className: 'text-indigo-600 hover:bg-indigo-50',
+        },
+
+        {
+            name: "Inventory",
+            icon: <Warehouse size={20} />,
+            path: '/dashboard/vendor/inventory',
+            className: 'text-indigo-600 hover:bg-indigo-50',
+        },
+        {
+            name: "Add Staff",
+            icon: <PlusSquare size={20} />,
+            path: '/dashboard/vendor/add/staff',
+            className: 'text-indigo-600 hover:bg-indigo-50',
+        },
+
+        {
+            name: "Add property",
+            icon: <PlusSquare size={20} />,
+            path: '/dashboard/vendor/add/holiday/property',
+            className: 'text-indigo-600 hover:bg-indigo-50',
+        },
+        {
+            name: "Add Doctors",
+            icon: <PlusSquare size={20} />,
+            path: '/dashboard/vendor/add/medical/doctors',
             className: 'text-indigo-600 hover:bg-indigo-50',
         },
         // {
@@ -50,6 +110,14 @@ const DashboardLayout = () => {
         //     path: '/dashboard/vendor/edit/page',
         //     className: 'text-indigo-600 hover:bg-indigo-50',
         // },
+
+        {
+            name: 'Add Clothes',
+            icon: <PlusSquare size={20} />,
+            path: '/dashboard/vendor/add/clothing/clothes',
+            className: 'text-indigo-600 hover:bg-indigo-50',
+        },
+
         {
             name: 'Subscriptions',
             icon: <CreditCard size={20} />,
@@ -130,11 +198,9 @@ const DashboardLayout = () => {
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
-                            <Link to="/dashboard/profile" className="flex items-center">
-                                <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-                                    JD
-                                </div>
-                            </Link>
+                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                                JD
+                            </div>
                         </div>
                     </div>
                 </header>
@@ -147,7 +213,7 @@ const DashboardLayout = () => {
             {/* Backdrop for mobile */}
             {isSidebarOpen && (
                 <div
-                    className="md:hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-20"
+                    className="md:hidden fixed inset-0 bg-gray-900/50 bg-opacity-50 z-20"
                     onClick={toggleSidebar}
                 ></div>
             )}

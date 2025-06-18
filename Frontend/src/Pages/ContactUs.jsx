@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
+import { useContactUsStore } from '../../Store/ContactUsStore';
+import { useEffect } from 'react';
 
 const ContactForm = () => {
+    const { sendContactUsData, success } = useContactUsStore()
+
     const [formData, setFormData] = useState({
         email: '',
         reason: '',
@@ -10,7 +14,11 @@ const ContactForm = () => {
     const [errors, setErrors] = useState({});
     const [isSubmitted, setIsSubmitted] = useState(false);
 
+
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -26,14 +34,28 @@ const ContactForm = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!emailRegex.test(formData.email)) {
             setErrors(prev => ({ ...prev, email: 'Please enter a valid email address.' }));
             return;
         }
+        const isSuccess = await sendContactUsData({
+            email: formData.email,
+            reason: formData.reason,
+            message: formData.message,
+            otherReason: formData.otherReason
+        });
+        if (isSuccess) {
+            setIsSubmitted(true);
+            setFormData({
+                email: '',
+                reason: '',
+                message: '',
+                otherReason: ''
+            });
+        }
 
-        setIsSubmitted(true);
     };
 
     const reasonOptions = [

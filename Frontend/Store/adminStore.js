@@ -48,7 +48,9 @@ export const useAdminStore = create((set, get) => ({
                 credentials: "include",
             });
             const data = await response.json();
-            if (response.status === 200) {
+            console.log(data)
+            if (response.status === 200 && data.vendors.length) {
+                
                 const extractedVendorsData = data.vendors.map((vendor) => ({
                     id: vendor._id,
                     businessName: vendor.businessDetails.businessName,
@@ -67,6 +69,7 @@ export const useAdminStore = create((set, get) => ({
             }
         } catch (error) {
             toast.error("Failed to fetch pending vendors");
+            console.log(error)
         } finally {
             set({ loading: false });
         }

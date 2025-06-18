@@ -3,22 +3,12 @@ import { toast } from "sonner";
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
 
-// Helper function for API requests with error handling
-const fetchData = async (url, options) => {
-    const response = await fetch(url, options);
-    const result = await response.json();
-    if (!response.ok) {
-        throw new Error(result.message || "Something went wrong");
-    }
-    return result;
-};
-
 export const useServiceStore = create((set, get) => ({
     servicePage: null,
     servicesData: [],
     allServices: [],
     pageId: null,
-    loading: false,
+    loading: true,
     isInitialized: false,
     pageIsInitialized: false,
     successfullyCreated: false,
@@ -26,6 +16,7 @@ export const useServiceStore = create((set, get) => ({
     initializeService: async (newData) => {
         try {
             set({ loading: true });
+
             const result = await fetch(
                 `${baseUrl}/service-page/services/initialize`,
                 {
@@ -55,24 +46,30 @@ export const useServiceStore = create((set, get) => ({
             set({ loading: false });
         }
     },
-    getAllServices: async () => {
+    getAllServices: async (category) => {
         set({ loading: true });
         try {
-            const result = await fetch(`${baseUrl}/service-page/services/all`, {
-                method: "GET",
-                credentials: "include",
-            });
+            const result = await fetch(
+                `${baseUrl}/service-page/services/all/${category}`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                }
+            );
 
             const data = await result.json();
-
-            if (result.status === 304)
+         
+            if (result.status === 304) {
+              
                 set({
                     allServices: data.data.map((service) => ({
                         ...service,
                         rating: 4.5, // Default rating, you can change this dynamically
                     })),
                 });
-            if (result.ok) {
+            }
+            if (result.status === 200) {
+               
                 set({
                     allServices: data.data.map((service) => ({
                         ...service,
@@ -82,10 +79,36 @@ export const useServiceStore = create((set, get) => ({
 
                 if (data.data.length === 0) toast.success("No services Found");
             }
+            if (!result.ok) set({ allServices: [] });
+        } catch (error) {
+            toast.error("Internal Server Error");
+            console.error("initializePage error:", error);
+        } finally {
+            set({ loading: false });
+        }
+    },
 
-            if (!result.ok) {
-                toast.error("Error loading data. Please reload the page");
-            }
+    editService: async (serviceId, updatedData) => {
+        set({ loading: true });
+        try {
+            const result = await fetch(
+                `${baseUrl}/service-page/service/${serviceId}/edit`,
+                {
+                    method: "PUT",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(updatedData),
+                }
+            );
+            const data = await result.json();
+            if (result.ok) {
+                set((state) => ({
+                    servicesData: state.servicesData.map((service) =>
+                        service._id === serviceId ? data.data : service
+                    ),
+                }));
+                toast.success(data.message || "Service updated successfully");
+            } else toast.error(data.message || "Internal Server Error");
         } catch (error) {
             toast.error("Internal Server Error");
             console.error("initializePage error:", error);

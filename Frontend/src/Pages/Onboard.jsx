@@ -8,6 +8,7 @@ import ProgressSteps from '../components/OnboardingForms/ProgressSteps';
 import { useEffect, useState } from 'react';
 import { useVendorStore } from '../../Store/vendorStore';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../Store/authStore';
 
 
 
@@ -18,6 +19,23 @@ const VendorOnboardingForm = () => {
     const totalSteps = 5;
 
     const { initializeOnboarding, isInitialized, vendor } = useVendorStore();
+
+    // const { checkVendor } = useAuthStore();
+
+
+    // useEffect(() => {
+    //     const checkVendorStatus = async () => {
+    //         const isVendor = await checkVendor();
+    //         console.log(isVendor);
+    //         if (isVendor) {
+    //             navigate('/vendor/dashboard');
+    //         }
+    //         else {
+    //             navigate('/');
+    //         }
+    //     };
+    //     checkVendorStatus();
+    // }, []);
 
 
     useEffect(() => {

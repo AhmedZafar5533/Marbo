@@ -7,6 +7,11 @@ export const useAuthStore = create((set, get) => ({
     user: null,
     authenticationState: false,
     redirectToOtp: false,
+    isVendor: false,
+    isAdmin: false,
+    vendorChecked: false, // new flag
+    adminChecked: false, // new flag
+    adminLoading: false,
     returnedMessages: [],
 
     loading: true, // Start with loading true to prevent flashes of redirect
@@ -54,21 +59,83 @@ export const useAuthStore = create((set, get) => ({
             set({ loading: false });
         }
     },
+    checkVendor: async () => {
+        try {
+            set({ loading: true });
+            const response = await fetch(baseUrl + "/auth/check-vendor", {
+                method: "GET",
+                credentials: "include",
+            });
 
+            const data = await response.json();
+
+            if (response.status === 200 && data.isAuthenticated) {
+                set({
+                    isVendor: true,
+                    vendorChecked: true,
+                    loading: false,
+                });
+            } else if (response.status === 304) {
+                if (data.isAuthenticated) {
+                    set({
+                        isVendor: true,
+                        vendorChecked: true,
+                        loading: false,
+                    });
+                } else {
+                    set({
+                        isVendor: false,
+                        vendorChecked: true,
+                        loading: false,
+                    });
+                }
+            } else {
+                set({
+                    isVendor: false,
+                    vendorChecked: true,
+                    loading: false,
+                });
+            }
+        } catch (error) {
+            set({
+                isVendor: false,
+                vendorChecked: true,
+                loading: false,
+            });
+        }
+    },
     // Rest of your store methods remain the same
     checkAdmin: async () => {
         try {
+            set({ adminLoading: true });
             const response = await fetch(baseUrl + "/auth/check-admin", {
                 method: "GET",
                 credentials: "include",
             });
             const data = await response.json();
+            console.log(data);
             if (response.status === 200) {
-                if (data.isAdmin) {
-                    set({ user: data.user, authenticationState: true });
+                if (data.isAuthenticated) {
+                    console.log("In 200 route", data);
+                    set({ isAdmin: true, adminChecked: true });
+                    console.log(get().isAdmin, get().adminChecked);
                 }
+                return;
             }
-        } catch (error) {}
+            if (response.status === 304) {
+                if (data.isAuthenticated) {
+                    console.log("In 304 route", data);
+
+                    set({ isAdmin: true, adminChecked: true }); // Or potentially do nothing, depending on your logic
+                }
+                return;
+            } else set({ isAdmin: false, adminChecked: true });
+        } catch (error) {
+            set({ isAdmin: false, adminChecked: true });
+        } finally {
+            console.log(get().isAdmin);
+            set({ loading: false });
+        }
     },
     sendRegisterReguest: async (userData) => {
         try {

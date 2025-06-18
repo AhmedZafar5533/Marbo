@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Eye, EyeOff, Camera, Calendar, Mail, User, Lock, Check, X, Key } from 'lucide-react';
 import { useAuthStore } from '../../Store/authStore';
 
+
 const ProfilePage = () => {
     const [userData, setUser] = useState({
         username: 'johndoe',
@@ -283,9 +284,8 @@ const ProfilePage = () => {
 
                                     {/* Password Change Section */}
                                     <div
-                                        className={`mt-8 transition-all duration-500 ease-in-out overflow-hidden ${
-                                            showPasswordFields ? 'max-h-[650px] opacity-100' : 'max-h-0 opacity-0'
-                                        }`}
+                                        className={`mt-8 transition-all duration-500 ease-in-out overflow-hidden ${showPasswordFields ? 'max-h-[650px] opacity-100' : 'max-h-0 opacity-0'
+                                            }`}
                                     >
                                         <div className="bg-indigo-50 rounded-2xl p-8 shadow-inner">
                                             <h3 className="text-xl font-bold text-indigo-800 mb-6 flex items-center">

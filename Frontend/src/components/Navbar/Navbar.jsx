@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 
-// Lazy load components based on screen size
+// Lazy load desktop/mobile navbars
 const DesktopNavbar = lazy(() => import('./DesktopNavbar'));
 const MobileNavbar = lazy(() => import('./MobileNavbar'));
 
@@ -10,27 +10,36 @@ const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const lastScrollY = useRef(0);
 
-    // Check screen size on mount and resize
+    // 1️⃣ Screen‐size detector
     useEffect(() => {
-        const checkScreenSize = () => {
-            setIsMobile(window.innerWidth < 1024);
-        };
+        const checkScreen = () => setIsMobile(window.innerWidth < 1024);
 
-        checkScreenSize();
-        window.addEventListener('resize', checkScreenSize);
-        return () => window.removeEventListener('resize', checkScreenSize);
+        checkScreen();
+        window.addEventListener('resize', checkScreen);
+        return () => window.removeEventListener('resize', checkScreen);
     }, []);
 
-    // Scroll event handler for shrinking effect
+    // 2️⃣ Throttled & guarded scroll handler
     useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-            setIsScrolled(currentScrollY > 30);
-            lastScrollY.current = currentScrollY;
+        let ticking = false;
+
+        const onScroll = () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const y = window.scrollY;
+                    setIsScrolled(prev => {
+                        const next = y >= 35;
+                        return prev === next ? prev : next;
+                    });
+                    lastScrollY.current = y;
+                    ticking = false;
+                });
+                ticking = true;
+            }
         };
 
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
     // Menu data
@@ -49,26 +58,15 @@ const Navbar = () => {
                 { name: 'Professional Services', description: 'Construction, farming, events, and ads', link: '/providers/professional' },
             ]
         },
-        {
-            title: 'Boost now',
-            link: '/pricing',
-            submenu: [],
-        },
-        {
-            title: 'Contact Us',
-            link: '/contact-us',
-            submenu: [],
-        }
+        { title: 'Boost now', link: '/pricing', submenu: [] },
+        { title: 'Contact Us', link: '/contact-us', submenu: [] }
     ];
 
-    // Search function
+    // Search helper
     const performSearch = (query) => {
         const allItems = [
-            ...menuItems.flatMap(category =>
-                category.submenu.map(item => ({
-                    ...item,
-                    category: category.title
-                }))
+            ...menuItems.flatMap(cat =>
+                cat.submenu.map(item => ({ ...item, category: cat.title }))
             ),
             { name: 'About Us', description: 'Learn more about our company', link: '/', category: 'Company' },
             { name: 'Contact', description: 'Get in touch with our team', link: '/contact-us', category: 'Company' },
@@ -76,30 +74,27 @@ const Navbar = () => {
         ];
 
         if (!query.trim()) return [];
-
         return allItems.filter(item =>
             item.name.toLowerCase().includes(query.toLowerCase()) ||
             item.description.toLowerCase().includes(query.toLowerCase())
         );
     };
 
+    // Initial blank placeholder while we detect screen size
     if (isMobile === null) {
-        return (
-            <div className="h-16 bg-indigo-50 shadow-md" aria-hidden="true"></div>
-        );
+        return <div className="h-16 bg-indigo-50 shadow-md" aria-hidden="true" />;
     }
 
     return (
         <nav
-            className={`sticky top-0 inset-x-0 z-50 transition-all duration-300 bg-white ${isScrolled ? 'shadow-lg' : 'shadow-md'
+            className={`sticky top-0 inset-x-0 z-50 bg-white transition-shadow duration-300 ${isScrolled ? 'shadow-lg' : 'shadow-md'
                 }`}
             role="navigation"
             aria-label="Main Navigation"
         >
-
             <Suspense
                 fallback={
-                    <div className={`${isScrolled ? 'h-16 lg:h-24' : 'h-18 lg:h-24'} bg-white`} aria-hidden="true"></div>
+                    <div className={`bg-white ${isScrolled ? 'h-16 lg:h-24' : 'h-18 lg:h-24'}`} aria-hidden="true" />
                 }
             >
                 {isMobile ? (

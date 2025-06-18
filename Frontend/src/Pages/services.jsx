@@ -69,9 +69,10 @@ const ServiceCard = ({ service }) => {
           ))}
         </div>
 
+
         {/* CTA button with improved interaction */}
         <div className="mt-auto">
-          <Link to={`/providers${service.url}`}  >
+          <Link to={`/providers/${service.title}`}  >
             <button className="inline-flex items-center cursor-pointer text-red-600 hover:text-red-800 font-medium transition-all group/cta">
               <span className="border-b border-transparent group-hover/cta:border-red-600 transition-all">
                 View Providers
@@ -355,14 +356,7 @@ const ServicesSection = () => {
             color: "bg-gradient-to-br from-red-500 to-orange-500",
             tags: ["event", "management", "planning", "mikolo", "services"]
           },
-          {
-            title: "Advertising Services",
-            url: '/professional',
-            description: "Targeted marketing solutions",
-            icon: <FaBullhorn className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-500 to-red-600",
-            tags: ["advertising", "marketing", "services", "solutions"]
-          }
+         
         ]
       },
     ];

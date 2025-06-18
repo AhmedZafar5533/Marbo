@@ -20,13 +20,13 @@ import {
   Link
 } from 'lucide-react';
 
-const Dashboard = lazy(() => import('../components/Admin/DashboardOverview'));
-const ListedVendors = lazy(() => import('../components/Admin/RegisteredVendors'));
-const PendingVendors = lazy(() => import('../components/Admin/PendingVendors'));
-const Orders = lazy(() => import('../components/Admin/Oredrs'));
-const Payments = lazy(() => import('../components/Admin/Payments'));
-const Messages = lazy(() => import('../components/Admin/Messages'));
-const Reviews = lazy(() => import('../components/Admin/Reviews'));
+const Dashboard = lazy(() => import('../../components/Admin/DashboardOverview'));
+const ListedVendors = lazy(() => import('../../components/Admin/RegisteredVendors'));
+const PendingVendors = lazy(() => import('../../components/Admin/PendingVendors'));
+const Orders = lazy(() => import('../../components/Admin/Oredrs'));
+const Payments = lazy(() => import('../../components/Admin/Payments'));
+const Messages = lazy(() => import('../../components/Admin/Messages'));
+const Reviews = lazy(() => import('../../components/Admin/Reviews'));
 
 
 
@@ -38,11 +38,11 @@ import {
   pendingVendors,
   approvedVendors,
   COLORS
-} from '../Pages/MochData';
-import { useAuthStore } from '../../Store/authStore';
+} from '../MochData';
+import { useAuthStore } from '../../../Store/authStore';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import LoadingSpinner from '../components/LoadingSpinner';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 
 function AdminDashboard() {
