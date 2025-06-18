@@ -8,6 +8,31 @@ const Room = require("../models/hotelSchema");
 const uploadFromBuffer = require("../Utils/imageCompress");
 const sharp = require("sharp");
 
+router.get("/get/dashboard", checkVendor, async (req, res) => {
+    try {
+        const service = await Service.findOne({
+            userId: req.user._id,
+            category: "Hotel Booking",
+        });
+        if (!service) {
+            return res.status(404).json({
+                message: "Service not found",
+            });
+        }
+        const rooms = await Room.find({ serviceId: service._id });
+        res.status(200).json({
+            rooms,
+        });
+    } catch (error) {
+        console.error("Error getting rooms:", error);
+        res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: error.message,
+        });
+    }
+});
+
 router.get("/get/all/:serviceId", checkVendor, async (req, res) => {
     try {
         const service = await Service.findOne({

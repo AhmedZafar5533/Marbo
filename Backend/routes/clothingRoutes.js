@@ -31,6 +31,39 @@ router.get("/get/all/:serviceId", async (req, res) => {
     }
 });
 
+router.get("/get/dashboard", async (req, res) => {
+    try {
+        const service = await Service.findOne({
+            userId: req.user._id,
+            category: "Fashion Services",
+        });
+        console.log()
+
+        if (!service) {
+            return res.status(404).json({ message: "Service not found" });
+        }
+
+        const clothing = await Clothing.find({
+            serviceId: service._id,
+        });
+        if (!clothing.length) {
+            return res.status(404).json({ message: "No clothing found" });
+        }
+        res.status(200).json({
+            success: true,
+            count: clothing.length,
+            clothing,
+        });
+    } catch (error) {
+        console.error("Error getting clothing:", error);
+        res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: error.message,
+        });
+    }
+});
+
 router.get("/get/:clothingId", async (req, res) => {
     try {
         const clothing = await Clothing.findOne({
