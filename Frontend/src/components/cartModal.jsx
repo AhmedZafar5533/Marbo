@@ -12,6 +12,7 @@ import {
 import { useCartStore } from "../../Store/cartStore";
 import { toast } from "sonner";
 import { useOrderStore } from "../../Store/orderStore";
+import { useNavigate } from "react-router-dom";
 
 const CartModal = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -19,6 +20,8 @@ const CartModal = () => {
   const [showOrderDetails, setShowOrderDetails] = useState(false);
   const [loadingItems, setLoadingItems] = useState(new Set());
   const [isProcessingCheckout, setIsProcessingCheckout] = useState(false);
+
+  const navigate = useNavigate();
 
   const {
     isModalOpen,
@@ -162,6 +165,7 @@ const CartModal = () => {
         currency: "USD",
       };
       addOrder(checkoutData);
+      navigate("/checkout");
     } catch (error) {
       console.error("Checkout error:", error);
       alert("Checkout failed. Please try again.");
