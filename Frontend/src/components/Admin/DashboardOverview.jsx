@@ -20,7 +20,7 @@ import {
     Cell
 } from 'recharts';
 
-const Dashboard = ({
+const adminDashboard = ({
     monthlyStats,
     revenueData,
     recentActivities,
@@ -78,7 +78,7 @@ const Dashboard = ({
 
     return (
         <div className="space-y-6">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Dashboard Overview</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">adminDashboard Overview</h1>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -325,4 +325,4 @@ const TopVendorItem = ({ vendor, formatCurrency }) => {
     );
 };
 
-export default Dashboard;
+export default adminDashboard;

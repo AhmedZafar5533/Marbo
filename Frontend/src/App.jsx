@@ -43,11 +43,19 @@ import HotelDashboard from "./Pages/VendorDashboard/hotelManagement";
 import MedicalStaffingDashboard from "./Pages/VendorDashboard/medicalStaffMangament";
 import PropertyManagementDashboard from "./Pages/VendorDashboard/PropertyManagment";
 import ClothingManagement from "./Pages/VendorDashboard/ClothingMangemnet";
+import PendingVendors from "./components/Admin/PendingVendors";
+import ListedVendors from "./components/Admin/RegisteredVendors";
+import AdminServiceManagement from "./components/Admin/ServiceManagent";
+import CheckoutPage from "./Pages/checkoutPage";
 
 // Lazy Layouts
 const MainLayout = lazy(() => import("./Layout/MainlLayout"));
-const VendorDashBoardLayout = lazy(() => import("./Layout/VendorDashBoardLayout"));
-const CustomerDashboardLayout = lazy(() => import("./Layout/UserDashboardLayout"));
+const VendorDashBoardLayout = lazy(() =>
+  import("./Layout/VendorDashBoardLayout")
+);
+const CustomerDashboardLayout = lazy(() =>
+  import("./Layout/UserDashboardLayout")
+);
 
 // Lazy Public Pages
 const Home = lazy(() => import("./Pages/home"));
@@ -71,25 +79,47 @@ const SubscriptionCheckout = lazy(() => import("./Pages/subscriptionCheckout"));
 
 // Lazy Vendor Pages
 const VendorOnboardingForm = lazy(() => import("./Pages/Onboard"));
-const VendorOnboardingPage = lazy(() => import("./Pages/VendorDashboard/GotoOnboarding"));
-const VendorDashboard = lazy(() => import("./Pages/VendorDashboard/VendorServicesPage"));
-const VendorSubscription = lazy(() => import("./Pages/VendorDashboard/VendorSubscription"));
-const UnderReviewPage = lazy(() => import("./Pages/VendorDashboard/UnderReview"));
+const VendorOnboardingPage = lazy(() =>
+  import("./Pages/VendorDashboard/GotoOnboarding")
+);
+const VendorDashboard = lazy(() =>
+  import("./Pages/VendorDashboard/VendorServicesPage")
+);
+const VendorSubscription = lazy(() =>
+  import("./Pages/VendorDashboard/VendorSubscription")
+);
+const UnderReviewPage = lazy(() =>
+  import("./Pages/VendorDashboard/UnderReview")
+);
 
 // Lazy Customer Pages
-const CustomerOrderDashboard = lazy(() => import("./Pages/User Dashboard/OrderManagment"));
+const CustomerOrderDashboard = lazy(() =>
+  import("./Pages/User Dashboard/OrderManagment")
+);
 
 // Lazy Insurance Pages
-const PolicyManagement = lazy(() => import("./Pages/insurance/policyManagement"));
-const InsuranceApplicationReview = lazy(() => import("./Pages/insurance/applicationReview"));
+const PolicyManagement = lazy(() =>
+  import("./Pages/insurance/policyManagement")
+);
+const InsuranceApplicationReview = lazy(() =>
+  import("./Pages/insurance/applicationReview")
+);
 const InsuranceCheckout = lazy(() => import("./Pages/insurance/checkout"));
-const InsurancePlanManagement = lazy(() => import("./Pages/insurance/insuranceManagement"));
-const InsuranceDashboardContent = lazy(() => import("./Pages/insurance/myPolicies"));
-const PlanDetailsApplication = lazy(() => import("./Pages/insurance/planDetails"));
+const InsurancePlanManagement = lazy(() =>
+  import("./Pages/insurance/insuranceManagement")
+);
+const InsuranceDashboardContent = lazy(() =>
+  import("./Pages/insurance/myPolicies")
+);
+const PlanDetailsApplication = lazy(() =>
+  import("./Pages/insurance/planDetails")
+);
 
 // Lazy Admin Pages
 const AdminDashboard = lazy(() => import("./Pages/AdminPages/Admin"));
-const VendorDetailsPage = lazy(() => import("./Pages/AdminPages/VendorDetails"));
+const VendorDetailsPage = lazy(() =>
+  import("./Pages/AdminPages/VendorDetails")
+);
 
 // Lazy Profile & Editor
 const ProfilePage = lazy(() => import("./Pages/ProfilePage"));
@@ -99,7 +129,8 @@ const App = () => {
   const { checkAuth } = useAuthStore();
   const { pathname } = useLocation();
 
-  const nprogressStyles = useMemo(() => `
+  const nprogressStyles = useMemo(
+    () => `
     #nprogress .bar {
       background: red !important;
       height: 3px !important;
@@ -107,7 +138,9 @@ const App = () => {
     #nprogress .spinner {
       display: none !important;
     }
-  `, []);
+  `,
+    []
+  );
 
   useEffect(() => {
     NProgress.start();
@@ -126,7 +159,6 @@ const App = () => {
 
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
-
           {/* PUBLIC ROUTES */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
@@ -136,31 +168,79 @@ const App = () => {
             <Route path="/view/:id" element={<ProductDetailPage />} />
             <Route path="/services" element={<MarketPlace />} />
             <Route path="/contact-us" element={<ContactForm />} />
-            <Route path="/providers/:category" element={<ServicesProviders />} />
-            <Route path="/service/Groceries/:id" element={<MainProductPage />} />
-            <Route path="/service/Domestic-Staffing/:id" element={<DomesticStaffingService />} />
-            <Route path="/service/Money-Transfer-Services/:id" element={<MoneyTransferService />} />
+            <Route
+              path="/providers/:category"
+              element={<ServicesProviders />}
+            />
+            <Route
+              path="/service/Groceries/:id"
+              element={<MainProductPage />}
+            />
+            <Route
+              path="/service/Domestic-Staffing/:id"
+              element={<DomesticStaffingService />}
+            />
+            <Route
+              path="/service/Money-Transfer-Services/:id"
+              element={<MoneyTransferService />}
+            />
             <Route path="/service/payment" element={<RegistrationLookup />} />
-            <Route path="/service/Hotel-Booking/:id" element={<HotelRoomsShowcase />} />
+            <Route
+              path="/service/Hotel-Booking/:id"
+              element={<HotelRoomsShowcase />}
+            />
             <Route path="/insurance" element={<PolicyManagement />} />
-            <Route path="/service/Holiday-Lets/:id" element={<PropertyShowcase />} />
-            <Route path="/service/Holiday-Lets/details/:id" element={<PropertyDetailPage />} />
-            <Route path="/service/hotel/room/details/:id" element={<RoomDetailPage />} />
-            <Route path="/service/Traditional-Clothing/:id" element={<MainClothingPage />} />
-            <Route path="/service/Traditional-Clothing/view/:id" element={<ClothingDetailPage />} />
-            <Route path="/service/Medical-Care/:id" element={<MedicalHealthService />} />
+            <Route
+              path="/service/Holiday-Lets/:id"
+              element={<PropertyShowcase />}
+            />
+            <Route
+              path="/service/Holiday-Lets/details/:id"
+              element={<PropertyDetailPage />}
+            />
+            <Route
+              path="/service/hotel/room/details/:id"
+              element={<RoomDetailPage />}
+            />
+            <Route
+              path="/service/Traditional-Clothing/:id"
+              element={<MainClothingPage />}
+            />
+            <Route
+              path="/service/Traditional-Clothing/view/:id"
+              element={<ClothingDetailPage />}
+            />
+            <Route
+              path="/service/Medical-Care/:id"
+              element={<MedicalHealthService />}
+            />
 
             <Route path="/service/insurance" element={<PlansMarketplace />} />
 
             {/* PUBLIC AUTH / PASSWORD / SUBSCRIPTION */}
-            <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
+            <Route
+              path="/reset-password/:token"
+              element={<ResetPasswordForm />}
+            />
             <Route path="/forget-password" element={<ForgotPasswordForm />} />
-            <Route path="/checkout/subscription" element={
-              <ProtectedRoute><SubscriptionCheckout /></ProtectedRoute>
-            } />
-            <Route path="/onboarding" element={
-              <ProtectedRoute><VendorProtectedRoute><VendorOnboardingForm /></VendorProtectedRoute></ProtectedRoute>
-            } />
+            <Route
+              path="/checkout/subscription"
+              element={
+                <ProtectedRoute>
+                  <SubscriptionCheckout />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/onboarding"
+              element={
+                <ProtectedRoute>
+                  <VendorProtectedRoute>
+                    <VendorOnboardingForm />
+                  </VendorProtectedRoute>
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
 
@@ -170,45 +250,141 @@ const App = () => {
           <Route path="/verify" element={<OTPVerification />} />
 
           {/* INSURANCE DASHBOARD (Protected) */}
-          <Route path="/test" element={
-            <ProtectedRoute><InsuranceDashboardContent /></ProtectedRoute>
-          } />
+          <Route
+            path="/test"
+            element={
+              <ProtectedRoute>
+                <InsuranceDashboardContent />
+              </ProtectedRoute>
+            }
+          />
 
           {/* VENDOR DASHBOARD ROUTES */}
-          <Route element={
-            <ProtectedRoute><VendorProtectedRoute><VendorDashBoardLayout /></VendorProtectedRoute></ProtectedRoute>
-          }>
+          <Route
+            element={
+              <ProtectedRoute>
+                <VendorProtectedRoute>
+                  <VendorDashBoardLayout />
+                </VendorProtectedRoute>
+              </ProtectedRoute>
+            }
+          >
             <Route path="/goto/onboarding" element={<VendorOnboardingPage />} />
             <Route path="/vendor/wait/review" element={<UnderReviewPage />} />
-            <Route path="/dashboard/vendor/services" element={<VendorDashboard />} />
+            <Route
+              path="/dashboard/vendor/services"
+              element={<VendorDashboard />}
+            />
             <Route path="/dashboard/vendor/profile" element={<ProfilePage />} />
-            <Route path="/dashboard/subscriptions/vendor" element={<VendorSubscription />} />
-            <Route path="/dashboard/vendor/orders" element={<VendorOrderDashboard />} />
-            <Route path="/dashboard/vendor/add/products" element={<ProductUploadForm />} />
-            <Route path="/dashboard/vendor/edit/page" element={<EditablePage />} />
-            <Route path="/dashboard/vendor/inventory" element={<InventoryPage />} />
-            <Route path="/dashboard/vendor/domestic-staffing-management" element={<DomesticStaffingDashboard />} />
-            <Route path="/dashboard/vendor/hotel-managment" element={<HotelDashboard />} />
-            <Route path="/dashboard/vendor/manage/medical-staff" element={<MedicalStaffingDashboard />} />
-            <Route path="/dashboard/vendor/manage/clothes" element={<ClothingManagement />} />
-            <Route path="/dashboard/vendor/manage/holiday-lets" element={<PropertyManagementDashboard />} />
-            <Route path="/dashboard/vendor/add/staff" element={<StaffTypeCreationForm />} />
-            <Route path="/dashboard/vendor/add/holiday/property" element={<HolidayLetForm />} />
-            <Route path="/dashboard/vendor/add/hotel/rooms" element={<HotelRoomUploadForm />} />
-            <Route path="/dashboard/vendor/add/clothing/clothes" element={<ClothingUploadForm />} />
-            <Route path="/dashboard/vendor/add/medical/doctors" element={<DoctorTypeCreationForm />} />
+            <Route
+              path="/dashboard/subscriptions/vendor"
+              element={<VendorSubscription />}
+            />
+            <Route
+              path="/dashboard/vendor/orders"
+              element={<VendorOrderDashboard />}
+            />
+            <Route
+              path="/dashboard/vendor/add/products"
+              element={<ProductUploadForm />}
+            />
+            <Route
+              path="/dashboard/vendor/edit/page"
+              element={<EditablePage />}
+            />
+            <Route
+              path="/dashboard/vendor/inventory"
+              element={<InventoryPage />}
+            />
+            <Route
+              path="/dashboard/vendor/domestic-staffing-management"
+              element={<DomesticStaffingDashboard />}
+            />
+            <Route
+              path="/dashboard/vendor/hotel-managment"
+              element={<HotelDashboard />}
+            />
+            <Route
+              path="/dashboard/vendor/manage/medical-staff"
+              element={<MedicalStaffingDashboard />}
+            />
+            <Route
+              path="/dashboard/vendor/manage/clothes"
+              element={<ClothingManagement />}
+            />
+            <Route
+              path="/dashboard/vendor/manage/holiday-lets"
+              element={<PropertyManagementDashboard />}
+            />
+            <Route
+              path="/dashboard/vendor/add/staff"
+              element={<StaffTypeCreationForm />}
+            />
+            <Route
+              path="/dashboard/vendor/add/holiday/property"
+              element={<HolidayLetForm />}
+            />
+            <Route
+              path="/dashboard/vendor/add/hotel/rooms"
+              element={<HotelRoomUploadForm />}
+            />
+            <Route
+              path="/dashboard/vendor/add/clothing/clothes"
+              element={<ClothingUploadForm />}
+            />
+            <Route
+              path="/dashboard/vendor/add/medical/doctors"
+              element={<DoctorTypeCreationForm />}
+            />
+          </Route>
+
+          <Route
+            element={
+              <ProtectedRoute>
+                <MainLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/checkout" element={<CheckoutPage />} />
           </Route>
 
           {/* CUSTOMER DASHBOARD ROUTES */}
-          <Route element={<ProtectedRoute><CustomerDashboardLayout /></ProtectedRoute>}>
-            <Route path="/dashboard/customer/profile" element={<ProfilePage />} />
-            <Route path="/dashboard/customer/orders" element={<CustomerOrderDashboard />} />
+          <Route
+            element={
+              <ProtectedRoute>
+                <CustomerDashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              path="/dashboard/customer/profile"
+              element={<ProfilePage />}
+            />
+
+            <Route
+              path="/dashboard/customer/orders"
+              element={<CustomerOrderDashboard />}
+            />
           </Route>
 
           {/* ADMIN DASHBOARD ROUTE */}
-          <Route path="/admin" element={
-            <ProtectedRoute><AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute></ProtectedRoute>
-          } />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminProtectedRoute>
+                  <AdminDashboard />
+                </AdminProtectedRoute>
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/admin/pending-vendors" element={<PendingVendors />} />
+            <Route path="/admin/listed-vendors" element={<ListedVendors />} />
+            <Route
+              path="/admin/manage-services"
+              element={<AdminServiceManagement />}
+            />
+          </Route>
 
           {/* OTHER PROTECTED ROUTES */}
           <Route path="/vendor-details/:id" element={<VendorDetailsPage />} />

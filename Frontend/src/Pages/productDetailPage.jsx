@@ -1,516 +1,507 @@
 import { useState, useEffect } from "react";
-import { Heart, ArrowLeft, Share2, Check, Clock, MapPin, Star, Camera, MessageSquare, X } from "lucide-react";
+import {
+  Heart,
+  ArrowLeft,
+  Share2,
+  Check,
+  Clock,
+  MapPin,
+  Star,
+  Camera,
+  MessageSquare,
+  X,
+  ShoppingCart,
+  Eye,
+  Shield,
+  Truck,
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Minus,
+} from "lucide-react";
 import { useProductStore } from "../../Store/productsStore";
 import { useParams } from "react-router-dom";
-import LoadingSpinner from "../components/LoadingSpinner";
-import { useOrderStore } from "../../Store/orderStore";
+import { useReviewStore } from "../../Store/reviewsStore";
+import { useCartStore } from "../../Store/cartStore";
 
-// Fallback gallery images from Unsplash
-const fallbackGalleryImages = [
-    "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
-    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
-    "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
-    "https://images.unsplash.com/photo-1607190074257-dd4b7af0309f?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
-    "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
-    "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
-];
-
-// Similar services with real images
-const similarServices = [
+// Mock data for demonstration
+const mockServiceDetails = {
+  productName: "Sony WH-1000XM5 Wireless Noise Canceling Headphones",
+  category: "Electronics",
+  price: 399.99,
+  description:
+    "Industry-leading noise cancellation with dual noise sensor technology. Up to 30-hour battery life with quick charge. Crystal clear hands-free calling and Alexa voice control. Seamless Bluetooth connectivity with multipoint connection.",
+  serviceId: {
+    id: "1",
+    vendorName: "TechWorld Electronics",
+    rating: 4.8,
+    status: "In Stock",
+    image: {
+      url: "https://images.unsplash.com/photo-1583394838336-acd977736f90?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
+    },
+  },
+  images: [
     {
-        id: "2",
-        name: "Engagement Photography Session",
-        price: 899.99,
-        image: "https://images.unsplash.com/photo-1529634597503-139d3726fed5?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600"
+      imageUrl:
+        "https://images.unsplash.com/photo-1484704849700-f032a568e944?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
     },
     {
-        id: "3",
-        name: "Event Photography Package",
-        price: 1099.99,
-        image: "https://images.unsplash.com/photo-1472653431158-6364773b2a56?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600"
-    }
+      imageUrl:
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
+    },
+  ],
+  features: [
+    "Industry-leading noise cancellation",
+    "30-hour battery life",
+    "Quick charge (3 min = 3 hours)",
+    "Crystal clear hands-free calling",
+    "Touch sensor controls",
+    "Multipoint Bluetooth connection",
+    "Alexa voice control",
+    "Premium comfort design",
+  ],
+};
+
+const fallbackGalleryImages = [
+  "https://images.unsplash.com/photo-1583394838336-acd977736f90?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
+  "https://images.unsplash.com/photo-1484704849700-f032a568e944?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
+  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
+  "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
+  "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
+  "https://images.unsplash.com/photo-1545127398-14699f92334b?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
 ];
 
-export default function ServiceDetailPage() {
-    const [isFavorite, setIsFavorite] = useState(false);
-    const [activeImage, setActiveImage] = useState("");
-    const [activeTab, setActiveTab] = useState("description");
-    const [lightboxOpen, setLightboxOpen] = useState(false);
-    const [lightboxImage, setLightboxImage] = useState("");
-    const [serviceDetails, setServiceDetails] = useState(null);
+const mockReviews = [
+  {
+    id: 1,
+    name: "Emily Johnson",
+    rating: 5,
+    date: "2 weeks ago",
+    comment:
+      "Absolutely incredible work! Sarah captured our wedding day perfectly. Every moment was beautifully documented.",
+    avatar: "EJ",
+  },
+  {
+    id: 2,
+    name: "Michael Chen",
+    rating: 5,
+    date: "1 month ago",
+    comment:
+      "Professional, creative, and so easy to work with. The photos exceeded our expectations!",
+    avatar: "MC",
+  },
+  {
+    id: 3,
+    name: "Lisa Rodriguez",
+    rating: 4,
+    date: "2 months ago",
+    comment:
+      "Great photography skills and attention to detail. Highly recommend for any special event.",
+    avatar: "LR",
+  },
+];
 
-    const { getProductById, fetchedProduct, loading } = useProductStore();
+export default function ProductDetailPage() {
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [activeImage, setActiveImage] = useState("");
+  const [activeTab, setActiveTab] = useState("overview");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState("");
+  const [productDetails, setProductDetails] = useState(mockServiceDetails);
+  const [showReviews, setShowReviews] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-    const { addOrder, loading: loading2 } = useOrderStore()
-    const { id } = useParams();
+  const { getProductById, fetchedProduct, loading } = useProductStore();
+  const { setisModelOpen } = useReviewStore();
+  const { addToCart } = useCartStore();
 
-    // Format price to currency
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(price);
-    };
+  const { id } = useParams();
 
-    useEffect(() => {
-        if (id) {
-            getProductById(id);
-        }
-    }, [getProductById, id]);
+  // Format price to currency
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(price);
+  };
 
-    useEffect(() => {
-        if (fetchedProduct) {
-            setServiceDetails(fetchedProduct);
-            // Set the first available image as active
-            if (fetchedProduct.serviceId?.image?.url) {
-                setActiveImage(fetchedProduct.serviceId.image.url);
-            } else if (fetchedProduct.images && fetchedProduct.images.length > 0) {
-                setActiveImage(fetchedProduct.images[0].imageUrl);
-            }
-        }
-    }, [fetchedProduct]);
-
-    // Get all available images for the gallery
-    const getAllImages = () => {
-        if (!serviceDetails) return fallbackGalleryImages;
-
-        const images = [];
-
-        // Add main service image if available
-        if (serviceDetails.serviceId?.image?.url) {
-            images.push(serviceDetails.serviceId.image.url);
-        }
-
-        // Add product images
-        if (serviceDetails.images && serviceDetails.images.length > 0) {
-            serviceDetails.images.forEach(img => {
-                if (img.imageUrl && !images.includes(img.imageUrl)) {
-                    images.push(img.imageUrl);
-                }
-            });
-        }
-
-        // If no images available, use fallback
-        if (images.length === 0) {
-            return fallbackGalleryImages;
-        }
-
-        return images;
-    };
-
-    const openLightbox = (image) => {
-        setLightboxImage(image);
-        setLightboxOpen(true);
-        document.body.style.overflow = 'hidden';
-    };
-
-    const closeLightbox = () => {
-        setLightboxOpen(false);
-        document.body.style.overflow = 'auto';
-    };
-
-    const tabs = [
-        { id: "description", label: "Overview", icon: <Camera size={16} /> },
-        { id: "gallery", label: "Gallery", icon: <Star size={16} /> }
-    ];
-
-    // Generate included items based on features or use defaults
-    const getIncludedItems = () => {
-        if (serviceDetails?.features && serviceDetails.features.length > 0) {
-            return serviceDetails.features;
-        }
-        return [
-            "Professional service delivery",
-            "Quality guarantee",
-            "Customer support",
-            "Timely completion"
-        ];
-    };
-
-    if (loading || loading2 || !serviceDetails) {
-        return (
-            <LoadingSpinner />
-        );
+  useEffect(() => {
+    if (id) {
+      getProductById(id);
     }
+  }, [getProductById, id]);
 
-    const buyHandler = async (id, price) => {
-        addOrder({ id, price })
-        console.log('Buying with id:', id, price)
+  useEffect(() => {
+    if (fetchedProduct) {
+      setProductDetails(fetchedProduct);
+      // Set the first available image as active
+      if (fetchedProduct.serviceId?.image?.url) {
+        setActiveImage(fetchedProduct.serviceId.image.url);
+      } else if (fetchedProduct.images && fetchedProduct.images.length > 0) {
+        setActiveImage(fetchedProduct.images[0].imageUrl);
+      }
     }
+  }, [fetchedProduct]);
 
+  useEffect(() => {
+    if (productDetails) {
+      if (productDetails.serviceId?.image?.url) {
+        setActiveImage(productDetails.serviceId.image.url);
+      } else if (productDetails.images && productDetails.images.length > 0) {
+        setActiveImage(productDetails.images[0].imageUrl);
+      }
+    }
+  }, [productDetails]);
+
+  const getAllImages = () => {
+    if (!productDetails) return fallbackGalleryImages;
+
+    const images = [];
+    if (productDetails.serviceId?.image?.url) {
+      images.push(productDetails.serviceId.image.url);
+    }
+    if (productDetails.images && productDetails.images.length > 0) {
+      productDetails.images.forEach((img) => {
+        if (img.imageUrl && !images.includes(img.imageUrl)) {
+          images.push(img.imageUrl);
+        }
+      });
+    }
+    return images.length === 0 ? fallbackGalleryImages : images;
+  };
+
+  const openLightbox = (image) => {
+    setLightboxImage(image);
+    setLightboxOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+    document.body.style.overflow = "auto";
+  };
+
+  const addToCartHandler = async () => {
+    console.log(quantity);
+    const productToAdd = {
+      name: productDetails.productName,
+      price: productDetails.price,
+      quantity: quantity,
+      imageUrl: productDetails.images[0].imageUrl,
+      serviceId: productDetails.serviceId.id,
+      productId: productDetails._id,
+    };
+    addToCart(productToAdd);
+  };
+
+  const nextImage = () => {
     const allImages = getAllImages();
-    const includedItems = getIncludedItems();
+    const nextIndex = (currentImageIndex + 1) % allImages.length;
+    setCurrentImageIndex(nextIndex);
+    setActiveImage(allImages[nextIndex]);
+  };
 
-    return (
-        <div className="min-h-screen bg-neutral-50 text-neutral-800">
-            {/* Modernized Header */}
-            <header className="fixed top-0 left-0 right-0 z-10 transition-all duration-300 bg-transparent">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-16">
-                        <div className="flex items-center">
-                            <button
-                                className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm hover:bg-neutral-100 transition"
-                                aria-label="Go back"
-                            >
-                                <ArrowLeft size={20} className="text-neutral-800" />
-                            </button>
+  const prevImage = () => {
+    const allImages = getAllImages();
+    const prevIndex =
+      currentImageIndex === 0 ? allImages.length - 1 : currentImageIndex - 1;
+    setCurrentImageIndex(prevIndex);
+    setActiveImage(allImages[prevIndex]);
+  };
 
-                            <h1 className="ml-4 font-semibold text-lg transition-all duration-300 opacity-0">
-                                {serviceDetails.productName}
-                            </h1>
-                        </div>
+  const allImages = getAllImages();
+  const reviewCount = mockReviews.length + Math.floor(Math.random() * 47) + 10;
 
-                        <div className="flex space-x-3">
-                            <button
-                                className={`flex items-center justify-center w-10 h-10 rounded-full ${isFavorite ? "bg-red-50" : "bg-white"
-                                    } shadow-sm hover:bg-neutral-100 transition`}
-                                onClick={() => setIsFavorite(!isFavorite)}
-                                aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-                            >
-                                <Heart
-                                    size={20}
-                                    className={isFavorite ? "fill-red-500 text-red-500" : "text-neutral-800"}
-                                />
-                            </button>
-                            <button
-                                className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm hover:bg-neutral-100 transition"
-                                aria-label="Share"
-                            >
-                                <Share2 size={20} className="text-neutral-800" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </header>
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Image Gallery */}
+          <div className="space-y-4">
+            <div className="relative aspect-square bg-white rounded-lg overflow-hidden border border-gray-200">
+              <img
+                src={activeImage || allImages[0]}
+                alt={productDetails.productName}
+                className="w-full h-full object-cover"
+              />
 
-            {/* Main Content */}
-            <main className="pb-16">
-                {/* Hero Image Section with Left Side Gallery Controls */}
-                <section className="relative h-[60vh] md:h-[70vh] bg-black overflow-hidden">
-                    <img
-                        src={activeImage || allImages[0]}
-                        alt={serviceDetails.productName}
-                        className="w-full h-full object-cover transition-all duration-700 ease-out"
-                    />
-                    {/* Simple overlay gradients */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-transparent to-black/50"></div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+              {/* Navigation arrows */}
+              {allImages.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
+                  >
+                    <ChevronLeft size={20} className="text-gray-600" />
+                  </button>
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
+                  >
+                    <ChevronRight size={20} className="text-gray-600" />
+                  </button>
+                </>
+              )}
 
-                    {/* Compact Vertical Gallery Controls */}
-                    <div className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 z-20">
-                        <div className="flex flex-col gap-2 py-3">
-                            {allImages.map((img, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`relative group transition-all duration-500 cursor-pointer ${activeImage === img ? "scale-110" : "hover:scale-105"
-                                        }`}
-                                    onClick={() => setActiveImage(img)}
-                                >
-                                    <div className={`relative w-8 h-8 md:w-10 md:h-10 rounded-md overflow-hidden transition-all duration-500 ${activeImage === img
-                                        ? "ring-2 ring-white shadow-lg shadow-white/20"
-                                        : "ring-1 ring-white/30 hover:ring-white/60 hover:shadow-md hover:shadow-black/50"
-                                        }`}>
-                                        <img
-                                            src={img}
-                                            alt={`Gallery ${idx + 1}`}
-                                            className="w-full h-full object-cover transition-all duration-500"
-                                        />
-                                        {/* Dark hover overlay */}
-                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300"></div>
-                                    </div>
+              {/* Zoom button */}
+              <button
+                onClick={() => openLightbox(activeImage)}
+                className="absolute bottom-4 right-4 bg-white/90 hover:bg-white px-4 py-2 rounded-lg shadow-lg transition-all text-sm font-medium flex items-center space-x-2"
+              >
+                <Eye size={16} />
+                <span>Zoom</span>
+              </button>
 
-                                    {/* Smaller index number */}
-                                    <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-300 ${activeImage === img
-                                        ? "bg-white text-black text-[10px]"
-                                        : "bg-black/70 text-white/90 group-hover:bg-black/90 text-[10px]"
-                                        }`}>
-                                        {idx + 1}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
+              {/* Image counter */}
+              <div className="absolute bottom-4 left-4 bg-black/50 text-white px-3 py-1 rounded-lg text-sm">
+                {currentImageIndex + 1} / {allImages.length}
+              </div>
+            </div>
 
-                {/* Info Cards & Content */}
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
-                    {/* Service Info Card - Simplified and More Intuitive */}
-                    <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                            {/* Service Info */}
-                            <div className="flex-grow">
-                                {/* Category Badge */}
-                                <div className="inline-flex items-center px-3 py-1 rounded-full bg-red-50 text-red-600 text-sm font-medium mb-2">
-                                    {serviceDetails.category}
-                                </div>
-
-                                {/* Service Title */}
-                                <h1 className="text-2xl md:text-3xl font-bold">{serviceDetails.productName}</h1>
-
-                                {/* Ratings */}
-                                <div className="flex items-center mt-2">
-                                    <div className="flex">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star
-                                                key={i}
-                                                size={18}
-                                                className={`${i < Math.floor(serviceDetails.serviceId?.rating || 0) ? "text-amber-400 fill-amber-400" : "text-neutral-300"}`}
-                                            />
-                                        ))}
-                                    </div>
-                                    <span className="ml-2 text-sm text-neutral-600">
-                                        {serviceDetails.serviceId?.rating || 0} ({Math.floor(Math.random() * 50) + 10} reviews)
-                                    </span>
-                                </div>
-
-                                {/* Service Highlights */}
-                                <div className="flex flex-wrap gap-3 mt-4">
-                                    <div className="flex items-center bg-neutral-50 px-4 py-2 rounded-lg">
-                                        <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-2">
-                                            <Check size={16} />
-                                        </div>
-                                        <span className="text-sm font-medium"> {serviceDetails.serviceId?.status || 'Available'}</span>
-                                    </div>
-                                    <div className="flex items-center bg-neutral-50 px-4 py-2 rounded-lg">
-                                        <div className="h-8 w-8 rounded-full bg-neutral-200 flex items-center justify-center text-neutral-700 mr-2 font-medium">
-                                            {serviceDetails.serviceId?.vendorName?.charAt(0) || 'V'}
-                                        </div>
-                                        <span className="text-sm font-medium">{serviceDetails.serviceId?.vendorName || 'Vendor'}</span>
-                                    </div>
-
-                                    <div className="flex items-center bg-neutral-50 px-4 py-2 rounded-lg">
-                                        <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-2">
-                                            <MapPin size={16} />
-                                        </div>
-                                        <span className="text-sm font-medium"> Location</span>
-                                    </div>
-
-
-
-
-                                </div>
-                            </div>
-
-                            {/* Price and Contact */}
-                            <div className="flex flex-col items-start md:items-end space-y-3">
-                                <div className="flex items-baseline">
-                                    <p className="text-3xl font-bold text-neutral-900">{formatPrice(serviceDetails.price)}</p>
-                                    <span className="ml-1 text-neutral-500 text-sm">/ service</span>
-                                </div>
-                                <button
-                                    onClick={() => buyHandler(serviceDetails.serviceId?.id, serviceDetails.price)}
-                                    className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-8 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-2">
-                                    <MessageSquare size={18} />
-                                    Buy now
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Improved Tab Navigation */}
-                        <div className="border-t border-neutral-200 mt-6 pt-4">
-                            <nav className="flex gap-6 overflow-x-auto">
-                                {tabs.map(tab => (
-                                    <button
-                                        key={tab.id}
-                                        className={`pb-2 px-1 font-medium text-sm border-b-2 transition-colors flex items-center gap-2 ${activeTab === tab.id
-                                            ? "border-red-600 text-red-600"
-                                            : "border-transparent text-neutral-500 hover:text-neutral-800"
-                                            }`}
-                                        onClick={() => setActiveTab(tab.id)}
-                                    >
-                                        {tab.icon}
-                                        {tab.label}
-                                    </button>
-                                ))}
-                            </nav>
-                        </div>
-                    </div>
-
-                    {/* Main Content Grid */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Left Column - Tab Content */}
-                        <div className="lg:col-span-2">
-                            <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-                                {/* Description Tab */}
-                                {activeTab === "description" && (
-                                    <div className="animate-fadeIn">
-                                        <h2 className="text-xl font-bold mb-4">About This Service</h2>
-                                        <p className="text-neutral-700 leading-relaxed mb-6">
-                                            {serviceDetails.description || "Professional service with attention to detail and customer satisfaction."}
-                                        </p>
-
-                                        {/* What's Included - More Visual */}
-                                        <div className="mt-8">
-                                            <h3 className="text-lg font-bold mb-4">What You'll Get</h3>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                {includedItems.map((item, idx) => (
-                                                    <div key={idx} className="flex items-start p-3 bg-neutral-50 rounded-lg group hover:bg-neutral-100 transition-colors cursor-default">
-                                                        <div className="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-3 group-hover:scale-110 transition-transform">
-                                                            <Check size={16} />
-                                                        </div>
-                                                        <span className="text-neutral-700 text-sm">{item}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-
-
-
-
-                                    </div>
-                                )}
-
-                                {/* Gallery Tab - Improved */}
-                                {activeTab === "gallery" && (
-                                    <div className="animate-fadeIn">
-                                        <h2 className="text-xl font-bold mb-6">Photo Gallery</h2>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                            {allImages.map((img, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className="rounded-lg overflow-hidden aspect-square cursor-pointer relative group shadow-md hover:shadow-lg transition-shadow"
-                                                    onClick={() => openLightbox(img)}
-                                                >
-                                                    <img
-                                                        src={img}
-                                                        alt={`Gallery ${idx + 1}`}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                    />
-                                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                                                        <div className="bg-white/80 backdrop-blur-sm rounded-full h-10 w-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                                <circle cx="11" cy="11" r="8"></circle>
-                                                                <path d="m21 21-4.35-4.35"></path>
-                                                                <path d="M11 8v6"></path>
-                                                                <path d="M8 11h6"></path>
-                                                            </svg>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Similar Services */}
-                            <div className="bg-white rounded-xl shadow-lg p-6">
-                                <h2 className="text-xl font-bold mb-4">Similar Services You Might Like</h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {similarServices.map((service, idx) => (
-                                        <div key={idx} className="bg-neutral-50 rounded-lg overflow-hidden group hover:shadow-md transition-shadow">
-                                            <div className="relative h-48 overflow-hidden">
-                                                <img
-                                                    src={service.image}
-                                                    alt={service.name}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                />
-                                                <div className="absolute top-3 right-3">
-                                                    <button className="h-8 w-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition">
-                                                        <Heart size={16} className="text-neutral-600" />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div className="p-4">
-                                                <h3 className="font-bold text-neutral-900 mb-2 line-clamp-1">{service.name}</h3>
-                                                <div className="flex items-center justify-between">
-                                                    <p className="font-medium text-red-600">{formatPrice(service.price)}</p>
-                                                    <button className="text-sm bg-neutral-200 hover:bg-neutral-300 px-3 py-1 rounded-full transition-colors">View Details</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Right Column - Vendor Info */}
-                        <div className="lg:col-span-1">
-                            {/* Vendor info card */}
-                            <div className="bg-white rounded-xl shadow-lg overflow-hidden mt-6">
-                                <div className="p-5">
-                                    <div className="flex items-center mb-4">
-                                        <div className="h-12 w-12 rounded-full bg-neutral-200 flex items-center justify-center text-neutral-700 font-bold mr-3">
-                                            {serviceDetails.serviceId?.vendorName?.charAt(0) || 'V'}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium">{serviceDetails.serviceId?.vendorName || 'Vendor'}</h3>
-                                            <p className="text-sm text-neutral-500">Service Provider</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex gap-2 mb-4">
-                                        <div className="flex items-center text-sm text-neutral-600">
-                                            <Clock size={16} className="mr-1" />
-                                            <span>Response time: ~2 hours</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="mb-4">
-                                        <div className="flex items-center justify-between text-sm mb-2">
-                                            <span className="text-neutral-600">Status:</span>
-                                            <span className={`font-medium ${serviceDetails.serviceId?.status?.toLowerCase() === 'available'
-                                                ? 'text-green-600'
-                                                : 'text-yellow-600'
-                                                }`}>
-                                                {serviceDetails.serviceId?.status || 'Available'}
-                                            </span>
-                                        </div>
-
-                                    </div>
-
-                                    <button className="w-full bg-white border border-neutral-300 text-neutral-800 font-medium py-2 rounded-lg hover:bg-neutral-50 transition-colors text-sm">
-                                        View Profile
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-
-            {/* Image Lightbox */}
-            {lightboxOpen && (
-                <div
-                    className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center"
-                    onClick={closeLightbox}
+            {/* Thumbnail gallery
+            <div className="grid grid-cols-5 gap-2">
+              {allImages.slice(0, 5).map((img, idx) => (
+                <button
+                  key={idx}
+                  className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                    activeImage === img
+                      ? "border-red-500"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                  onClick={() => {
+                    setActiveImage(img);
+                    setCurrentImageIndex(idx);
+                  }}
                 >
-                    <button
-                        className="absolute top-6 right-6 text-white h-12 w-12 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 transition-colors"
-                        aria-label="Close lightbox"
-                    >
-                        <X size={24} />
-                    </button>
-                    <img
-                        src={lightboxImage}
-                        alt="Enlarged view"
-                        className="max-w-screen-lg max-h-screen object-contain p-4"
+                  <img
+                    src={img}
+                    alt={`Thumbnail ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div> */}
+          </div>
+
+          {/* Product Info */}
+          <div className="space-y-6">
+            {/* Category & Rating */}
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                {productDetails.category}
+              </span>
+              <div className="flex items-center space-x-1">
+                <div className="flex items-center">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      size={16}
+                      className={`${
+                        i < Math.floor(productDetails.serviceId?.rating || 0)
+                          ? "text-yellow-400 fill-current"
+                          : "text-gray-300"
+                      }`}
                     />
-                    <div className="absolute bottom-6 left-0 right-0 flex justify-center">
-                        <div className="flex gap-2 overflow-x-auto px-4">
-                            {allImages.map((img, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`w-16 h-16 rounded-lg overflow-hidden cursor-pointer border-2 transition transform ${lightboxImage === img ? "border-white scale-110" : "border-transparent hover:border-white/60"
-                                        }`}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setLightboxImage(img);
-                                    }}
-                                >
-                                    <img
-                                        src={img}
-                                        alt={`Thumbnail ${idx + 1}`}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                  ))}
                 </div>
-            )}
+                <span className="text-sm text-gray-600 ml-2">
+                  {productDetails.serviceId?.rating} ({reviewCount} reviews)
+                </span>
+              </div>
+            </div>
+            {/* Title & Price */}
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {productDetails.productName}
+              </h1>
+              <div className="flex items-baseline space-x-2">
+                <span className="text-3xl font-bold text-red-600">
+                  {formatPrice(productDetails.price)}
+                </span>
+                <span className="text-lg text-gray-500 line-through">
+                  {formatPrice(productDetails.price * 1.2)}
+                </span>
+                <span className="text-sm font-medium text-green-600 bg-green-100 px-2 py-1 rounded">
+                  Save 17%
+                </span>
+              </div>
+            </div>
+            <div>
+              <p className="text-gray-600 leading-relaxed">
+                {productDetails.description}
+              </p>
+            </div>
+            {/* Vendor Info */}
+            <div className="bg-gray-50 rounded-lg p-2">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white font-bold">
+                  {productDetails.serviceId?.vendorName?.charAt(0)}
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-gray-900">
+                    Sold by {productDetails.serviceId?.vendorName}
+                  </p>
+                  <div className="flex items-center space-x-4 text-sm text-gray-500">
+                    <span className="flex items-center">
+                      <Clock size={14} className="mr-1" />
+                      Ships in 2-3 days
+                    </span>
+                    <span className="flex items-center">
+                      <MapPin size={14} className="mr-1" />
+                      US Seller
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Product Details Tabs */}
+            <div className="mt-5">
+              <div className="border-b border-gray-200">
+                <nav className="flex space-x-8">
+                  {[
+                    { id: "overview", label: "What you will get" },
+                    { id: "gallery", label: "Gallery" },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                        activeTab === tab.id
+                          ? "border-red-500 text-red-600"
+                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      }`}
+                      onClick={() => setActiveTab(tab.id)}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </nav>
+              </div>
+
+              <div className="mt-8">
+                {activeTab === "overview" && (
+                  <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {productDetails.features.map((feature, idx) => (
+                        <div key={idx} className="flex items-center space-x-3">
+                          <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Check size={12} className="text-white" />
+                          </div>
+                          <span className="text-gray-700">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === "gallery" && (
+                  <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {allImages.map((img, idx) => (
+                        <div
+                          key={idx}
+                          className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-75 transition-opacity"
+                          onClick={() => openLightbox(img)}
+                        >
+                          <img
+                            src={img}
+                            alt={`Gallery ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* Quantity Selector */}
+            <div className="flex items-center space-x-4">
+              <span className="text-sm font-medium text-gray-900">
+                Quantity:
+              </span>
+              <div className="flex items-center border border-gray-300 rounded-lg">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="p-2 hover:bg-gray-50 transition-colors"
+                >
+                  <Minus size={16} className="text-gray-600" />
+                </button>
+                <span className="px-4 py-2 text-center min-w-[60px] border-x border-gray-300">
+                  {quantity}
+                </span>
+                <button
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="p-2 hover:bg-gray-50 transition-colors"
+                >
+                  <Plus size={16} className="text-gray-600" />
+                </button>
+              </div>
+            </div>
+            {/* Actions */}
+            <div className="space-y-3">
+              <button
+                onClick={() => addToCartHandler()}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2"
+              >
+                <ShoppingCart size={20} />
+                <span>Add to Cart</span>
+              </button>
+
+              <button
+                onClick={() => setisModelOpen()}
+                className="w-full bg-white hover:bg-gray-50 text-gray-900 font-semibold py-4 px-6 rounded-lg border border-gray-300 transition-colors flex items-center justify-center space-x-2"
+              >
+                <MessageSquare size={20} />
+                <span>View Reviews ({reviewCount})</span>
+              </button>
+            </div>
+          </div>
         </div>
-    );
+        {/* Trust Badges */}
+        <div className="grid grid-cols-3 gap-4 py-4 border-y border-gray-200 mt-5">
+          <div className="text-center">
+            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-1">
+              <Shield size={16} className="text-green-600" />
+            </div>
+            <p className="text-xs font-medium text-gray-900">Verified</p>
+          </div>
+          <div className="text-center">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-1">
+              <Truck size={16} className="text-blue-600" />
+            </div>
+            <p className="text-xs font-medium text-gray-900">Fast Delivery</p>
+          </div>
+          <div className="text-center">
+            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-1">
+              <RefreshCw size={16} className="text-purple-600" />
+            </div>
+            <p className="text-xs font-medium text-gray-900">Easy Returns</p>
+          </div>
+        </div>
+      </div>
+      {/* Lightbox */}
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
+          onClick={closeLightbox}
+        >
+          <button
+            className="absolute top-4 right-4 text-white p-2 hover:bg-white/20 rounded-lg transition-colors"
+            onClick={closeLightbox}
+          >
+            <X size={24} />
+          </button>
+          <img
+            src={lightboxImage}
+            alt="Enlarged view"
+            className="max-w-screen-lg max-h-screen object-contain"
+          />
+        </div>
+      )}
+    </div>
+  );
 }

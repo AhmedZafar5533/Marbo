@@ -11,6 +11,7 @@ export default defineConfig({
         pure: isProduction ? ["console.log"] : [],
         // drop: isProduction ? ['console', 'debugger'] : [], // More aggressive
     },
+    
     build: {
         minify: "terser",
         terserOptions: {

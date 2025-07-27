@@ -1,35 +1,57 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from "react";
 
 // import { Link } from 'react-router-dom';
 
-
 import {
-  FaHeartbeat, FaShieldAlt, FaStore, FaTools, FaBuilding, FaHome,
-  FaKey, FaTree, FaUmbrellaBeach, FaUserTie, FaCalendarCheck, FaLaptop, FaTractor,
-  FaGraduationCap, FaBolt, FaTint, FaMoneyCheckAlt, FaMoneyBillWave, FaHandshake,
-  FaPiggyBank, FaPhoneAlt, FaPalette, FaCouch, FaUsers, FaTshirt,
-  FaBullhorn, FaShoppingBag, FaHotel, FaSearch, FaTimes, FaChevronRight, FaChevronLeft, FaChevronDown, FaHeadset
-
-
-
+  FaHeartbeat,
+  FaShieldAlt,
+  FaStore,
+  FaTools,
+  FaBuilding,
+  FaHome,
+  FaKey,
+  FaTree,
+  FaUmbrellaBeach,
+  FaUserTie,
+  FaCalendarCheck,
+  FaLaptop,
+  FaTractor,
+  FaGraduationCap,
+  FaBolt,
+  FaTint,
+  FaMoneyCheckAlt,
+  FaMoneyBillWave,
+  FaHandshake,
+  FaPiggyBank,
+  FaPhoneAlt,
+  FaPalette,
+  FaCouch,
+  FaUsers,
+  FaTshirt,
+  FaBullhorn,
+  FaShoppingBag,
+  FaHotel,
+  FaSearch,
+  FaTimes,
+  FaChevronRight,
+  FaChevronLeft,
+  FaChevronDown,
+  FaHeadset,
 } from "react-icons/fa";
 
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
 
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
+import "swiper/css";
+import "swiper/css/navigation";
 
-import 'swiper/css';
-import 'swiper/css/navigation';
+import "swiper/css/pagination";
 
-import 'swiper/css/pagination';
-
-
-
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
+import { useServiceStore } from "../../Store/servicesStore";
 
 const ServiceCard = ({ service }) => {
-
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -38,16 +60,14 @@ const ServiceCard = ({ service }) => {
       className="group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden h-full"
     >
       {/* Subtle gradient overlay on hover */}
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300 bg-gradient-to-br from-red-400 to-red-600"
-      />
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300 bg-gradient-to-br from-red-400 to-red-600" />
 
       <div className="relative p-6 h-full flex flex-col">
         {/* Icon with improved styling */}
-        <div className={`mb-5 w-16 h-16 rounded-xl flex items-center justify-center ${service.color} group-hover:scale-110 transition-transform duration-300 shadow-md`}>
-          <span className="text-white text-2xl">
-            {service.icon}
-          </span>
+        <div
+          className={`mb-5 w-16 h-16 rounded-xl flex items-center justify-center ${service.color} group-hover:scale-110 transition-transform duration-300 shadow-md`}
+        >
+          <span className="text-white text-2xl">{service.icon}</span>
         </div>
 
         {/* Title with improved spacing */}
@@ -63,16 +83,18 @@ const ServiceCard = ({ service }) => {
         {/* Tags row */}
         <div className="flex flex-wrap gap-2 mb-4">
           {service.tags.slice(0, 3).map((tag, index) => (
-            <span key={index} className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-full">
+            <span
+              key={index}
+              className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-full"
+            >
               {tag}
             </span>
           ))}
         </div>
 
-
         {/* CTA button with improved interaction */}
         <div className="mt-auto">
-          <Link to={`/providers/${service.title}`}  >
+          <Link to={`/providers/${service.title}`}>
             <button className="inline-flex items-center cursor-pointer text-red-600 hover:text-red-800 font-medium transition-all group/cta">
               <span className="border-b border-transparent group-hover/cta:border-red-600 transition-all">
                 View Providers
@@ -87,290 +109,337 @@ const ServiceCard = ({ service }) => {
 };
 
 const ServicesSection = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState(null);
 
+  const { fetchFrontendServices, frontEndServices } = useServiceStore();
+
+  useEffect(() => {
+    fetchFrontendServices();
+  }, []);
+
   // Services data remains the same
-  const services =
-    [
-      {
-        name: "Home Services",
+  const services = [
+    {
+      name: "Home Services",
 
-        services: [
-          {
-            title: "Groceries",
-            url: '/home',
-            description: "Authentic fresh produce sourced directly from local markets",
-            icon: <FaStore className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-500 to-red-600",
-            tags: ["groceries", "local", "markets", "fresh", "produce"]
-          },
+      services: [
+        {
+          title: "Groceries",
+          url: "/home",
+          description:
+            "Authentic fresh produce sourced directly from local markets",
+          icon: <FaStore className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-500 to-red-600",
+          tags: ["groceries", "local", "markets", "fresh", "produce"],
+        },
 
-          {
-            title: "Interior Design",
-            url: '/home',
-            description: "Inspired home design and decoration services",
-            icon: <FaCouch className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-400 to-orange-500",
-            tags: ["interior", "design", "home", "decoration", "services"]
-          },
-          {
-            title: "Domestic Staffing",
-            url: '/home',
-            description: "Verified house helps, cleaners, and domestic workers",
-            icon: <FaUsers className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-600 to-red-700",
-            tags: ["domestic", "staffing", "house help", "cleaners", "workers"]
-          }
-        ]
-      },
-      {
-        name: "Payments & Utilities",
+        {
+          title: "Interior Design",
+          url: "/home",
+          description: "Inspired home design and decoration services",
+          icon: <FaCouch className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-400 to-orange-500",
+          tags: ["interior", "design", "home", "decoration", "services"],
+        },
+        {
+          title: "Domestic Staffing",
+          url: "/home",
+          description: "Verified house helps, cleaners, and domestic workers",
+          icon: <FaUsers className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-600 to-red-700",
+          tags: ["domestic", "staffing", "house help", "cleaners", "workers"],
+        },
+      ],
+    },
+    {
+      name: "Payments & Utilities",
 
-        services: [
-          {
-            title: "Utility Payments",
-            url: '/payments',
-            description: "Pay electricity and water bills for your properties",
-            icon: <FaBolt className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-500 to-red-600",
-            tags: ["utilities", "payments", "electricity", "water", "bills"]
-          },
-          {
-            title: "Water Bill Payments",
-            url: '/payments',
-            description: "Convenient payment solutions for water services",
-            icon: <FaTint className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-400 to-red-500",
-            tags: ["water", "payments", "bills", "services", "convenience"]
-          },
-          {
-            title: "School Fee Payments",
-            url: '/payments',
-            description: "Seamless school fee payments and support for students",
-            icon: <FaGraduationCap className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-500 to-orange-500",
-            tags: ["education", "school fees", "payments", "student support"]
-          }
-        ]
-      },
-      {
-        name: "Lifestyle",
+      services: [
+        {
+          title: "Utility Payments",
+          url: "/payments",
+          description: "Pay electricity and water bills for your properties",
+          icon: <FaBolt className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-500 to-red-600",
+          tags: ["utilities", "payments", "electricity", "water", "bills"],
+        },
+        {
+          title: "Water Bill Payments",
+          url: "/payments",
+          description: "Convenient payment solutions for water services",
+          icon: <FaTint className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-400 to-red-500",
+          tags: ["water", "payments", "bills", "services", "convenience"],
+        },
+        {
+          title: "School Fee Payments",
+          url: "/payments",
+          description: "Seamless school fee payments and support for students",
+          icon: <FaGraduationCap className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-500 to-orange-500",
+          tags: ["education", "school fees", "payments", "student support"],
+        },
+      ],
+    },
+    {
+      name: "Lifestyle",
 
-        services: [
-          {
-            title: "Traditional Clothing",
-            url: '/lifestyle',
-            description: "Authentic Gomesi, Kanzu, and cultural attire",
-            icon: <FaTshirt className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-600 to-red-700",
-            tags: ["traditional", "clothing", "cultural", "attire"]
-          },
-          {
-            title: "Holiday Lets",
-            url: '/lifestyle',
-            description: "Book vacation homes and short-term rentals",
-            icon: <FaUmbrellaBeach className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-500 to-orange-400",
-            tags: ["holiday", "vacation", "lets", "rentals", "short-term"]
-          },
-          {
-            title: "Arts & Crafts",
-            url: '/lifestyle',
-            description: "Authentic handmade products and artifacts",
-            icon: <FaPalette className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-400 to-red-500",
-            tags: ["arts", "crafts", "handmade", "artifacts"]
-          },
-          {
-            title: "Fashion Services",
-            url: '/lifestyle',
-            description: "Contemporary and traditional fashion",
-            icon: <FaShoppingBag className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-500 to-red-600",
-            tags: ["fashion", "services", "traditional", "contemporary"]
-          },
-          {
-            title: "Hotel Booking",
-            url: '/lifestyle',
-            description: "Premium accommodation options",
-            icon: <FaHotel className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-600 to-red-700",
-            tags: ["hotel", "booking", "accommodation", "travel"]
-          }
-        ]
-      },
-      {
-        name: "Health & Wellness",
+      services: [
+        {
+          title: "Traditional Clothing",
+          url: "/lifestyle",
+          description: "Authentic Gomesi, Kanzu, and cultural attire",
+          icon: <FaTshirt className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-600 to-red-700",
+          tags: ["traditional", "clothing", "cultural", "attire"],
+        },
+        {
+          title: "Holiday Lets",
+          url: "/lifestyle",
+          description: "Book vacation homes and short-term rentals",
+          icon: <FaUmbrellaBeach className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-500 to-orange-400",
+          tags: ["holiday", "vacation", "lets", "rentals", "short-term"],
+        },
+        {
+          title: "Arts & Crafts",
+          url: "/lifestyle",
+          description: "Authentic handmade products and artifacts",
+          icon: <FaPalette className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-400 to-red-500",
+          tags: ["arts", "crafts", "handmade", "artifacts"],
+        },
+        {
+          title: "Fashion Services",
+          url: "/lifestyle",
+          description: "Contemporary and traditional fashion",
+          icon: <FaShoppingBag className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-500 to-red-600",
+          tags: ["fashion", "services", "traditional", "contemporary"],
+        },
+        {
+          title: "Hotel Booking",
+          url: "/lifestyle",
+          description: "Premium accommodation options",
+          icon: <FaHotel className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-600 to-red-700",
+          tags: ["hotel", "booking", "accommodation", "travel"],
+        },
+      ],
+    },
+    {
+      name: "Health & Wellness",
 
-        services: [
-          {
-            title: "Medical Care",
-            url: '/health',
-            description: "Access trusted medical professionals and healthcare facilities",
-            icon: <FaHeartbeat className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-500 to-red-600",
-            tags: ["healthcare", "medical", "hospitals", "care"]
-          },
-          {
-            title: "Health Insurance",
-            url: '/health',
-            description: "Secure health coverage plans from trusted providers back home",
-            icon: <FaShieldAlt className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-400 to-red-500",
-            tags: ["insurance", "health", "coverage", "plans", "protection"]
-          }
-        ]
-      },
-      {
-        name: "Real Estate & Property",
+      services: [
+        {
+          title: "Medical Care",
+          url: "/health",
+          description:
+            "Access trusted medical professionals and healthcare facilities",
+          icon: <FaHeartbeat className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-500 to-red-600",
+          tags: ["healthcare", "medical", "hospitals", "care"],
+        },
+        {
+          title: "Health Insurance",
+          url: "/health",
+          description:
+            "Secure health coverage plans from trusted providers back home",
+          icon: <FaShieldAlt className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-400 to-red-500",
+          tags: ["insurance", "health", "coverage", "plans", "protection"],
+        },
+      ],
+    },
+    {
+      name: "Real Estate & Property",
 
-        services: [
-          {
-            title: "Properties for Sale",
-            url: '/real-estate',
-            description: "Premium real estate listings",
-            icon: <FaHome className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-500 to-red-600",
-            tags: ["real estate", "properties", "sale", "listings"]
-          },
-          {
-            title: "Rental Properties",
-            url: '/real-estate',
-            description: "Find verified rental properties and rent-to-own options",
-            icon: <FaKey className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-600 to-red-700",
-            tags: ["rental", "properties", "real estate", "rent-to-own", "leasing"]
-          },
-          {
-            title: "Land Acquisition",
-            url: '/real-estate',
-            description: "Verified land listings with secure transaction support",
-            icon: <FaTree className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-400 to-orange-500",
-            tags: ["land", "acquisition", "real estate", "listings", "transactions"]
-          },
-          {
-            title: "Property Management",
-            url: '/real-estate',
-            description: "Professional property maintenance and tenant management",
-            icon: <FaUserTie className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-500 to-red-600",
-            tags: ["property", "management", "maintenance", "tenants", "services"]
-          }
-        ]
-      },
-      {
-        name: "Financial Services",
+      services: [
+        {
+          title: "Properties for Sale",
+          url: "/real-estate",
+          description: "Premium real estate listings",
+          icon: <FaHome className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-500 to-red-600",
+          tags: ["real estate", "properties", "sale", "listings"],
+        },
+        {
+          title: "Rental Properties",
+          url: "/real-estate",
+          description:
+            "Find verified rental properties and rent-to-own options",
+          icon: <FaKey className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-600 to-red-700",
+          tags: [
+            "rental",
+            "properties",
+            "real estate",
+            "rent-to-own",
+            "leasing",
+          ],
+        },
+        {
+          title: "Land Acquisition",
+          url: "/real-estate",
+          description: "Verified land listings with secure transaction support",
+          icon: <FaTree className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-400 to-orange-500",
+          tags: [
+            "land",
+            "acquisition",
+            "real estate",
+            "listings",
+            "transactions",
+          ],
+        },
+        {
+          title: "Property Management",
+          url: "/real-estate",
+          description:
+            "Professional property maintenance and tenant management",
+          icon: <FaUserTie className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-500 to-red-600",
+          tags: [
+            "property",
+            "management",
+            "maintenance",
+            "tenants",
+            "services",
+          ],
+        },
+      ],
+    },
+    {
+      name: "Financial Services",
 
-        services: [
-          {
-            title: "Money Transfer Services",
-            url: '/financial',
-            description: "Get best rates for sending money internationally",
-            icon: <FaMoneyBillWave className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-500 to-red-600",
-            tags: ["money", "transfer", "remittance", "services"]
-          },
-          {
-            title: "Mortgage Services",
-            url: '/financial',
-            description: "Mortgage solutions for diaspora investors",
-            icon: <FaHandshake className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-600 to-red-700",
-            tags: ["mortgage", "real estate", "finance", "investment", "services"]
-          },
-          {
-            title: "Banking Services",
-            url: '/financial',
-            description: "Diaspora-focused banking solutions",
-            icon: <FaPiggyBank className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-400 to-red-500",
-            tags: ["banking", "finance", "services", "diaspora"]
-          },
-          {
-            title: "Rent Collection",
-            url: '/financial',
-            description: "Secure and reliable rent collection services",
-            icon: <FaMoneyCheckAlt className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-500 to-orange-500",
-            tags: ["rent", "collection", "payments", "real estate", "services"]
-          }
-        ]
-      },
-      {
-        name: "Technology & Communication",
+      services: [
+        {
+          title: "Money Transfer Services",
+          url: "/financial",
+          description: "Get best rates for sending money internationally",
+          icon: <FaMoneyBillWave className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-500 to-red-600",
+          tags: ["money", "transfer", "remittance", "services"],
+        },
+        {
+          title: "Mortgage Services",
+          url: "/financial",
+          description: "Mortgage solutions for diaspora investors",
+          icon: <FaHandshake className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-600 to-red-700",
+          tags: [
+            "mortgage",
+            "real estate",
+            "finance",
+            "investment",
+            "services",
+          ],
+        },
+        {
+          title: "Banking Services",
+          url: "/financial",
+          description: "Diaspora-focused banking solutions",
+          icon: <FaPiggyBank className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-400 to-red-500",
+          tags: ["banking", "finance", "services", "diaspora"],
+        },
+        {
+          title: "Rent Collection",
+          url: "/financial",
+          description: "Secure and reliable rent collection services",
+          icon: <FaMoneyCheckAlt className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-500 to-orange-500",
+          tags: ["rent", "collection", "payments", "real estate", "services"],
+        },
+      ],
+    },
+    {
+      name: "Technology & Communication",
 
-        services: [
-          {
-            title: "Tech Supplies",
-            url: '/technology',
-            description: "Computers, phones, and telecom equipment from trusted vendors",
-            icon: <FaLaptop className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-500 to-red-600",
-            tags: ["tech", "supplies", "computers", "phones", "telecom"]
-          },
-          {
-            title: "Telecom Services",
-            url: '/technology',
-            description: "Mobile money and internet services",
-            icon: <FaPhoneAlt className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-600 to-red-700",
-            tags: ["telecom", "mobile", "internet", "services"]
-          }
-        ]
-      },
-      {
-        name: "Professional Services",
+      services: [
+        {
+          title: "Tech Supplies",
+          url: "/technology",
+          description:
+            "Computers, phones, and telecom equipment from trusted vendors",
+          icon: <FaLaptop className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-500 to-red-600",
+          tags: ["tech", "supplies", "computers", "phones", "telecom"],
+        },
+        {
+          title: "Telecom Services",
+          url: "/technology",
+          description: "Mobile money and internet services",
+          icon: <FaPhoneAlt className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-600 to-red-700",
+          tags: ["telecom", "mobile", "internet", "services"],
+        },
+      ],
+    },
+    {
+      name: "Professional Services",
 
-        services: [
-          {
-            title: "Construction Services",
-            url: '/professional',
-            description: "Connect with certified building professionals and contractors",
-            icon: <FaBuilding className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-500 to-red-600",
-            tags: ["construction", "building", "contractors", "services", "professionals"]
-          },
-          {
-            title: "Hardware Suppliers",
-            url: '/professional',
-            description: "Source construction materials directly from trusted suppliers",
-            icon: <FaTools className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-400 to-red-500",
-            tags: ["hardware", "construction", "suppliers", "materials"]
-          },
-          {
-            title: "Agricultural Services",
-            url: '/professional',
-            description: "Farming equipment and professional farm management",
-            icon: <FaTractor className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-600 to-red-700",
-            tags: ["agriculture", "farming", "equipment", "management", "farm"]
-          },
-          {
-            title: "Event Management",
-            url: '/professional',
-            description: "Complete event planning including traditional Mikolo services",
-            icon: <FaCalendarCheck className="w-8 h-8" />,
-            color: "bg-gradient-to-br from-red-500 to-orange-500",
-            tags: ["event", "management", "planning", "mikolo", "services"]
-          },
-         
-        ]
-      },
-    ];
+      services: [
+        {
+          title: "Construction Services",
+          url: "/professional",
+          description:
+            "Connect with certified building professionals and contractors",
+          icon: <FaBuilding className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-500 to-red-600",
+          tags: [
+            "construction",
+            "building",
+            "contractors",
+            "services",
+            "professionals",
+          ],
+        },
+        {
+          title: "Hardware Suppliers",
+          url: "/professional",
+          description:
+            "Source construction materials directly from trusted suppliers",
+          icon: <FaTools className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-400 to-red-500",
+          tags: ["hardware", "construction", "suppliers", "materials"],
+        },
+        {
+          title: "Agricultural Services",
+          url: "/professional",
+          description: "Farming equipment and professional farm management",
+          icon: <FaTractor className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-600 to-red-700",
+          tags: ["agriculture", "farming", "equipment", "management", "farm"],
+        },
+        {
+          title: "Event Management",
+          url: "/professional",
+          description:
+            "Complete event planning including traditional Mikolo services",
+          icon: <FaCalendarCheck className="w-8 h-8" />,
+          color: "bg-gradient-to-br from-red-500 to-orange-500",
+          tags: ["event", "management", "planning", "mikolo", "services"],
+        },
+      ],
+    },
+  ];
 
-  const filteredServices = searchTerm
-    ? services.filter(category =>
-      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      category.services.some(service =>
-        service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+  // Fetch services that match the titles in fetchedServices
+  const filteredServices = services.map((category) => {
+    // Filter the services within each category based on titles from fetchedServices
+    const filteredCategoryServices = category.services.filter((service) =>
+      frontEndServices.some(
+        (fetchedService) => fetchedService === service.title
       )
-    )
-    : services;
+    );
+
+    return {
+      ...category,
+      services: filteredCategoryServices,
+    };
+  });
 
   // Set first category as active by default
   useEffect(() => {
@@ -402,14 +471,15 @@ const ServicesSection = () => {
           </motion.span>
 
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4 leading-tight">
-            Bridging Borders with{' '}
+            Bridging Borders with{" "}
             <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
               Trusted Services
             </span>
           </h2>
 
           <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-            Connecting diasporans with a global network of trusted local services—empowering communities and enriching lives.
+            Connecting diasporans with a global network of trusted local
+            services—empowering communities and enriching lives.
           </p>
 
           {/* Improved search component */}
@@ -430,7 +500,7 @@ const ServicesSection = () => {
               <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg" />
               {searchTerm && (
                 <button
-                  onClick={() => setSearchTerm('')}
+                  onClick={() => setSearchTerm("")}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   <FaTimes className="w-5 h-5" />
@@ -449,18 +519,21 @@ const ServicesSection = () => {
             className="mb-12 overflow-x-auto pb-4 scrollbar-hide"
           >
             <div className="flex space-x-2 pb-2 min-w-max">
-              {services.map((category, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveCategory(category.name)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${activeCategory === category.name
-                    ? 'bg-red-600 text-white shadow-md'
-                    : 'bg-white text-slate-700 hover:bg-red-50 hover:text-red-600'
+              {filteredServices.map((category, index) =>
+                category.services.length > 0 ? (
+                  <button
+                    key={index}
+                    onClick={() => setActiveCategory(category.name)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                      activeCategory === category.name
+                        ? "bg-red-600 text-white shadow-md"
+                        : "bg-white text-slate-700 hover:bg-red-50 hover:text-red-600"
                     }`}
-                >
-                  {category.name}
-                </button>
-              ))}
+                  >
+                    {category.name}
+                  </button>
+                ) : null
+              )}
             </div>
           </motion.div>
         )}
@@ -474,8 +547,11 @@ const ServicesSection = () => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: categoryIndex * 0.1 }}
-                className={`scroll-mt-24 ${!searchTerm && activeCategory !== category.name ? 'hidden' : ''
-                  }`}
+                className={`scroll-mt-24 ${
+                  !searchTerm && activeCategory !== category.name
+                    ? "hidden"
+                    : ""
+                }`}
               >
                 {/* Improved category header */}
                 <div className="mb-8 flex items-center">
@@ -489,63 +565,7 @@ const ServicesSection = () => {
                 </div>
 
                 {/* Mobile & Tablet View - Enhanced Swiper with touch swiping */}
-
-                <div className="lg:hidden relative">
-                  <Swiper
-                    modules={[Navigation]} // Removed Pagination module
-                    spaceBetween={16}
-                    slidesPerView={1.2}
-                    breakpoints={{
-                      480: {
-                        slidesPerView: 1.5,
-                        spaceBetween: 16,
-                      },
-                      640: {
-                        slidesPerView: 2,
-                        spaceBetween: 20,
-                      },
-                      768: {
-                        slidesPerView: 2.5,
-                        spaceBetween: 24,
-                      },
-                    }}
-                    className="px-2 pb-10"
-                    navigation={{
-                      nextEl: `.swiper-next-${categoryIndex}`,
-                      prevEl: `.swiper-prev-${categoryIndex}`,
-                    }}
-                    grabCursor={true}
-                    touchEventsTarget="container"
-                    touchRatio={1.5}
-                    touchAngle={45}
-                    longSwipes={true}
-                  >
-                    {category.services.map((service, serviceIndex) => (
-                      <SwiperSlide key={serviceIndex} className="!h-auto">
-                        <ServiceCard
-                          service={service}
-                          categoryGradient={`bg-gradient-to-br from-red-500 to-red-600`}
-                        />
-                      </SwiperSlide>
-                    ))}
-                    {/* Custom navigation buttons */}
-                    <div
-                      className={`swiper-prev-${categoryIndex} absolute top-1/2 -translate-y-1/2 left-0 z-1 hidden md:block`}
-                    >
-                      <button className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-lg hover:bg-red-50 transition-colors">
-                        <FaChevronLeft className="text-red-600 text-sm" />
-                      </button>
-                    </div>
-                    <div
-                      className={`swiper-next-${categoryIndex} absolute top-1/2 -translate-y-1/2 right-0 z-10 hidden md:block`}
-                    >
-                      <button className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-lg hover:bg-red-50 transition-colors">
-                        <FaChevronRight className="text-red-600 text-sm" />
-                      </button>
-                    </div>
-                  </Swiper>
-                </div>
-
+                {/* ... Swiper implementation here */}
 
                 {/* Desktop View - Grid layout */}
                 <div className="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -578,47 +598,24 @@ const ServicesSection = () => {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-50 text-red-400 mb-6">
               <FaSearch className="w-8 h-8" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-800 mb-3">No matching services found</h3>
-            <p className="text-slate-500 max-w-md mx-auto mb-6">Try different search terms or browse our service categories</p>
+            <h3 className="text-2xl font-bold text-slate-800 mb-3">
+              No matching services found
+            </h3>
+            <p className="text-slate-500 max-w-md mx-auto mb-6">
+              Try different search terms or browse our service categories
+            </p>
             <button
-              onClick={() => setSearchTerm('')}
+              onClick={() => setSearchTerm("")}
               className="px-5 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
             >
               View All Services
             </button>
           </motion.div>
         )}
-
-        {/* Added contact section at bottom */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          className="bg-gradient-to-r from-red-500 to-red-600 rounded-xl p-6 mt-12">
-          <div className="md:flex md:items-center md:justify-between">
-            <div className="mb-4 md:mb-0 md:mr-6">
-              <h2 className="text-2xl font-bold text-white mb-2">
-                Become a Service Provider
-              </h2>
-              <p className="text-red-100 text-md">
-                Join our platform and reach thousands of customers looking for your services.
-              </p>
-            </div>
-            <a href='/signup' >
-              <button className="bg-white cursor-pointer text-red-600 px-5 py-2 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors shadow-sm">
-                Apply Now
-              </button>
-            </a>
-          </div>
-        </motion.div>
       </div>
     </div>
   );
 };
-
-
-
-
 
 const ServicesCarousel = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -634,14 +631,14 @@ const ServicesCarousel = () => {
       id: 1,
       title: "Custom Artwork",
       category: "Art",
-      url: '/providers/lifestyle',
+      url: "/providers/lifestyle",
       description: "Bespoke paintings and handcrafted designs.",
       link: "https://plus.unsplash.com/premium_photo-1671527298459-cea23635bd5b?auto=format&fit=crop&w=800&q=80",
     },
     {
       id: 2,
       title: "Medical Consultation",
-      url: '/providers/health',
+      url: "/providers/health",
       category: "Health",
       description: "Expert medical advice and online consultations.",
       link: "https://images.pexels.com/photos/5452232/pexels-photo-5452232.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=2",
@@ -649,7 +646,7 @@ const ServicesCarousel = () => {
     {
       id: 4,
       title: "Home Renovation",
-      url: '/providers/home',
+      url: "/providers/home",
       category: "Construction",
       description: "High-quality home remodeling services.",
       link: "https://images.pexels.com/photos/7092358/pexels-photo-7092358.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=2",
@@ -657,7 +654,7 @@ const ServicesCarousel = () => {
     {
       id: 5,
       title: "Grocery Delivery",
-      url: '/providers/home',
+      url: "/providers/home",
       category: "Groceries",
       description: "Get your daily essentials delivered fast.",
       link: "https://images.pexels.com/photos/7457217/pexels-photo-7457217.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=2",
@@ -665,13 +662,12 @@ const ServicesCarousel = () => {
     {
       id: 6,
       title: "Property Listings",
-      url: '/providers/real-estate',
+      url: "/providers/real-estate",
       category: "Real Estate",
       description: "Find your dream home with ease.",
       link: "https://images.pexels.com/photos/7578890/pexels-photo-7578890.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=2",
     },
   ];
-
 
   // Handle screen size changes
   useEffect(() => {
@@ -680,8 +676,8 @@ const ServicesCarousel = () => {
     };
 
     handleResize(); // Initialize on mount
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Only display the first 5 services if more are present.
@@ -700,7 +696,8 @@ const ServicesCarousel = () => {
 
   const goToPrev = () => {
     setActiveIndex((prevIndex) => {
-      const newIndex = prevIndex === 0 ? displayServices.length - 1 : prevIndex - 1;
+      const newIndex =
+        prevIndex === 0 ? displayServices.length - 1 : prevIndex - 1;
       return newIndex;
     });
   };
@@ -756,7 +753,7 @@ const ServicesCarousel = () => {
       category: service.category || "Consulting",
       duration: service.estimatedTime || "2-4 weeks",
       clientCount: service.clientCount || Math.floor(Math.random() * 500) + 100,
-      satisfaction: service.satisfaction || Math.floor(Math.random() * 20) + 80
+      satisfaction: service.satisfaction || Math.floor(Math.random() * 20) + 80,
     };
   };
 
@@ -775,20 +772,25 @@ const ServicesCarousel = () => {
           // Only apply the background image if this slide has been loaded.
           const backgroundStyle = loadedImages[index]
             ? {
-              backgroundImage: service.link
-                ? `url(${service.link})`
-                : `url(/api/placeholder/800/400?text=${encodeURIComponent(service.title)})`,
-              animation: isActive ? 'zoomIn 8s ease-out forwards' : 'none'
-            }
+                backgroundImage: service.link
+                  ? `url(${service.link})`
+                  : `url(/api/placeholder/800/400?text=${encodeURIComponent(
+                      service.title
+                    )})`,
+                animation: isActive ? "zoomIn 8s ease-out forwards" : "none",
+              }
             : {
-              backgroundColor: '#333' // placeholder background color
-            };
+                backgroundColor: "#333", // placeholder background color
+              };
 
           return (
             <div
               key={service.id}
-              className={`absolute w-full h-full ${isActive ? 'opacity-100 z-10 visible' : 'opacity-0 invisible'
-                } transition-opacity duration-1000 ease-in-out ${service.className || ''}`}
+              className={`absolute w-full h-full ${
+                isActive ? "opacity-100 z-10 visible" : "opacity-0 invisible"
+              } transition-opacity duration-1000 ease-in-out ${
+                service.className || ""
+              }`}
             >
               <div className="flex h-full relative">
                 <div className="absolute inset-0 md:left-0 bottom-6 w-full md:w-[60%] lg:w-[45%] z-[5] p-4 md:p-6 lg:p-10 flex flex-col justify-end md:ml-10">
@@ -802,9 +804,13 @@ const ServicesCarousel = () => {
 
                   <div className="flex flex-wrap items-center gap-2 md:gap-3 lg:gap-5 mb-4 md:mb-6 text-xs md:text-sm text-white">
                     <div className="flex items-center">
-                      <span className="bg-white/10 py-1 px-2 rounded-md">{meta.category}</span>
+                      <span className="bg-white/10 py-1 px-2 rounded-md">
+                        {meta.category}
+                      </span>
                     </div>
-                    <div className="bg-white/10 py-1 px-2 rounded-md">{meta.duration}</div>
+                    <div className="bg-white/10 py-1 px-2 rounded-md">
+                      {meta.duration}
+                    </div>
                     <div>
                       <span className="bg-red-600/20 text-white py-1 px-2 rounded-md text-xs font-semibold border border-red-600/30">
                         {meta.clientCount}+ clients
@@ -826,8 +832,10 @@ const ServicesCarousel = () => {
                   <div className="flex gap-2 md:gap-3 lg:gap-5 mt-2 md:mt-4">
                     <Link to={`${service.url}`}>
                       <button className="rounded-full py-2 md:py-3 px-4 md:px-6 lg:px-8 font-semibold text-sm md:text-base cursor-pointer flex items-center transition duration-300 bg-white/10 text-white border border-white/15 hover:bg-white/15 hover:transform hover:-translate-y-0.5 hover:shadow-lg backdrop-blur-sm">
-                        Get a Quote <span className="ml-1 md:ml-2 transition-transform duration-300 group-hover:translate-x-0.5">→</span>
-
+                        Get a Quote{" "}
+                        <span className="ml-1 md:ml-2 transition-transform duration-300 group-hover:translate-x-0.5">
+                          →
+                        </span>
                       </button>
                     </Link>
                   </div>
@@ -868,10 +876,11 @@ const ServicesCarousel = () => {
           {displayServices.map((_, index) => (
             <button
               key={index}
-              className={`w-2 h-2 md:w-2.5 md:h-2.5 rounded-full transition-all duration-300 ${index === activeIndex
-                ? 'bg-gradient-to-r from-red-600 to-orange-500 scale-125 shadow-lg shadow-red-600/50'
-                : 'bg-white/20'
-                } border-none cursor-pointer`}
+              className={`w-2 h-2 md:w-2.5 md:h-2.5 rounded-full transition-all duration-300 ${
+                index === activeIndex
+                  ? "bg-gradient-to-r from-red-600 to-orange-500 scale-125 shadow-lg shadow-red-600/50"
+                  : "bg-white/20"
+              } border-none cursor-pointer`}
               onClick={() => setActiveIndex(index)}
               aria-label={`Go to service ${index + 1}`}
             ></button>
@@ -889,7 +898,6 @@ const ServicesCarousel = () => {
   );
 };
 
-
 const ServiceMarketplace = () => {
   return (
     <>
@@ -897,7 +905,7 @@ const ServiceMarketplace = () => {
 
       <ServicesSection></ServicesSection>
     </>
-  )
-}
+  );
+};
 
 export default ServiceMarketplace;

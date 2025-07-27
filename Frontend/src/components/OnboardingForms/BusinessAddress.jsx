@@ -144,12 +144,12 @@ const BusinessAddress = ({ prevStep, currentStep, totalSteps }) => {
 
         if (!validateForm()) return;
 
-        // Skip API call if form hasn't been modified
-        if (!isFormModified && initialFormData && JSON.stringify(formData) === JSON.stringify(initialFormData)) {
-            toast.info('Your Application is under review!')
-            navigate('/');
-            return;
-        }
+        // // Skip API call if form hasn't been modified
+        // if (!isFormModified && initialFormData && JSON.stringify(formData) === JSON.stringify(initialFormData)) {
+        //     toast.info('Your Application is under review!')
+        //     navigate('/');
+        //     return;
+        // }
 
         // Save data and proceed to next step
         await sendAddressDetails(formData);
