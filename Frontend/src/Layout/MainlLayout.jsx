@@ -11,7 +11,7 @@ import CartModal from "../components/cartModal";
 
 export default function MainLayout() {
   const [showButton, setShowButton] = useState(false);
-  const { setisModelOpen, isModelOpen } = useReviewStore();
+  const { isModelOpen } = useReviewStore();
   const { isModalOpen: isCartModelOpen } = useCartStore();
 
   useEffect(() => {
