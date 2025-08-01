@@ -18,24 +18,10 @@ import {
 } from "lucide-react";
 import { useOrderStore } from "../../Store/orderStore";
 
-const CheckoutPage = ({ checkoutData, onBack, onPlaceOrder }) => {
+const CheckoutPage = ({ onBack, onPlaceOrder }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showOrderSummary, setShowOrderSummary] = useState(false);
   const [formData, setFormData] = useState({
-    // Contact Information
-    // email: "",
-    // phone: "",
-
-    // // Shipping Address
-    // firstName: "",
-    // lastName: "",
-    // address: "",
-    // apartment: "",
-    // city: "",
-    // state: "",
-    // zipCode: "",
-    // country: "United States",
-
     // Payment Information
     cardNumber: "",
     expiryDate: "",
@@ -55,39 +41,88 @@ const CheckoutPage = ({ checkoutData, onBack, onPlaceOrder }) => {
     payment: false,
   });
 
-  const { addOrder } = useOrderStore();
+  const { getOrders, addOrder, orders, loading } = useOrderStore();
 
-  // Mock checkout data if not provided
-  const defaultCheckoutData = {
-    items: [
-      {
-        id: "1",
-        name: "Premium Wireless Headphones",
-        quantity: 2,
-        unitPrice: 149.99,
-        totalPrice: 299.98,
-        imageUrl: "/api/placeholder/80/80",
+  useEffect(() => {
+    getOrders();
+  }, [getOrders]);
+
+  // Check section completion
+  useEffect(() => {
+    setCompletedSections({
+      contact: true, // Assuming contact info is handled elsewhere
+      shipping: true, // Assuming shipping info is handled elsewhere
+      payment:
+        formData.cardNumber &&
+        formData.expiryDate &&
+        formData.cvv &&
+        formData.cardholderName,
+    });
+  }, [formData]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
+  }
+
+  console.log(orders)
+  const processOrdersToCheckoutData = (orders) => {
+    if (!orders || orders.length === 0) {
+      return {
+        items: [],
+        summary: {
+          itemCount: 0,
+          subtotal: 0,
+          tax: 0,
+          taxRate: 0.085,
+          shipping: 0,
+          totalPrice: 0,
+        },
+      };
+    }
+
+    // Transform orders to checkout items format
+    const items = orders.map((order, index) => ({
+      id: index.toString(),
+      name: order.name,
+      quantity: order.quantity,
+      unitPrice: order.price,
+      totalPrice: order.price * order.quantity,
+      imageUrl: order.imageUrl || "/api/placeholder/80/80",
+    }));
+
+    // Calculate summary
+    const itemCount = orders.reduce(
+      (total, order) => total + order.quantity,
+      0
+    );
+    const subtotal = orders.reduce(
+      (total, order) => total + order.price * order.quantity,
+      0
+    );
+    const taxRate = 0.085;
+    const tax = subtotal * taxRate;
+    const shipping = 0; // Free shipping
+    const totalPrice = subtotal + tax + shipping;
+
+    return {
+      items,
+      summary: {
+        itemCount,
+        subtotal,
+        tax,
+        taxRate,
+        shipping,
+        totalPrice,
       },
-      {
-        id: "2",
-        name: "Bluetooth Speaker",
-        quantity: 1,
-        unitPrice: 79.99,
-        totalPrice: 79.99,
-        imageUrl: "/api/placeholder/80/80",
-      },
-    ],
-    summary: {
-      itemCount: 3,
-      subtotal: 379.97,
-      tax: 32.3,
-      taxRate: 0.085,
-      shipping: 0,
-      totalPrice: 412.27,
-    },
+    };
   };
 
-  const data = checkoutData || defaultCheckoutData;
+  // Get checkout data from orders
+  const data = processOrdersToCheckoutData(orders);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -107,20 +142,6 @@ const CheckoutPage = ({ checkoutData, onBack, onPlaceOrder }) => {
   const validateSection = (section) => {
     const newErrors = {};
 
-    // if (section === "contact") {
-    //   if (!formData.email) newErrors.email = "Email is required";
-    //   if (!formData.phone) newErrors.phone = "Phone number is required";
-    // }
-
-    // if (section === "shipping") {
-    //   if (!formData.firstName) newErrors.firstName = "First name is required";
-    //   if (!formData.lastName) newErrors.lastName = "Last name is required";
-    //   if (!formData.address) newErrors.address = "Address is required";
-    //   if (!formData.city) newErrors.city = "City is required";
-    //   if (!formData.state) newErrors.state = "State is required";
-    //   if (!formData.zipCode) newErrors.zipCode = "ZIP code is required";
-    // }
-
     if (section === "payment") {
       if (!formData.cardNumber)
         newErrors.cardNumber = "Card number is required";
@@ -135,48 +156,16 @@ const CheckoutPage = ({ checkoutData, onBack, onPlaceOrder }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  //advanve payment handler
-
-  //   const handlePlaceOrder = async () => {
-  //     // Only validate payment data
-  //     const isPaymentValid = validateSection("payment");
-
-  //     // If payment is not valid, stop the order placement
-  //     if (!isPaymentValid) {
-  //       return;
-  //     }
-
-  //     setIsProcessing(true);
-
-  //     try {
-  //       const orderData = {
-  //         ...data,
-  //         customerInfo: formData, // Includes all form data (contact + shipping + payment)
-  //         timestamp: new Date().toISOString(),
-  //       };
-
-  //       // Simulate API call
-  //       await new Promise((resolve) => setTimeout(resolve, 3000));
-
-  //       if (onPlaceOrder) {
-  //         onPlaceOrder(orderData); // If callback is provided, invoke it
-  //       } else {
-  //         alert("Order placed successfully!"); // Otherwise, show a success message
-  //       }
-  //     } catch (error) {
-  //       console.error("Order placement failed:", error);
-  //       alert("Failed to place order. Please try again.");
-  //     } finally {
-  //       setIsProcessing(false); // Reset processing state after the action
-  //     }
-  //   };
-
   const handlePlaceOrder = async () => {
-    // const isContactValid = validateSection("contact");
-    // const isShippingValid = validateSection("shipping");
     const isPaymentValid = validateSection("payment");
 
     if (!isPaymentValid) {
+      return;
+    }
+
+    // Check if there are items to order
+    if (!orders || orders.length === 0) {
+      alert("No items in cart to place order.");
       return;
     }
 
@@ -189,7 +178,8 @@ const CheckoutPage = ({ checkoutData, onBack, onPlaceOrder }) => {
         timestamp: new Date().toISOString(),
       };
       console.log(orderData);
-      addOrder(orderData);  
+      addOrder(orderData);
+
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -206,85 +196,75 @@ const CheckoutPage = ({ checkoutData, onBack, onPlaceOrder }) => {
     }
   };
 
-  // Check section completion
-  useEffect(() => {
-    setCompletedSections({
-      contact: formData.email && formData.phone,
-      shipping:
-        formData.firstName &&
-        formData.lastName &&
-        formData.address &&
-        formData.city &&
-        formData.state &&
-        formData.zipCode,
-      payment:
-        formData.cardNumber &&
-        formData.expiryDate &&
-        formData.cvv &&
-        formData.cardholderName,
-    });
-  }, [formData]);
-
   const OrderSummaryContent = () => (
     <div className="space-y-6">
       {/* Items */}
       <div className="space-y-4">
-        {data.items.map((item) => (
-          <div key={item.id} className="flex space-x-4">
-            <div className="relative flex-shrink-0">
-              <img
-                src={item.imageUrl || "/api/placeholder/60/60"}
-                alt={item.name}
-                className="w-16 h-16 object-cover rounded-xl"
-              />
-              <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
-                {item.quantity}
+        {data.items.length === 0 ? (
+          <div className="text-center py-8">
+            <ShoppingBag className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500">No items in cart</p>
+          </div>
+        ) : (
+          data.items.map((item) => (
+            <div key={item.id} className="flex space-x-4">
+              <div className="relative flex-shrink-0">
+                <img
+                  src={item.imageUrl || "/api/placeholder/60/60"}
+                  alt={item.name}
+                  className="w-16 h-16 object-cover rounded-xl"
+                />
+                <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
+                  {item.quantity}
+                </div>
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-gray-900 text-sm leading-tight">
+                  {item.name}
+                </h4>
+                <p className="text-gray-500 text-sm mt-1">
+                  ${item.unitPrice.toFixed(2)} each
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-bold text-gray-900">
+                  ${item.totalPrice.toFixed(2)}
+                </p>
               </div>
             </div>
-            <div className="flex-1">
-              <h4 className="font-semibold text-gray-900 text-sm leading-tight">
-                {item.name}
-              </h4>
-              <p className="text-gray-500 text-sm mt-1">
-                ${item.unitPrice.toFixed(2)} each
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="font-bold text-gray-900">
-                ${item.totalPrice.toFixed(2)}
-              </p>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Totals */}
-      <div className="border-t border-gray-200 pt-4 space-y-3">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600">
-            Subtotal ({data.summary.itemCount} items)
-          </span>
-          <span className="font-medium">
-            ${data.summary.subtotal.toFixed(2)}
-          </span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Shipping</span>
-          <span className="font-medium text-green-600">Free</span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Tax</span>
-          <span className="font-medium">${data.summary.tax.toFixed(2)}</span>
-        </div>
-        <div className="border-t border-gray-200 pt-3">
-          <div className="flex justify-between">
-            <span className="text-lg font-bold text-gray-900">Total</span>
-            <span className="text-lg font-bold text-red-600">
-              ${data.summary.totalPrice.toFixed(2)}
+      {data.items.length > 0 && (
+        <div className="border-t border-gray-200 pt-4 space-y-3">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">
+              Subtotal ({data.summary.itemCount} items)
+            </span>
+            <span className="font-medium">
+              ${data.summary.subtotal.toFixed(2)}
             </span>
           </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">Shipping</span>
+            <span className="font-medium text-green-600">Free</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">Tax</span>
+            <span className="font-medium">${data.summary.tax.toFixed(2)}</span>
+          </div>
+          <div className="border-t border-gray-200 pt-3">
+            <div className="flex justify-between">
+              <span className="text-lg font-bold text-gray-900">Total</span>
+              <span className="text-lg font-bold text-red-600">
+                ${data.summary.totalPrice.toFixed(2)}
+              </span>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 
@@ -331,8 +311,6 @@ const CheckoutPage = ({ checkoutData, onBack, onPlaceOrder }) => {
           {/* Main Form */}
           <div className="lg:col-span-7">
             <div className="space-y-8">
-             
-
               {/* Payment Information */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center space-x-3 mb-6">
@@ -344,7 +322,7 @@ const CheckoutPage = ({ checkoutData, onBack, onPlaceOrder }) => {
                     {completedSections.payment ? (
                       <Check className="w-4 h-4 text-white" />
                     ) : (
-                      <span className="text-white font-bold text-sm">3</span>
+                      <span className="text-white font-bold text-sm">1</span>
                     )}
                   </div>
                   <h2 className="text-lg font-bold text-gray-900">
@@ -487,9 +465,8 @@ const CheckoutPage = ({ checkoutData, onBack, onPlaceOrder }) => {
                     onClick={handlePlaceOrder}
                     disabled={
                       isProcessing ||
-                      //   !completedSections.contact ||
-                      //   !completedSections.shipping ||
-                      !completedSections.payment
+                      !completedSections.payment ||
+                      data.items.length === 0
                     }
                     className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl shadow-lg relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   >
@@ -514,9 +491,8 @@ const CheckoutPage = ({ checkoutData, onBack, onPlaceOrder }) => {
           onClick={handlePlaceOrder}
           disabled={
             isProcessing ||
-            // !completedSections.contact ||
-            // !completedSections.shipping ||
-            !completedSections.payment
+            !completedSections.payment ||
+            data.items.length === 0
           }
           className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl shadow-lg relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >

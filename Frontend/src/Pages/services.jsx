@@ -116,7 +116,7 @@ const ServicesSection = () => {
 
   useEffect(() => {
     fetchFrontendServices();
-  }, []);
+  }, [fetchFrontendServices]); // Add fetchFrontendServices to dependency array
 
   // Services data remains the same
   const services = [
@@ -426,27 +426,74 @@ const ServicesSection = () => {
     },
   ];
 
-  // Fetch services that match the titles in fetchedServices
-  const filteredServices = services.map((category) => {
-    // Filter the services within each category based on titles from fetchedServices
-    const filteredCategoryServices = category.services.filter((service) =>
-      frontEndServices.some(
-        (fetchedService) => fetchedService === service.title
-      )
-    );
+  // Memoize filtered services to prevent unnecessary recalculations
+  const filteredServices = useMemo(() => {
+    // Add null/undefined checks and ensure frontEndServices is an array
+    if (!Array.isArray(frontEndServices) || frontEndServices.length === 0) {
+      return [];
+    }
 
-    return {
-      ...category,
-      services: filteredCategoryServices,
-    };
-  });
 
-  // Set first category as active by default
+
+    return services
+      .map((category) => {
+        // Filter the services within each category based on titles from fetchedServices
+        const filteredCategoryServices = category.services.filter((service) =>
+          frontEndServices.some(
+            (fetchedService) => fetchedService === service.title
+          )
+        );
+
+        return {
+          ...category,
+          services: filteredCategoryServices,
+        };
+      })
+      .filter((category) => category.services.length > 0); // Only return categories with services
+  }, [frontEndServices]);
+
+  // Set first category as active by default - with better logic
   useEffect(() => {
     if (filteredServices.length > 0 && activeCategory === null) {
       setActiveCategory(filteredServices[0].name);
     }
+    // Reset active category if current one becomes empty
+    else if (
+      activeCategory &&
+      !filteredServices.some((cat) => cat.name === activeCategory)
+    ) {
+      setActiveCategory(
+        filteredServices.length > 0 ? filteredServices[0].name : null
+      );
+    }
   }, [filteredServices, activeCategory]);
+
+  // Additional search functionality
+  const searchFilteredServices = useMemo(() => {
+    if (!searchTerm.trim()) return filteredServices;
+
+    return filteredServices
+      .map((category) => ({
+        ...category,
+        services: category.services.filter(
+          (service) =>
+            service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            service.description
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
+            service.tags.some((tag) =>
+              tag.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+        ),
+      }))
+      .filter((category) => category.services.length > 0);
+  }, [filteredServices, searchTerm]);
+
+  const displayServices = searchTerm
+    ? searchFilteredServices
+    : filteredServices;
+
+
 
   return (
     <div className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-br from-slate-50 via-red-50/20 to-orange-50/20">
@@ -541,9 +588,9 @@ const ServicesSection = () => {
         {/* Services display with improved layout */}
         <div className="space-y-16">
           <AnimatePresence>
-            {filteredServices.map((category, categoryIndex) => (
+            {displayServices.map((category, categoryIndex) => (
               <motion.section
-                key={categoryIndex}
+                key={`${category.name}-${categoryIndex}`}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: categoryIndex * 0.1 }}
@@ -571,7 +618,24 @@ const ServicesSection = () => {
                 <div className="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {category.services.map((service, serviceIndex) => (
                     <motion.div
-                      key={serviceIndex}
+                      key={`${service.title}-${serviceIndex}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: serviceIndex * 0.05 }}
+                    >
+                      <ServiceCard
+                        service={service}
+                        categoryGradient={`bg-gradient-to-br from-red-500 to-red-600`}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Mobile/Tablet View - Show grid here too for now */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-6">
+                  {category.services.map((service, serviceIndex) => (
+                    <motion.div
+                      key={`mobile-${service.title}-${serviceIndex}`}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: serviceIndex * 0.05 }}
@@ -589,7 +653,7 @@ const ServicesSection = () => {
         </div>
 
         {/* Empty state with improved visual */}
-        {filteredServices.length === 0 && (
+        {displayServices.length === 0 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -599,17 +663,23 @@ const ServicesSection = () => {
               <FaSearch className="w-8 h-8" />
             </div>
             <h3 className="text-2xl font-bold text-slate-800 mb-3">
-              No matching services found
+              {searchTerm
+                ? "No matching services found"
+                : "No services available"}
             </h3>
             <p className="text-slate-500 max-w-md mx-auto mb-6">
-              Try different search terms or browse our service categories
+              {searchTerm
+                ? "Try different search terms or browse our service categories"
+                : "Services are currently being loaded or unavailable"}
             </p>
-            <button
-              onClick={() => setSearchTerm("")}
-              className="px-5 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
-            >
-              View All Services
-            </button>
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="px-5 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
+              >
+                View All Services
+              </button>
+            )}
           </motion.div>
         )}
       </div>
@@ -902,7 +972,6 @@ const ServiceMarketplace = () => {
   return (
     <>
       <ServicesCarousel></ServicesCarousel>
-
       <ServicesSection></ServicesSection>
     </>
   );

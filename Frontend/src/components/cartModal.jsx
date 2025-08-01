@@ -143,28 +143,27 @@ const CartModal = () => {
       const shipping = 0; // Free shipping
 
       // Prepare checkout data
-      const checkoutData = {
-        items: cart.map((item) => ({
-          productId: getItemId(item),
-          name: item.name || "Unnamed Product",
-          serviceId: item.serviceId || null,
-          quantity: item.quantity || 0,
-          unitPrice: item.price || 0,
-          totalPrice: (item.price || 0) * (item.quantity || 0),
-          imageUrl: item.imageUrl || null,
-        })),
-        summary: {
-          itemCount: getTotalItems(),
-          subtotal: parseFloat(subtotal.toFixed(2)),
-          tax: parseFloat(tax.toFixed(2)),
-          taxRate: taxRate,
-          shipping: shipping,
-          totalPrice: parseFloat(totalPrice.toFixed(2)),
-        },
-        timestamp: new Date().toISOString(),
-        currency: "USD",
-      };
-      addOrder(checkoutData);
+      // const checkoutData = {
+      //   items: cart.map((item) => ({
+      //     productId: getItemId(item),
+      //     name: item.name || "Unnamed Product",
+      //     serviceId: item.serviceId || null,
+      //     quantity: item.quantity || 0,
+      //     unitPrice: item.price || 0,
+      //     totalPrice: (item.price || 0) * (item.quantity || 0),
+      //     imageUrl: item.imageUrl || null,
+      //   })),
+      //   summary: {
+      //     itemCount: getTotalItems(),
+      //     subtotal: parseFloat(subtotal.toFixed(2)),
+      //     tax: parseFloat(tax.toFixed(2)),
+      //     taxRate: taxRate,
+      //     shipping: shipping,
+      //     totalPrice: parseFloat(totalPrice.toFixed(2)),
+      //   },
+      //   timestamp: new Date().toISOString(),
+      //   currency: "USD",
+      // };
       navigate("/checkout");
     } catch (error) {
       console.error("Checkout error:", error);
