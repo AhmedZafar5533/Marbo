@@ -2,53 +2,25 @@ import { useEffect, lazy, Suspense, useMemo } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
 import NProgress from "nprogress";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 import "nprogress/nprogress.css";
 
 // Global Store
 import { useAuthStore } from "../Store/authStore";
 
-// Route Guards
 import ProtectedRoute from "./RoutesProtection/ProtecteRoutes";
 import VendorProtectedRoute from "./RoutesProtection/VendorRoutes";
 import AdminProtectedRoute from "./RoutesProtection/AdminRoutes";
 
-// Components
 import LoadingSpinner from "./components/LoadingSpinner";
-import AppointmentForm from "./Pages/med/docProfileDetails";
-import RegistrationLookup from "./Pages/UtilityPage";
+import SuccessPage from "./Pages/successPage";
+import Payments from "./components/Admin/Payments";
+import Orders from "./components/Admin/Orders";
+import Reviews from "./components/Admin/Reviews";
+import VendorReviews from "./Pages/VendorDashboard/Reviews";
+import VendorOrders from "./Pages/VendorDashboard/Orders";
 
-// Eager-loaded Pages
-import MainProductPage from "./Pages/productListing";
-import ProductDetailPage from "./Pages/productDetailPage";
-import ProductUploadForm from "./Pages/VendorDashboard/ProductCreation";
-import VendorOrderDashboard from "./Pages/VendorDashboard/orderManagement";
-import InventoryPage from "./Pages/VendorDashboard/Inventory";
-import MoneyTransferService from "./Pages/moneyTransfer";
-import DomesticStaffingService from "./Pages/DomesticStaffing";
-import StaffTypeCreationForm from "./Pages/VendorDashboard/StaffCreation";
-import HotelRoomsShowcase from "./Pages/Hotel";
-import PropertyDetailPage from "./Pages/HolidayLetsSpotDetails";
-import MedicalHealthService from "./Pages/Medical";
-import HolidayLetForm from "./Pages/VendorDashboard/HolidayLetsCreation";
-import HotelRoomUploadForm from "./Pages/VendorDashboard/HotelRoomCreation";
-import PlansMarketplace from "./Pages/Insurance";
-import ClothingUploadForm from "./Pages/VendorDashboard/ClothCreation";
-import DoctorTypeCreationForm from "./Pages/VendorDashboard/DoctorCreation";
-import RoomDetailPage from "./Pages/hotelRoomDetailsPage";
-import PropertyShowcase from "./Pages/HolidayLetsSpots";
-import MainClothingPage from "./Pages/ClothingListing";
-import ClothingDetailPage from "./Pages/ClothingDetailPage";
-import DomesticStaffingDashboard from "./Pages/VendorDashboard/domesticStaffingManagament";
-import HotelDashboard from "./Pages/VendorDashboard/hotelManagement";
-import MedicalStaffingDashboard from "./Pages/VendorDashboard/medicalStaffMangament";
-import PropertyManagementDashboard from "./Pages/VendorDashboard/PropertyManagment";
-import ClothingManagement from "./Pages/VendorDashboard/ClothingMangemnet";
-import PendingVendors from "./components/Admin/PendingVendors";
-import ListedVendors from "./components/Admin/RegisteredVendors";
-import AdminServiceManagement from "./components/Admin/ServiceManagent";
-import CheckoutPage from "./Pages/checkoutPage";
-
-// Lazy Layouts
 const MainLayout = lazy(() => import("./Layout/MainlLayout"));
 const VendorDashBoardLayout = lazy(() =>
   import("./Layout/VendorDashBoardLayout")
@@ -57,47 +29,45 @@ const CustomerDashboardLayout = lazy(() =>
   import("./Layout/UserDashboardLayout")
 );
 
-// Lazy Public Pages
 const Home = lazy(() => import("./Pages/home"));
 const PricingPage = lazy(() => import("./Pages/PricingPage"));
-const DoctorsListingPage = lazy(() => import("./Pages/med/docListing"));
-const Appointment = lazy(() => import("./Pages/med/appointment"));
 const MarketPlace = lazy(() => import("./Pages/services"));
 const ServicesProviders = lazy(() => import("./Pages/ServicesProviderPage"));
-const UserViewPage = lazy(() => import("./Pages/ClientServicePage"));
 const ContactForm = lazy(() => import("./Pages/ContactUs"));
 const NotFoundPage = lazy(() => import("./Pages/404Page"));
 const RedirectPage = lazy(() => import("./Pages/RedirectPage"));
 
-// Lazy Auth Pages
 const LoginForm = lazy(() => import("./components/LoginForm"));
 const RegisterForm = lazy(() => import("./components/RegisterForm"));
 const OTPVerification = lazy(() => import("./components/OtpForm/OtpForm"));
 const ResetPasswordForm = lazy(() => import("./Pages/resetPassword"));
 const ForgotPasswordForm = lazy(() => import("./Pages/passwordResetEmail"));
-const SubscriptionCheckout = lazy(() => import("./Pages/subscriptionCheckout"));
 
-// Lazy Vendor Pages
-const VendorOnboardingForm = lazy(() => import("./Pages/Onboard"));
-const VendorOnboardingPage = lazy(() =>
-  import("./Pages/VendorDashboard/GotoOnboarding")
-);
-const VendorDashboard = lazy(() =>
-  import("./Pages/VendorDashboard/VendorServicesPage")
-);
-const VendorSubscription = lazy(() =>
-  import("./Pages/VendorDashboard/VendorSubscription")
-);
-const UnderReviewPage = lazy(() =>
-  import("./Pages/VendorDashboard/UnderReview")
-);
+const MainProductPage = lazy(() => import("./Pages/productListing"));
+const ProductDetailPage = lazy(() => import("./Pages/productDetailPage"));
 
-// Lazy Customer Pages
-const CustomerOrderDashboard = lazy(() =>
-  import("./Pages/User Dashboard/OrderManagment")
-);
+const CheckoutPage = lazy(() => import("./Layout/PaymentLayout"));
 
-// Lazy Insurance Pages
+const DoctorsListingPage = lazy(() => import("./Pages/med/docListing"));
+const Appointment = lazy(() => import("./Pages/med/appointment"));
+const AppointmentForm = lazy(() => import("./Pages/med/docProfileDetails"));
+const MedicalHealthService = lazy(() => import("./Pages/Medical"));
+
+const UtilityPaymentPage = lazy(() => import("./Pages/UtilityPage"));
+const MoneyTransferService = lazy(() => import("./Pages/moneyTransfer"));
+
+const DomesticStaffingService = lazy(() => import("./Pages/DomesticStaffing"));
+
+const HotelRoomsShowcase = lazy(() => import("./Pages/Hotel"));
+const RoomDetailPage = lazy(() => import("./Pages/hotelRoomDetailsPage"));
+
+const PropertyShowcase = lazy(() => import("./Pages/HolidayLetsSpots"));
+const PropertyDetailPage = lazy(() => import("./Pages/HolidayLetsSpotDetails"));
+
+const MainClothingPage = lazy(() => import("./Pages/ClothingListing"));
+const ClothingDetailPage = lazy(() => import("./Pages/ClothingDetailPage"));
+
+const PlansMarketplace = lazy(() => import("./Pages/Insurance"));
 const PolicyManagement = lazy(() =>
   import("./Pages/insurance/policyManagement")
 );
@@ -115,15 +85,90 @@ const PlanDetailsApplication = lazy(() =>
   import("./Pages/insurance/planDetails")
 );
 
-// Lazy Admin Pages
+const SubscriptionCheckout = lazy(() => import("./Pages/subscriptionCheckout"));
+const VendorOnboardingForm = lazy(() => import("./Pages/Onboard"));
+const VendorOnboardingPage = lazy(() =>
+  import("./Pages/VendorDashboard/GotoOnboarding")
+);
+const UnderReviewPage = lazy(() =>
+  import("./Pages/VendorDashboard/UnderReview")
+);
+
+const VendorDashboard = lazy(() =>
+  import("./Pages/VendorDashboard/VendorServicesPage")
+);
+const VendorSubscription = lazy(() =>
+  import("./Pages/VendorDashboard/VendorSubscription")
+);
+
+// Vendor Product Management
+const ProductUploadForm = lazy(() =>
+  import("./Pages/VendorDashboard/ProductCreation")
+);
+const TechProductUploadForm = lazy(() =>
+  import("./Pages/VendorDashboard/TechStuffCreation")
+);
+const VendorOrderDashboard = lazy(() =>
+  import("./Pages/VendorDashboard/orderManagement")
+);
+const InventoryPage = lazy(() => import("./Pages/VendorDashboard/Inventory"));
+
+// Vendor Service Management
+const StaffTypeCreationForm = lazy(() =>
+  import("./Pages/VendorDashboard/StaffCreation")
+);
+const HolidayLetForm = lazy(() =>
+  import("./Pages/VendorDashboard/HolidayLetsCreation")
+);
+const HotelRoomUploadForm = lazy(() =>
+  import("./Pages/VendorDashboard/HotelRoomCreation")
+);
+const ClothingUploadForm = lazy(() =>
+  import("./Pages/VendorDashboard/ClothCreation")
+);
+const DoctorTypeCreationForm = lazy(() =>
+  import("./Pages/VendorDashboard/DoctorCreation")
+);
+
+// Vendor Dashboard Management
+const DomesticStaffingDashboard = lazy(() =>
+  import("./Pages/VendorDashboard/domesticStaffingManagament")
+);
+const HotelDashboard = lazy(() =>
+  import("./Pages/VendorDashboard/hotelManagement")
+);
+const MedicalStaffingDashboard = lazy(() =>
+  import("./Pages/VendorDashboard/medicalStaffMangament")
+);
+const PropertyManagementDashboard = lazy(() =>
+  import("./Pages/VendorDashboard/PropertyManagment")
+);
+const ClothingManagement = lazy(() =>
+  import("./Pages/VendorDashboard/ClothingMangemnet")
+);
+
+const CustomerOrderDashboard = lazy(() =>
+  import("./Pages/User Dashboard/OrderManagment")
+);
+
 const AdminDashboard = lazy(() => import("./Pages/AdminPages/Admin"));
 const VendorDetailsPage = lazy(() =>
   import("./Pages/AdminPages/VendorDetails")
 );
+const PendingVendors = lazy(() => import("./components/Admin/PendingVendors"));
+const ListedVendors = lazy(() =>
+  import("./components/Admin/RegisteredVendors")
+);
+const AdminServiceManagement = lazy(() =>
+  import("./components/Admin/ServiceManagent")
+);
 
-// Lazy Profile & Editor
+const AdminMessages = lazy(() => import("./components/Admin/Messages"));
+
 const ProfilePage = lazy(() => import("./Pages/ProfilePage"));
 const EditablePage = lazy(() => import("./Pages/EditPage"));
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const App = () => {
   const { checkAuth } = useAuthStore();
@@ -159,37 +204,67 @@ const App = () => {
 
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
-          {/* PUBLIC ROUTES */}
           <Route element={<MainLayout />}>
+            {/* Core Public Pages */}
             <Route path="/" element={<Home />} />
             <Route path="/pricing" element={<PricingPage />} />
-            <Route path="/medical" element={<DoctorsListingPage />} />
-            <Route path="/appoint" element={<Appointment />} />
-            <Route path="/view/:id" element={<ProductDetailPage />} />
             <Route path="/services" element={<MarketPlace />} />
             <Route path="/contact-us" element={<ContactForm />} />
+            <Route path="/success" element={<SuccessPage />} />
             <Route
               path="/providers/:category"
               element={<ServicesProviders />}
+            />
+
+            {/* Medical Services */}
+            <Route path="/medical" element={<DoctorsListingPage />} />
+            <Route path="/appoint" element={<Appointment />} />
+            <Route
+              path="/service/Medical-Care/:id"
+              element={<MedicalHealthService />}
+            />
+
+            {/* Product Services */}
+            <Route
+              path="/view/:type/:serviceId/:id"
+              element={<ProductDetailPage />}
             />
             <Route
               path="/service/Groceries/:id"
               element={<MainProductPage />}
             />
             <Route
+              path="/service/Tech-Supplies/:id"
+              element={<MainProductPage />}
+            />
+
+            {/* Staffing & Professional Services */}
+            <Route
               path="/service/Domestic-Staffing/:id"
               element={<DomesticStaffingService />}
             />
+
+            {/* Financial Services */}
             <Route
               path="/service/Money-Transfer-Services/:id"
               element={<MoneyTransferService />}
             />
-            <Route path="/service/payment" element={<RegistrationLookup />} />
+            <Route
+              path="/service/:billType/:id"
+              element={<UtilityPaymentPage />}
+            />
+
+            {/* Hospitality Services */}
             <Route
               path="/service/Hotel-Booking/:id"
               element={<HotelRoomsShowcase />}
             />
-            <Route path="/insurance" element={<PolicyManagement />} />
+            <Route
+              path="/service/hotel/room/details/:id"
+              element={<RoomDetailPage />}
+            />
+
+            {/* Property Services */}
             <Route
               path="/service/Holiday-Lets/:id"
               element={<PropertyShowcase />}
@@ -198,10 +273,8 @@ const App = () => {
               path="/service/Holiday-Lets/details/:id"
               element={<PropertyDetailPage />}
             />
-            <Route
-              path="/service/hotel/room/details/:id"
-              element={<RoomDetailPage />}
-            />
+
+            {/* Fashion Services */}
             <Route
               path="/service/Traditional-Clothing/:id"
               element={<MainClothingPage />}
@@ -210,19 +283,12 @@ const App = () => {
               path="/service/Traditional-Clothing/view/:id"
               element={<ClothingDetailPage />}
             />
-            <Route
-              path="/service/Medical-Care/:id"
-              element={<MedicalHealthService />}
-            />
 
+            {/* Insurance Services */}
+            <Route path="/insurance" element={<PolicyManagement />} />
             <Route path="/service/insurance" element={<PlansMarketplace />} />
 
-            {/* PUBLIC AUTH / PASSWORD / SUBSCRIPTION */}
-            <Route
-              path="/reset-password/:token"
-              element={<ResetPasswordForm />}
-            />
-            <Route path="/forget-password" element={<ForgotPasswordForm />} />
+            {/* Authenticated Public Routes */}
             <Route
               path="/checkout/subscription"
               element={
@@ -234,13 +300,13 @@ const App = () => {
             <Route
               path="/onboarding"
               element={
-                <ProtectedRoute>
-                  <VendorProtectedRoute>
-                    <VendorOnboardingForm />
-                  </VendorProtectedRoute>
-                </ProtectedRoute>
+                <VendorProtectedRoute>
+                  <VendorOnboardingForm />
+                </VendorProtectedRoute>
               }
             />
+
+            {/* Catch-all for 404 */}
             <Route path="*" element={<NotFoundPage />} />
           </Route>
 
@@ -249,73 +315,71 @@ const App = () => {
           <Route path="/signup" element={<RegisterForm />} />
           <Route path="/verify" element={<OTPVerification />} />
 
-          {/* INSURANCE DASHBOARD (Protected) */}
+          {/* Password Reset Routes */}
           <Route
-            path="/test"
-            element={
-              <ProtectedRoute>
-                <InsuranceDashboardContent />
-              </ProtectedRoute>
-            }
+            path="/reset-password/:token"
+            element={<ResetPasswordForm />}
           />
+          <Route path="/forget-password" element={<ForgotPasswordForm />} />
 
-          {/* VENDOR DASHBOARD ROUTES */}
           <Route
             element={
               <ProtectedRoute>
-                <VendorProtectedRoute>
-                  <VendorDashBoardLayout />
-                </VendorProtectedRoute>
+                <MainLayout />
               </ProtectedRoute>
             }
           >
+            <Route path="/checkout" element={<CheckoutPage />} />
+          </Route>
+
+          <Route
+            element={
+              <VendorProtectedRoute>
+                <VendorDashBoardLayout />
+              </VendorProtectedRoute>
+            }
+          >
+            {/* Vendor Onboarding & Status */}
             <Route path="/goto/onboarding" element={<VendorOnboardingPage />} />
             <Route path="/vendor/wait/review" element={<UnderReviewPage />} />
+
+            {/* Vendor Core Dashboard */}
             <Route
               path="/dashboard/vendor/services"
               element={<VendorDashboard />}
             />
             <Route path="/dashboard/vendor/profile" element={<ProfilePage />} />
             <Route
+              path="/dashboard/vendor/edit/page"
+              element={<EditablePage />}
+            />
+            <Route
               path="/dashboard/subscriptions/vendor"
               element={<VendorSubscription />}
             />
+
+            {/* Vendor Order & Inventory Management */}
+            <Route path="/dashboard/vendor/orders" element={<VendorOrders />} />
             <Route
-              path="/dashboard/vendor/orders"
-              element={<VendorOrderDashboard />}
-            />
-            <Route
-              path="/dashboard/vendor/add/products"
-              element={<ProductUploadForm />}
-            />
-            <Route
-              path="/dashboard/vendor/edit/page"
-              element={<EditablePage />}
+              path="/dashboard/vendor/reviews"
+              element={<VendorReviews />}
             />
             <Route
               path="/dashboard/vendor/inventory"
               element={<InventoryPage />}
             />
+
+            {/* Vendor Product Creation */}
             <Route
-              path="/dashboard/vendor/domestic-staffing-management"
-              element={<DomesticStaffingDashboard />}
+              path="/dashboard/vendor/add/products"
+              element={<ProductUploadForm />}
             />
             <Route
-              path="/dashboard/vendor/hotel-managment"
-              element={<HotelDashboard />}
+              path="/dashboard/vendor/add/tech-products"
+              element={<TechProductUploadForm />}
             />
-            <Route
-              path="/dashboard/vendor/manage/medical-staff"
-              element={<MedicalStaffingDashboard />}
-            />
-            <Route
-              path="/dashboard/vendor/manage/clothes"
-              element={<ClothingManagement />}
-            />
-            <Route
-              path="/dashboard/vendor/manage/holiday-lets"
-              element={<PropertyManagementDashboard />}
-            />
+
+            {/* Vendor Service Creation */}
             <Route
               path="/dashboard/vendor/add/staff"
               element={<StaffTypeCreationForm />}
@@ -336,19 +400,30 @@ const App = () => {
               path="/dashboard/vendor/add/medical/doctors"
               element={<DoctorTypeCreationForm />}
             />
+
+            {/* Vendor Service Management */}
+            <Route
+              path="/dashboard/vendor/domestic-staffing-management"
+              element={<DomesticStaffingDashboard />}
+            />
+            <Route
+              path="/dashboard/vendor/hotel-managment"
+              element={<HotelDashboard />}
+            />
+            <Route
+              path="/dashboard/vendor/manage/medical-staff"
+              element={<MedicalStaffingDashboard />}
+            />
+            <Route
+              path="/dashboard/vendor/manage/clothes"
+              element={<ClothingManagement />}
+            />
+            <Route
+              path="/dashboard/vendor/manage/holiday-lets"
+              element={<PropertyManagementDashboard />}
+            />
           </Route>
 
-          <Route
-            element={
-              <ProtectedRoute>
-                <MainLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/checkout" element={<CheckoutPage />} />
-          </Route>
-
-          {/* CUSTOMER DASHBOARD ROUTES */}
           <Route
             element={
               <ProtectedRoute>
@@ -360,33 +435,42 @@ const App = () => {
               path="/dashboard/customer/profile"
               element={<ProfilePage />}
             />
-
             <Route
               path="/dashboard/customer/orders"
               element={<CustomerOrderDashboard />}
             />
           </Route>
 
-          {/* ADMIN DASHBOARD ROUTE */}
           <Route
             path="/admin"
             element={
-              <ProtectedRoute>
-                <AdminProtectedRoute>
-                  <AdminDashboard />
-                </AdminProtectedRoute>
-              </ProtectedRoute>
+              <AdminProtectedRoute>
+                <AdminDashboard />
+              </AdminProtectedRoute>
             }
           >
             <Route path="/admin/pending-vendors" element={<PendingVendors />} />
             <Route path="/admin/listed-vendors" element={<ListedVendors />} />
+            <Route path="/admin/messages" element={<AdminMessages />} />
+            <Route path="/admin/orders" element={<Orders />} />
+            <Route path="/admin/reviews" element={<Reviews />} />
+            <Route path="/admin/payments" element={<Payments />} />
             <Route
               path="/admin/manage-services"
               element={<AdminServiceManagement />}
             />
           </Route>
 
-          {/* OTHER PROTECTED ROUTES */}
+          <Route
+            path="/test"
+            element={
+              <ProtectedRoute>
+                <InsuranceDashboardContent />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Vendor Details (Admin Access) */}
           <Route path="/vendor-details/:id" element={<VendorDetailsPage />} />
         </Routes>
       </Suspense>

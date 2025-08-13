@@ -19,21 +19,24 @@ import {
   ChevronRight,
   Plus,
   Minus,
+  Award,
+  Package,
+  Calendar,
+  Info,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
 } from "lucide-react";
+import { useCartStore } from "../../Store/cartStore";
+import { useReviewStore } from "../../Store/reviewsStore";
 import { useProductStore } from "../../Store/productsStore";
 import { useParams } from "react-router-dom";
-import { useReviewStore } from "../../Store/reviewsStore";
-import { useCartStore } from "../../Store/cartStore";
 
-// Mock data for demonstration
+// Mock data for demonstration adapted to your schema
 const mockServiceDetails = {
-  productName: "Sony WH-1000XM5 Wireless Noise Canceling Headphones",
-  category: "Electronics",
-  price: 399.99,
-  description:
-    "Industry-leading noise cancellation with dual noise sensor technology. Up to 30-hour battery life with quick charge. Crystal clear hands-free calling and Alexa voice control. Seamless Bluetooth connectivity with multipoint connection.",
+  _id: "507f1f77bcf86cd799439011",
   serviceId: {
-    id: "1",
+    _id: "507f1f77bcf86cd799439012",
     vendorName: "TechWorld Electronics",
     rating: 4.8,
     status: "In Stock",
@@ -41,16 +44,14 @@ const mockServiceDetails = {
       url: "https://images.unsplash.com/photo-1583394838336-acd977736f90?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
     },
   },
-  images: [
-    {
-      imageUrl:
-        "https://images.unsplash.com/photo-1484704849700-f032a568e944?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
-    },
-    {
-      imageUrl:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
-    },
-  ],
+  productName: "Sony WH-1000XM5 Wireless Noise Canceling Headphones",
+  typeOf: "Tech",
+  category: "Electronics",
+  brand: "Sony",
+  price: 399.99,
+  quantity: 15,
+  description:
+    "Industry-leading noise cancellation with dual noise sensor technology. Up to 30-hour battery life with quick charge. Crystal clear hands-free calling and Alexa voice control. Seamless Bluetooth connectivity with multipoint connection.",
   features: [
     "Industry-leading noise cancellation",
     "30-hour battery life",
@@ -61,6 +62,28 @@ const mockServiceDetails = {
     "Alexa voice control",
     "Premium comfort design",
   ],
+  warranty: "yes",
+  warrantyConditions: [
+    "Defects in materials and workmanship",
+    "Valid from date of purchase with proof of receipt",
+    "2 year manufacturer warranty",
+  ],
+  sizes: [],
+  gender: "Unisex",
+  images: [
+    {
+      imageUrl:
+        "https://images.unsplash.com/photo-1484704849700-f032a568e944?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
+      publicId: "product_image_1",
+    },
+    {
+      imageUrl:
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
+      publicId: "product_image_2",
+    },
+  ],
+  createdAt: "2024-01-15T10:30:00Z",
+  updatedAt: "2024-01-15T10:30:00Z",
 };
 
 const fallbackGalleryImages = [
@@ -103,21 +126,22 @@ const mockReviews = [
 ];
 
 export default function ProductDetailPage() {
-  const [isFavorite, setIsFavorite] = useState(false);
   const [activeImage, setActiveImage] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
   const [productDetails, setProductDetails] = useState(mockServiceDetails);
-  const [showReviews, setShowReviews] = useState(false);
-  const [quantity, setQuantity] = useState(1);
+
+  const [quantityToBuy, setQuantityToBuy] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const { getProductById, fetchedProduct, loading } = useProductStore();
-  const { setisModelOpen } = useReviewStore();
-  const { addToCart } = useCartStore();
-
   const { id } = useParams();
+
+  // Mock store functions (replace with actual store calls)
+  const { getProductById, fetchedProduct } = useProductStore();
+
+  const { addToCart } = useCartStore();
+  const { setisModelOpen } = useReviewStore();
 
   // Format price to currency
   const formatPrice = (price) => {
@@ -186,13 +210,15 @@ export default function ProductDetailPage() {
   };
 
   const addToCartHandler = async () => {
-    console.log(quantity);
     const productToAdd = {
       name: productDetails.productName,
       price: productDetails.price,
-      quantity: quantity,
-      imageUrl: productDetails.images[0].imageUrl,
-      serviceId: productDetails.serviceId.id,
+      quantity: quantityToBuy,
+      typeOf: "product",
+      imageUrl:
+        productDetails.images[0]?.imageUrl ||
+        productDetails.serviceId?.image?.url,
+      serviceId: productDetails.serviceId.id || productDetails.serviceId,
       productId: productDetails._id,
     };
     addToCart(productToAdd);
@@ -215,6 +241,10 @@ export default function ProductDetailPage() {
 
   const allImages = getAllImages();
   const reviewCount = mockReviews.length + Math.floor(Math.random() * 47) + 10;
+
+  // Calculate discounted price if available (you can add originalPrice field if needed)
+  const hasDiscount = false; // Set based on your business logic
+  const originalPrice = hasDiscount ? productDetails.price * 1.2 : null;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -261,39 +291,22 @@ export default function ProductDetailPage() {
                 {currentImageIndex + 1} / {allImages.length}
               </div>
             </div>
-
-            {/* Thumbnail gallery
-            <div className="grid grid-cols-5 gap-2">
-              {allImages.slice(0, 5).map((img, idx) => (
-                <button
-                  key={idx}
-                  className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                    activeImage === img
-                      ? "border-red-500"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
-                  onClick={() => {
-                    setActiveImage(img);
-                    setCurrentImageIndex(idx);
-                  }}
-                >
-                  <img
-                    src={img}
-                    alt={`Thumbnail ${idx + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div> */}
           </div>
 
           {/* Product Info */}
           <div className="space-y-6">
             {/* Category & Rating */}
             <div className="flex items-center justify-between">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                {productDetails.category}
-              </span>
+              <div className="flex items-center space-x-2">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                  {productDetails.typeOf}
+                </span>
+                {productDetails.brand && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                    {productDetails.brand}
+                  </span>
+                )}
+              </div>
               <div className="flex items-center space-x-1">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
@@ -313,6 +326,7 @@ export default function ProductDetailPage() {
                 </span>
               </div>
             </div>
+
             {/* Title & Price */}
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -322,44 +336,138 @@ export default function ProductDetailPage() {
                 <span className="text-3xl font-bold text-red-600">
                   {formatPrice(productDetails.price)}
                 </span>
-                <span className="text-lg text-gray-500 line-through">
-                  {formatPrice(productDetails.price * 1.2)}
-                </span>
-                <span className="text-sm font-medium text-green-600 bg-green-100 px-2 py-1 rounded">
-                  Save 17%
-                </span>
+                {originalPrice && (
+                  <>
+                    <span className="text-lg text-gray-500 line-through">
+                      {formatPrice(originalPrice)}
+                    </span>
+                    <span className="text-sm font-medium text-green-600 bg-green-100 px-2 py-1 rounded">
+                      Save{" "}
+                      {Math.round(
+                        ((originalPrice - productDetails.price) /
+                          originalPrice) *
+                          100
+                      )}
+                      %
+                    </span>
+                  </>
+                )}
               </div>
             </div>
+
+            {/* Description */}
             <div>
               <p className="text-gray-600 leading-relaxed">
                 {productDetails.description}
               </p>
             </div>
+
+            {/* Category Info */}
+            <div className="bg-gray-100 rounded-lg p-3">
+              <span className="text-sm text-gray-600">Category: </span>
+              <span className="font-medium text-gray-900">
+                {productDetails.category}
+              </span>
+              {productDetails.gender && productDetails.gender !== "Unisex" && (
+                <>
+                  <span className="text-sm text-gray-600 ml-4">Gender: </span>
+                  <span className="font-medium text-gray-900">
+                    {productDetails.gender}
+                  </span>
+                </>
+              )}
+            </div>
+
+            {/* Sizes (if applicable) */}
+            {productDetails.sizes && productDetails.sizes.length > 0 && (
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <h3 className="font-semibold text-gray-900 mb-3">
+                  Available Sizes:
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {productDetails.sizes.map((size, idx) => (
+                    <span
+                      key={idx}
+                      className="px-3 py-1 bg-gray-100 text-gray-700 rounded border hover:bg-gray-200 cursor-pointer text-sm"
+                    >
+                      {size}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Availability Status */}
+            <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="flex items-center space-x-3 mb-3">
+                {productDetails.quantity > 0 ? (
+                  <CheckCircle size={20} className="text-green-500" />
+                ) : (
+                  <XCircle size={20} className="text-red-500" />
+                )}
+                <span
+                  className={`font-semibold ${
+                    productDetails.quantity > 0
+                      ? "text-green-700"
+                      : "text-red-700"
+                  }`}
+                >
+                  {productDetails.quantity > 0 ? "In Stock" : "Out of Stock"}
+                </span>
+                {productDetails.quantity > 0 && (
+                  <span className="text-sm text-gray-500">
+                    ({productDetails.quantity} available)
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Warranty Information */}
+            {productDetails.warranty === "yes" &&
+              productDetails.warrantyConditions && (
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-4">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                      <Award size={16} className="text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-blue-900">
+                        Warranty Included
+                      </h3>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    {productDetails.warrantyConditions.map((condition, idx) => (
+                      <p key={idx} className="text-sm text-blue-700">
+                        • {condition}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
+
             {/* Vendor Info */}
-            <div className="bg-gray-50 rounded-lg p-2">
+            <div className="bg-gray-50 rounded-lg p-4">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white font-bold">
-                  {productDetails.serviceId?.vendorName?.charAt(0)}
+                  {productDetails.serviceId?.vendorName?.charAt(0) || "S"}
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold text-gray-900">
-                    Sold by {productDetails.serviceId?.vendorName}
+                    Sold by {productDetails.serviceId?.vendorName || "Seller"}
                   </p>
                   <div className="flex items-center space-x-4 text-sm text-gray-500">
                     <span className="flex items-center">
                       <Clock size={14} className="mr-1" />
                       Ships in 2-3 days
                     </span>
-                    <span className="flex items-center">
-                      <MapPin size={14} className="mr-1" />
-                      US Seller
-                    </span>
                   </div>
                 </div>
               </div>
             </div>
+
             {/* Product Details Tabs */}
-            <div className="mt-5">
+            <div className="mt-8">
               <div className="border-b border-gray-200">
                 <nav className="flex space-x-8">
                   {[
@@ -385,14 +493,14 @@ export default function ProductDetailPage() {
                 {activeTab === "overview" && (
                   <div className="bg-white rounded-lg border border-gray-200 p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {productDetails.features.map((feature, idx) => (
+                      {productDetails.features?.map((feature, idx) => (
                         <div key={idx} className="flex items-center space-x-3">
                           <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
                             <Check size={12} className="text-white" />
                           </div>
                           <span className="text-gray-700">{feature}</span>
                         </div>
-                      ))}
+                      )) || <p className="text-gray-500">No features listed</p>}
                     </div>
                   </div>
                 )}
@@ -418,6 +526,7 @@ export default function ProductDetailPage() {
                 )}
               </div>
             </div>
+
             {/* Quantity Selector */}
             <div className="flex items-center space-x-4">
               <span className="text-sm font-medium text-gray-900">
@@ -425,30 +534,45 @@ export default function ProductDetailPage() {
               </span>
               <div className="flex items-center border border-gray-300 rounded-lg">
                 <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  onClick={() =>
+                    setQuantityToBuy(Math.max(1, quantityToBuy - 1))
+                  }
                   className="p-2 hover:bg-gray-50 transition-colors"
                 >
                   <Minus size={16} className="text-gray-600" />
                 </button>
                 <span className="px-4 py-2 text-center min-w-[60px] border-x border-gray-300">
-                  {quantity}
+                  {quantityToBuy}
                 </span>
                 <button
-                  onClick={() => setQuantity(quantity + 1)}
+                  onClick={() =>
+                    setQuantityToBuy(
+                      Math.min(productDetails.quantity, quantityToBuy + 1)
+                    )
+                  }
                   className="p-2 hover:bg-gray-50 transition-colors"
+                  disabled={quantityToBuy >= productDetails.quantity}
                 >
                   <Plus size={16} className="text-gray-600" />
                 </button>
               </div>
             </div>
+
             {/* Actions */}
             <div className="space-y-3">
               <button
                 onClick={() => addToCartHandler()}
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2"
+                disabled={productDetails.quantity <= 0}
+                className={`w-full font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 ${
+                  productDetails.quantity > 0
+                    ? "bg-red-600 hover:bg-red-700 text-white"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
               >
                 <ShoppingCart size={20} />
-                <span>Add to Cart</span>
+                <span>
+                  {productDetails.quantity > 0 ? "Add to Cart" : "Out of Stock"}
+                </span>
               </button>
 
               <button
@@ -461,28 +585,35 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
+
         {/* Trust Badges */}
-        <div className="grid grid-cols-3 gap-4 py-4 border-y border-gray-200 mt-5">
+        <div className="grid grid-cols-3 gap-4 py-8 border-y border-gray-200 mt-12">
           <div className="text-center">
-            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-1">
-              <Shield size={16} className="text-green-600" />
+            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <Shield size={20} className="text-green-600" />
             </div>
-            <p className="text-xs font-medium text-gray-900">Verified</p>
+            <p className="text-sm font-medium text-gray-900">
+              Verified Product
+            </p>
+            <p className="text-xs text-gray-500 mt-1">Authentic guarantee</p>
           </div>
           <div className="text-center">
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-1">
-              <Truck size={16} className="text-blue-600" />
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <Truck size={20} className="text-blue-600" />
             </div>
-            <p className="text-xs font-medium text-gray-900">Fast Delivery</p>
+            <p className="text-sm font-medium text-gray-900">Fast Delivery</p>
+            <p className="text-xs text-gray-500 mt-1">2-3 business days</p>
           </div>
           <div className="text-center">
-            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-1">
-              <RefreshCw size={16} className="text-purple-600" />
+            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <RefreshCw size={20} className="text-purple-600" />
             </div>
-            <p className="text-xs font-medium text-gray-900">Easy Returns</p>
+            <p className="text-sm font-medium text-gray-900">Easy Returns</p>
+            <p className="text-xs text-gray-500 mt-1">30 day policy</p>
           </div>
         </div>
       </div>
+
       {/* Lightbox */}
       {lightboxOpen && (
         <div

@@ -35,15 +35,12 @@ export const useCartStore = create((set, get) => ({
         const data = await response.json();
 
         if (data.success) {
-          // Get current cart from state (which should be synced with localStorage)
           const currentCart = [...get().cart];
 
-          // Use the cart item returned from backend
           const updatedCartItem = data.cartItem;
           console.log(updatedCartItem);
 
           if (updatedCartItem) {
-            // Find existing item in current cart
             const existingItemIndex = currentCart.findIndex(
               (item) =>
                 (item.productId &&
@@ -54,10 +51,8 @@ export const useCartStore = create((set, get) => ({
             );
 
             if (existingItemIndex >= 0) {
-              // Update existing item with backend data
               currentCart[existingItemIndex] = updatedCartItem;
             } else {
-              // Add new item from backend
               currentCart.push(updatedCartItem);
             }
           } else {
@@ -318,7 +313,7 @@ export const useCartStore = create((set, get) => ({
         if (data.success) {
           localStorage.removeItem("cart");
           set({ cart: [], cartQuantity: 0 });
-          toast.success("Cart cleared");
+
         } else {
           toast.error(data.message || "Failed to clear cart");
         }

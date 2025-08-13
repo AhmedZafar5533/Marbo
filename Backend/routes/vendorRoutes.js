@@ -4,9 +4,13 @@ const Vendor = require("../models/vendors");
 const auth = require("../middlewares/checkAuthetication");
 const path = require("path");
 const checkAuthetication = require("../middlewares/checkAuthetication");
+const checkVendor = require("../middlewares/checkVendor");
 const uploadFromBuffer = require("../Utils/imageCompress");
 const sharp = require("sharp");
 const User = require("../models/User");
+const reviews = require("../models/reviews");
+const Service = require("../models/service");
+const subOrders = require("../models/suborders");
 
 router.post("/initialize", checkAuthetication, async (req, res) => {
   try {
@@ -19,10 +23,8 @@ router.post("/initialize", checkAuthetication, async (req, res) => {
     }
     const existingVendor = await Vendor.findOne({ userId: req.user.id });
 
-    console.log("existingVendor", existingVendor);
-
     if (existingVendor) {
-      return res.json({
+      return res.status(200).json({
         isInititialized: true,
         newVendor: false,
         vendorData: existingVendor,
@@ -391,6 +393,67 @@ router.post("/business-address", auth, async (req, res) => {
     });
   } catch (error) {
     console.error("Error saving business address:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+});
+
+router.get("/reviews", checkVendor, async (req, res) => {
+  try {
+    const service = await Service.findOne({ userId: req.user.id })
+      .select("_id")
+      .lean();
+
+    console.log("Service ID:", service._id);
+    if (!service) {
+      return res.status(404).json({
+        success: false,
+        message: "Vendor not found",
+      });
+    }
+
+    const reviewsData = await reviews.find({ serviceId: service._id }).lean();
+    console.log("Reviews Data:", reviewsData);
+
+    res.status(200).json({
+      success: true,
+      data: reviewsData,
+    });
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+});
+
+router.get("/orders", checkVendor, async (req, res) => {
+  try {
+    const service = await Service.findOne({ userId: req.user.id })
+      .select("_id")
+      .lean();
+
+    if (!service) {
+      return res.status(404).json({
+        success: false,
+        message: "Vendor not found",
+      });
+    }
+
+    const ordersData = await subOrders.find({ serviceId: service._id }).lean();
+    console.log("Reviews Data:", ordersData);
+
+    res.status(200).json({
+      success: true,
+      data: ordersData,
+    });
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
     res.status(500).json({
       success: false,
       message: "Server error",

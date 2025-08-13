@@ -124,6 +124,7 @@ export const useDomesticStaffingStore = create((set, get) => ({
                 return;
             }
             if (response.status === 200 || response.status === 304) {
+                
                 const data = await response.json();
                 console.log(data);
                 set({

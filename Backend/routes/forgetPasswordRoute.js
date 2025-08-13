@@ -2,108 +2,118 @@ const jwt = require("jsonwebtoken");
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const bcrypt = require("bcrypt");
 const {
-    passwordResetEmailSchema,
-    newPasswordSchema,
+  passwordResetEmailSchema,
+  newPasswordSchema,
 } = require("../Validations/resetPasswordSchema");
 const { sendPasswordResetEmail } = require("../Utils/mailer");
+const checkAuthetication = require("../middlewares/checkAuthetication");
 
 const RESET_SECRET = process.env.Jwt_Secret || "super_secret_reset_key";
 const RESET_TOKEN_EXPIRY = "5m";
-const COOKIE_EXPIRY = 5 * 60 * 1000; // Same as JWT expiration (in milliseconds)
+const COOKIE_EXPIRY = 5 * 60 * 1000;
 
 router.post("/send/reset/link", async (req, res) => {
-    const { email } = req.body;
+  const { email } = req.body;
 
-    // Validate input
-    if (!email) {
-        return res.status(400).json({ message: "Email is required" });
+  // Validate input
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  const { error } = passwordResetEmailSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
+  try {
+    const lowerCasedEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: lowerCasedEmail });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const { error } = passwordResetEmailSchema.validate(req.body);
-    if (error) {
-        return res.status(400).json({ message: error.details[0].message });
-    }
+    // Generate reset token
+    const resetToken = jwt.sign(
+      { id: user._id, email: user.email },
+      RESET_SECRET,
+      { expiresIn: RESET_TOKEN_EXPIRY }
+    );
 
-    try {
-        const lowerCasedEmail = email.toLowerCase().trim();
-        const user = await User.findOne({ email: lowerCasedEmail });
+    // Create reset URL (adjust frontend URL as needed)
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
+    // Send password reset email with reset link
+    await sendPasswordResetEmail(user, resetLink, RESET_TOKEN_EXPIRY);
 
-        // Generate reset token
-        const resetToken = jwt.sign(
-            { id: user._id, email: user.email },
-            RESET_SECRET,
-            { expiresIn: RESET_TOKEN_EXPIRY }
-        );
+    // Store JWT in a secure cookie with expiration
+    res.cookie("resetToken", resetToken, {
+      httpOnly: true,
+      secure: true, // Use secure cookies only in production
+      sameSite: "Strict",
+      maxAge: COOKIE_EXPIRY, // The cookie expires after the same duration as the token
+    });
 
-        // Create reset URL (adjust frontend URL as needed)
-        const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+    res.status(200).json({ message: "Reset link sent to your email." });
+  } catch (error) {
+    console.error("Forgot Password Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
-        // Send password reset email with reset link
-        await sendPasswordResetEmail(user, resetLink, RESET_TOKEN_EXPIRY);
-
-        // Store JWT in a secure cookie with expiration
-        res.cookie("resetToken", resetToken, {
-            httpOnly: true,
-            secure: true, // Use secure cookies only in production
-            sameSite: "Strict",
-            maxAge: COOKIE_EXPIRY, // The cookie expires after the same duration as the token
-        });
-
-        res.status(200).json({ message: "Reset link sent to your email." });
-    } catch (error) {
-        console.error("Forgot Password Error:", error);
-        res.status(500).json({ message: "Server error" });
-    }
+router.put("/change/password", checkAuthetication, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    const isMatch = await bcrypt.compare(req.body.oldPassword, user.password);
+    if (!isMatch) return res.status(400).json({ message: "Incorrect " });
+  } catch (error) {}
 });
 
 router.post("/reset", async (req, res) => {
-    const { newPassword, confirmPassword } = req.body;
+  const { newPassword, confirmPassword } = req.body;
 
-    // Validate inputs
-    const { error } = newPasswordSchema.validate({
-        newPassword,
-        confirmPassword,
-    });
-    if (error) {
-        return res.status(400).json({ message: error.details[0].message });
+  const { error } = newPasswordSchema.validate({
+    newPassword,
+    confirmPassword,
+  });
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
+  try {
+    // Get JWT from cookie
+    const token = req.cookies.resetToken;
+    console.log(token);
+    if (!token) {
+      return res.status(400).json({ message: "Reset Link expired." });
     }
 
-    try {
-        // Get JWT from cookie
-        const token = req.cookies.resetToken;
-        console.log(token);
-        if (!token) {
-            return res.status(400).json({ message: "Reset Link expired." });
-        }
+    // Verify the token
+    const decoded = jwt.verify(token, RESET_SECRET); // This will check for expiration as well
 
-        // Verify the token
-        const decoded = jwt.verify(token, RESET_SECRET); // This will check for expiration as well
-
-        // Find user by ID
-        const user = await User.findById(decoded.id);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        // Update user password
-        user.password = newPassword;
-        await user.save();
-
-        // Clear the reset token cookie
-        res.clearCookie("resetToken");
-
-        res.status(200).json({ message: "Password reset successful." });
-    } catch (error) {
-        console.error("Reset Password Error:", error);
-        return res
-            .status(400)
-            .json({ message: "Link hass expired. Please generate a new one." });
+    // Find user by ID
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+    // Update user password
+    user.password = newPassword;
+    await user.save();
+
+    // Clear the reset token cookie
+    res.clearCookie("resetToken");
+
+    res.status(200).json({ message: "Password reset successful." });
+  } catch (error) {
+    console.error("Reset Password Error:", error);
+    return res
+      .status(400)
+      .json({ message: "Link hass expired. Please generate a new one." });
+  }
 });
 
 module.exports = router;

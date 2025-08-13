@@ -34,7 +34,7 @@ const FloatingCart = () => {
       >
         <ShoppingCart className="w-6 h-6" />
         {cartQuantity > 0 && (
-          <span className="absolute -top-2 -right-2 bg-white text-[#FD1A03] text-sm w-6 h-6 rounded-full flex items-center justify-center font-bold shadow-lg animate-pulse">
+          <span className="absolute -top-2 -right-2 bg-white text-[#FD1A03] text-sm w-6 h-6 rounded-full flex items-center justify-center font-bold shadow-lg ">
             {cartQuantity > 99 ? "99+" : cartQuantity}
           </span>
         )}

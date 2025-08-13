@@ -250,7 +250,6 @@ router.delete("/service/:id/delete", auth, checkVendor, async (req, res) => {
 });
 router.post("/services/initialize", auth, checkVendor, async (req, res) => {
   try {
-    console.log(req.body);
     const {
       category,
       price,
@@ -304,7 +303,6 @@ router.post("/services/initialize", auth, checkVendor, async (req, res) => {
       publicId: imageUpload.public_id,
       url: imageUpload.secure_url,
     };
-    const formateedCategory = category.toLowerCase().trim();
     const newService = new service({
       vendorId,
       serviceName: name,
@@ -327,13 +325,6 @@ router.post("/services/initialize", auth, checkVendor, async (req, res) => {
   } catch (error) {
     console.error("Error creating service:", error);
 
-    if (error.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        error: "A service with this name already exists for this vendor",
-      });
-    }
-
     res.status(500).json({
       success: false,
       message: "Failed to create service",
@@ -343,44 +334,13 @@ router.post("/services/initialize", auth, checkVendor, async (req, res) => {
   }
 });
 
-router.get(
-  "/:id",
-
-  async (req, res) => {
-    try {
-      console.log("here we re");
-      const page = await Page.findOne({ userId: req.params.id });
-
-      if (!page) {
-        return res.status(404).json({
-          success: false,
-          error: "Page not found",
-        });
-      }
-
-      res.json({
-        success: true,
-        data: page,
-      });
-    } catch (error) {
-      console.error("Error retrieving page:", error);
-      res.status(500).json({
-        success: false,
-        error: "Failed to retrieve page",
-        details:
-          process.env.NODE_ENV === "production" ? undefined : error.message,
-      });
-    }
-  }
-);
-
 router.get("/services/active/all", async (req, res) => {
   try {
     const services = await activeServices.find(
-      { isActive: true }, // Filter: only active services
-      { _id: 0, title: 1 } // Projection: exclude _id and include only id and title
+      { isActive: true },
+      { _id: 0, title: 1 }
     );
-    
+
     res.json({
       success: true,
       data: services,
@@ -393,6 +353,23 @@ router.get("/services/active/all", async (req, res) => {
       details:
         process.env.NODE_ENV === "production" ? undefined : error.message,
     });
+  }
+});
+
+router.get("/service/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const serviceToFind = await service.findById(id);
+    console.log(serviceToFind);
+    if (!serviceToFind)
+      return res.status(404).json({ message: "Service not found." });
+    return res.status(200).json({
+      success: true,
+      data: serviceToFind,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error." });
   }
 });
 

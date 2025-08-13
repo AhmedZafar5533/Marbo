@@ -140,8 +140,6 @@ function AdminDashboard() {
                     />
                   </Suspense>
                 ) : (
-                  // This is where your other routed components will render
-                  // You can use an Outlet here if using nested routes
                   <div>
                     <Outlet />
                   </div>

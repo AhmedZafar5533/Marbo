@@ -8,11 +8,12 @@ import {
   Heart,
   Star,
   Loader2,
+  Lock,
 } from "lucide-react";
 import { useCartStore } from "../../Store/cartStore";
 import { toast } from "sonner";
-import { useOrderStore } from "../../Store/orderStore";
 import { useNavigate } from "react-router-dom";
+import { useOrderStore } from "../../Store/orderStore";
 
 const CartModal = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -22,7 +23,7 @@ const CartModal = () => {
   const [isProcessingCheckout, setIsProcessingCheckout] = useState(false);
 
   const navigate = useNavigate();
-
+  const { addOrder } = useOrderStore();
   const {
     isModalOpen,
     setIsModalOpen,
@@ -35,7 +36,7 @@ const CartModal = () => {
     cartQuantity,
   } = useCartStore();
 
-  const { addOrder } = useOrderStore();
+  console.log("Cart items:", cart);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -62,9 +63,21 @@ const CartModal = () => {
     };
   }, [isModalOpen]);
 
+  const canModifyQuantity = (item) => {
+    const itemType = item.category || item.type || "";
+    const allowedTypes = ["Product", "product"];
+    return allowedTypes.includes(itemType);
+  };
+
   const handleUpdateQuantity = async (id, change) => {
     const item = cart.find((item) => item._id === id || item.productId === id);
     if (!item) return;
+
+    // Check if quantity modification is allowed
+    if (!canModifyQuantity(item)) {
+      toast.error("Quantity cannot be modified for this item type");
+      return;
+    }
 
     const newQuantity = Math.max(0, item.quantity + change);
 
@@ -135,39 +148,14 @@ const CartModal = () => {
 
     setIsProcessingCheckout(true);
     try {
-      // Calculate totals
-      const subtotal = getTotalPrice();
-      const taxRate = 0.085; // 8.5%
-      const tax = subtotal * taxRate;
-      const totalPrice = subtotal + tax;
-      const shipping = 0; // Free shipping
+      const success = await addOrder();
+      console.log("Checkout success:", success);
 
-      // Prepare checkout data
-      // const checkoutData = {
-      //   items: cart.map((item) => ({
-      //     productId: getItemId(item),
-      //     name: item.name || "Unnamed Product",
-      //     serviceId: item.serviceId || null,
-      //     quantity: item.quantity || 0,
-      //     unitPrice: item.price || 0,
-      //     totalPrice: (item.price || 0) * (item.quantity || 0),
-      //     imageUrl: item.imageUrl || null,
-      //   })),
-      //   summary: {
-      //     itemCount: getTotalItems(),
-      //     subtotal: parseFloat(subtotal.toFixed(2)),
-      //     tax: parseFloat(tax.toFixed(2)),
-      //     taxRate: taxRate,
-      //     shipping: shipping,
-      //     totalPrice: parseFloat(totalPrice.toFixed(2)),
-      //   },
-      //   timestamp: new Date().toISOString(),
-      //   currency: "USD",
-      // };
+      if (!success) return;
+      setIsModalOpen();
       navigate("/checkout");
     } catch (error) {
       console.error("Checkout error:", error);
-      alert("Checkout failed. Please try again.");
     } finally {
       setTimeout(() => {
         setIsProcessingCheckout(false);
@@ -313,6 +301,7 @@ const CartModal = () => {
               ) : (
                 cart.map((item, index) => {
                   const itemId = getItemId(item);
+                  const canModify = canModifyQuantity(item);
                   return (
                     <div
                       key={itemId}
@@ -354,6 +343,18 @@ const CartModal = () => {
                             <h3 className="font-semibold text-gray-900 text-sm leading-tight mb-1">
                               {item.name || "Unnamed Product"}
                             </h3>
+                            {/* Display item type and restriction notice */}
+                            <div className="flex items-center space-x-2">
+                              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                                {item.category || "Unknown"}
+                              </span>
+                              {!canModify && (
+                                <div className="flex items-center space-x-1 text-xs text-amber-600">
+                                  <Lock className="w-3 h-3" />
+                                  <span>Quantity locked</span>
+                                </div>
+                              )}
+                            </div>
                           </div>
 
                           <div className="flex items-center justify-between">
@@ -380,13 +381,27 @@ const CartModal = () => {
                               <button
                                 onClick={() => handleUpdateQuantity(itemId, -1)}
                                 disabled={
+                                  !canModify ||
                                   loadingItems.has(itemId) ||
                                   (item.quantity || 0) <= 1 ||
                                   isProcessingCheckout
                                 }
-                                className="w-8 h-8 rounded-lg bg-white hover:bg-red-500 text-gray-600 hover:text-white flex items-center justify-center transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+                                  canModify
+                                    ? "bg-white hover:bg-red-500 text-gray-600 hover:text-white"
+                                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                }`}
+                                title={
+                                  !canModify
+                                    ? "Quantity modification not allowed for this item type"
+                                    : ""
+                                }
                               >
-                                <Minus className="w-3 h-3" />
+                                {!canModify ? (
+                                  <Lock className="w-3 h-3" />
+                                ) : (
+                                  <Minus className="w-3 h-3" />
+                                )}
                               </button>
                               <span className="font-bold text-gray-900 min-w-[2rem] text-center text-sm">
                                 {item.quantity || 0}
@@ -394,12 +409,26 @@ const CartModal = () => {
                               <button
                                 onClick={() => handleUpdateQuantity(itemId, 1)}
                                 disabled={
+                                  !canModify ||
                                   loadingItems.has(itemId) ||
                                   isProcessingCheckout
                                 }
-                                className="w-8 h-8 rounded-lg bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+                                  canModify
+                                    ? "bg-red-500 hover:bg-red-600 text-white"
+                                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                }`}
+                                title={
+                                  !canModify
+                                    ? "Quantity modification not allowed for this item type"
+                                    : ""
+                                }
                               >
-                                <Plus className="w-3 h-3" />
+                                {!canModify ? (
+                                  <Lock className="w-3 h-3" />
+                                ) : (
+                                  <Plus className="w-3 h-3" />
+                                )}
                               </button>
                             </div>
                             <div className="text-right">
@@ -441,7 +470,7 @@ const CartModal = () => {
                     <div className="flex items-center space-x-3">
                       <span className="font-bold text-lg text-red-600">
                         $
-                        {(getTotalPrice() + getTotalPrice() * 0.085).toFixed(2)}
+                        {(getTotalPrice()  ).toFixed(2)}
                       </span>
                       <div
                         className={`transform transition-transform duration-300 ${
@@ -502,12 +531,12 @@ const CartModal = () => {
                           ${getTotalPrice().toFixed(2)}
                         </span>
                       </div>
-                      <div className="flex justify-between text-sm">
+                      {/* <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Tax (8.5%)</span>
                         <span className="font-medium">
                           ${(getTotalPrice() * 0.085).toFixed(2)}
                         </span>
-                      </div>
+                      </div> */}
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Shipping</span>
                         <span className="font-medium text-green-600">Free</span>

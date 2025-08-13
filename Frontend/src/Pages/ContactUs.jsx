@@ -60,10 +60,10 @@ const ContactForm = () => {
 
     const reasonOptions = [
         { value: '', label: 'Select a reason' },
-        { value: 'support', label: 'Technical Support' },
-        { value: 'billing', label: 'Billing Inquiry' },
-        { value: 'partnership', label: 'Partnership Opportunity' },
-        { value: 'other', label: 'Other' }
+        { value: 'Technical Support', label: 'Technical Support' },
+        { value: 'Billing Inquiry', label: 'Billing Inquiry' },
+        { value: 'Partnership Opportunity', label: 'Partnership Opportunity' },
+        { value: 'Other', label: 'Other' }
     ];
 
     if (isSubmitted) {

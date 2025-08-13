@@ -13,6 +13,7 @@ export const useServiceStore = create((set, get) => ({
   pageIsInitialized: false,
   frontEndServices: [],
   successfullyCreated: false,
+  singleService: null,
 
   initializeService: async (newData) => {
     try {
@@ -29,13 +30,14 @@ export const useServiceStore = create((set, get) => ({
       );
       const data = await result.json();
 
-      if (result.ok) {
+      if (result.status === 201) {
         set((state) => ({
           servicesData: [...state.servicesData, data.data],
         }));
-        set({ successfullyCreated: true });
 
         toast.success(data.message || "Service created successfully");
+        set({ successfullyCreated: true });
+        return true;
       } else {
         toast.error(data.message || "Internal Server Error");
         set({ successfullyCreated: false });
@@ -186,15 +188,36 @@ export const useServiceStore = create((set, get) => ({
       );
       const data = await result.json();
 
-      if (result.ok) {
+      if (result.status === 200) {
         const dataToSet = data.data.map((service) => service.title);
-        console.log(dataToSet);
+      
         set({ frontEndServices: dataToSet });
       }
       if (!result.ok) toast.error(data.message);
     } catch (error) {
       toast.error("Internal Server Error");
       console.error("initializePage error:", error);
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  getSingleService: async (id) => {
+    try {
+      set({ loading: true });
+      const response = await fetch(baseUrl + `/service-page/service/${id}`);
+      if (!response.ok) {
+        const data = await response.json();
+        toast.error("Error finding service" || data.message);
+        return;
+      }
+      if (response.status === 200) {
+        const data = await response.json();
+        set({ singleService: data.data });
+        return;
+      }
+    } catch (error) {
+      toast.error("Internal Server Error");
     } finally {
       set({ loading: false });
     }

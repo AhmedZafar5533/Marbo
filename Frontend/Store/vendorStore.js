@@ -8,6 +8,8 @@ export const useVendorStore = create((set) => ({
   goToNextStep: false,
   loading: false,
   isInitialized: false,
+  reviews: [],
+  orders: [],
 
   unsetGotoNextStep: () => set({ goToNextStep: false }),
 
@@ -211,6 +213,47 @@ export const useVendorStore = create((set) => ({
       }
     } catch (error) {
       toast.error("Error saving address details");
+    } finally {
+      set({ loading: false });
+    }
+  },
+  getReviews: async () => {
+    try {
+      set({ loading: true });
+      const response = await fetch(`${baseUrl}/vendor/reviews`, {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (response.status === 200) {
+        console.log(data);
+        set({ reviews: data.data });
+      } else if (!response.ok) {
+        toast.error(data.message || "Failed to fetch reviews.");
+      }
+    } catch (error) {
+      toast.error("Error fetching reviews");
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  getOrders: async () => {
+    try {
+      set({ loading: true });
+      const response = await fetch(`${baseUrl}/vendor/orders`, {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (response.status === 200) {
+        console.log(data);
+        set({ orders: data.data });
+      } else if (!response.ok) {
+        toast.error(data.message || "Failed to fetch orders.");
+      }
+    } catch (error) {
+      toast.error("Error fetching orders");
     } finally {
       set({ loading: false });
     }

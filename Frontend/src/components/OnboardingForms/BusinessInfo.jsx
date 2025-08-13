@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useVendorStore } from "../../../Store/vendorStore";
 import ErrorBoundary from "../ErrorBoundary";
 import { toast } from "sonner";
+import { useServiceStore } from "../../../Store/servicesStore";
 
 const BusinessInformationWithErrorBoundary = (props) => (
   <ErrorBoundary>
@@ -17,6 +18,16 @@ const BusinessInformation = ({ nextStep, currentStep, totalSteps }) => {
     vendor,
     unsetGotoNextStep,
   } = useVendorStore();
+
+  const {
+    frontEndServices,
+    fetchFrontendServices,
+    loading: servicesLoading,
+  } = useServiceStore();
+
+  useEffect(() => {
+    fetchFrontendServices();
+  }, [fetchFrontendServices]);
 
   const [formData, setFormData] = useState({
     businessName: "",
@@ -126,6 +137,14 @@ const BusinessInformation = ({ nextStep, currentStep, totalSteps }) => {
     }
   }, [vendor]);
 
+  if (servicesLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-gray-500">Loading services...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <form onSubmit={handleSubmit} className="p-10 space-y-8">
@@ -196,49 +215,11 @@ const BusinessInformation = ({ nextStep, currentStep, totalSteps }) => {
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
           >
             <option value="">Select category</option>
-            <option value="Agricultural Services">Agricultural Services</option>
-            <option value="Arts & Crafts">Arts & Crafts</option>
-            <option value="Banking Services">Banking Services</option>
-            <option value="Construction">Construction</option>
-            <option value="Construction Services">Construction Services</option>
-            <option value="Domestic Staffing">Domestic Staffing</option>
-            <option value="Education">Education</option>
-            <option value="Event Management">Event Management</option>
-            <option value="Fashion Services">Fashion Services</option>
-            <option value="Financial Services">Financial Services</option>
-            <option value="Groceries">Groceries</option>
-            <option value="Hardware Suppliers">Hardware Suppliers</option>
-            <option value="Health & Wellness">Health & Wellness</option>
-            <option value="Health Insurance">Health Insurance</option>
-            <option value="Holiday Lets">Holiday Lets</option>
-            <option value="Home Services">Home Services</option>
-            <option value="Hotel Booking">Hotel Booking</option>
-            <option value="Interior Design">Interior Design</option>
-            <option value="Land Acquisition">Land Acquisition</option>
-            <option value="Lifestyle">Lifestyle</option>
-            <option value="Medical Care">Medical Care</option>
-            <option value="Money Transfer Services">
-              Money Transfer Services
-            </option>
-            <option value="Mortgage Services">Mortgage Services</option>
-            <option value="Payments & Utilities">Payments & Utilities</option>
-            <option value="Professional Services">Professional Services</option>
-            <option value="Properties for Sale">Properties for Sale</option>
-            <option value="Property Management">Property Management</option>
-            <option value="Real Estate & Property">
-              Real Estate & Property
-            </option>
-            <option value="Rent Collection">Rent Collection</option>
-            <option value="Rental Properties">Rental Properties</option>
-            <option value="School Fee Payments">School Fee Payments</option>
-            <option value="Tech Supplies">Tech Supplies</option>
-            <option value="Technology & Communication">
-              Technology & Communication
-            </option>
-            <option value="Telecom Services">Telecom Services</option>
-            <option value="Traditional Clothing">Traditional Clothing</option>
-            <option value="Utility Payments">Utility Payments</option>
-            <option value="Water Bill Payments">Water Bill Payments</option>
+            {frontEndServices.map((service) => (
+              <option key={service} value={service}>
+                {service}
+              </option>
+            ))}
           </select>
 
           {errors.businessIndustry && (

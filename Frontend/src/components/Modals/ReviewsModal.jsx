@@ -11,6 +11,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { useReviewStore } from "../../../Store/reviewsStore";
+import { useParams } from "react-router-dom";
 
 const ReviewsModal = ({ isOpen, onClose }) => {
   const [reviews, setReviews] = useState([
@@ -46,6 +47,8 @@ const ReviewsModal = ({ isOpen, onClose }) => {
     },
   ]);
 
+  const { id, serviceId } = useParams();
+
   document.body.style.overflow = "hidden";
 
   const [newReview, setNewReview] = useState({
@@ -57,7 +60,7 @@ const ReviewsModal = ({ isOpen, onClose }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [hoveredStar, setHoveredStar] = useState(0);
 
-  const { isModelOpen, setisModelOpen } = useReviewStore();
+  const { isModelOpen, setisModelOpen, postReview } = useReviewStore();
 
   // Handle escape key to close modal
   useEffect(() => {
@@ -97,14 +100,15 @@ const ReviewsModal = ({ isOpen, onClose }) => {
   const handleAddReview = () => {
     if (newReview.comment.trim() && newReview.rating > 0) {
       const review = {
-        id: Date.now(),
-        name: "You",
         rating: newReview.rating,
+        serviceId: serviceId,
         comment: newReview.comment,
         date: new Date().toISOString().split("T")[0],
         isOwn: true,
         avatar: "YO",
       };
+      postReview(id, review);
+      console.log(review);
       setReviews([...reviews, review]);
       setNewReview({ rating: 0, comment: "" });
       setShowAddForm(false);
@@ -201,8 +205,6 @@ const ReviewsModal = ({ isOpen, onClose }) => {
   };
 
   if (!isModelOpen) return null;
-
-
 
   return (
     <div

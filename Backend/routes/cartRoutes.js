@@ -1,6 +1,7 @@
 const express = require("express");
 const checkAuth = require("../middlewares/checkAuthetication");
 const cartSchema = require("../models/cartSchema");
+const { cartValidationSchema } = require("../Validations/cartValidation");
 
 const router = express.Router();
 
@@ -30,6 +31,7 @@ router.get("/get", checkAuth, async (req, res) => {
 router.post("/add", checkAuth, async (req, res) => {
   try {
     const { product } = req.body;
+    console.log("Adding to cart:", product);
 
     if (!product) {
       return res.status(400).json({
@@ -37,11 +39,26 @@ router.post("/add", checkAuth, async (req, res) => {
         message: "Product data is required",
       });
     }
+    const { error } = cartValidationSchema.validate({
+      name: product.name,
+      price: product.price,
+      quantity: product.quantity,
+      imageUrl: product.imageUrl,
+      typeOf: product.typeOf,
+  
+    });
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.details[0].message,
+      });
+    }
 
     let existingCartItem;
 
-    // Find existing cart item by productId or serviceId
     if (product.productId) {
+      console.log(product.productId);
       existingCartItem = await cartSchema.findOne({
         productId: product.productId,
         userId: req.user._id,
@@ -58,8 +75,15 @@ router.post("/add", checkAuth, async (req, res) => {
       });
     }
 
+    if (existingCartItem && existingCartItem.typeOf !== "product") {
+      return res.status(400).json({
+        success: false,
+        message: "This cart item can only be added once.",
+      });
+    }
+
     if (existingCartItem) {
-      // Update existing item quantity
+      console.log(existingCartItem.quantity);
       existingCartItem.quantity += product.quantity || 1;
       await existingCartItem.save();
 
@@ -69,16 +93,15 @@ router.post("/add", checkAuth, async (req, res) => {
         message: "Cart updated successfully",
       });
     } else {
-      // Create new cart item
+      console.log("Creating new cart item");
       const cartItemData = {
         userId: req.user._id,
         name: product.name,
+        category: product.typeOf,
         price: product.price,
         quantity: product.quantity || 1,
         imageUrl: product.imageUrl,
       };
-
-      // Add productId or serviceId based on what's available
       if (product.productId) {
         cartItemData.productId = product.productId;
       }

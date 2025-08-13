@@ -352,7 +352,6 @@ const VendorDashboardServicesSection = () => {
             }
         };
         const handleCloseModal = () => {
-            resetForm(); // Reset the form when closing the modal
             setShowUploadModal(false);
         };
         const fileInputRef = useRef(null);

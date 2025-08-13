@@ -5,6 +5,9 @@ const Vendor = require("../models/vendors");
 const checkAdmin = require("../middlewares/checkAdmin");
 const User = require("../models/User");
 const activeServices = require("../models/activeServices");
+const payment = require("../models/payment");
+const MainOrder = require("../models/MainOrders");
+const reviews = require("../models/reviews");
 
 router.get("/pending-vendors", auth, checkAdmin, async (req, res) => {
   try {
@@ -174,6 +177,54 @@ router.put(
     }
   }
 );
+
+router.get("/payments", checkAdmin, async (req, res) => {
+  try {
+    const payments = await payment.find({}).sort({ createdAt: -1 }).lean();
+    res.status(200).json({
+      success: true,
+      data: payments,
+    });
+  } catch (error) {
+    console.error("Error fetching payments:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to retrieve payments",
+    });
+  }
+});
+
+router.get("/orders", checkAdmin, async (req, res) => {
+  try {
+    const orders = await MainOrder.find({}).sort({ createdAt: -1 }).lean();
+    res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to retrieve orders",
+    });
+  }
+});
+
+router.get("/reviews", checkAdmin, async (req, res) => {
+  try {
+    const reviewData = await reviews.find({}).sort({ createdAt: -1 }).lean();
+    res.status(200).json({
+      success: true,
+      data: reviewData,
+    });
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to retrieve reviews",
+    });
+  }
+});
 
 // router.put("/admin/update-status/:id", auth, async (req, res) => {
 //     try {

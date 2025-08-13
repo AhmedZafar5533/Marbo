@@ -239,6 +239,8 @@ const ProductUploadForm = () => {
         ...formData,
         price: parseFloat(formData.price),
         quantity: parseInt(formData.quantity),
+        typeOf: "Groceries",
+        category: formData.category,
         images: formData.images.map((img) => ({
           base64Image: img.base64,
         })),

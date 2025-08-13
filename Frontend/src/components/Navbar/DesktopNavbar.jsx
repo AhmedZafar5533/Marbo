@@ -128,7 +128,7 @@ const DesktopNavbar = ({ menuItems, performSearch }) => {
                         <div className="hidden md:flex ml-4 lg:ml-8 xl:ml-12 space-x-2 sm:space-x-4 md:space-x-6 lg:space-x-8 xl:space-x-10">
                             {menuItems.map((item, index) => (
                                 <div key={index} className="relative" onMouseEnter={() => handleMouseEnter(index)} onMouseLeave={handleMouseLeave}>
-                                    {item.submenu.length > 0 ? (
+                                    {item.submenu && item.submenu.length > 0 ? (
                                         <button
                                             className={`inline-flex items-center px-1 sm:px-2 md:px-3 py-2 transition-all duration-300 text-sm lg:text-base ${isScrolled ? 'text-sm md:text-base' : 'text-sm md:text-base lg:text-lg'} font-medium text-gray-800 hover:text-red-600`}
                                             aria-haspopup="true"

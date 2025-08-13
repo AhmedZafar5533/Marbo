@@ -1,13 +1,15 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/footer";
 import { ChevronUp } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useReviewStore } from "../../Store/reviewsStore";
-import ReviewsModal from "../components/Modals/ReviewsModal";
-import FloatingCart from "../components/cartButton";
 import { useCartStore } from "../../Store/cartStore";
-import CartModal from "../components/cartModal";
+
+
+const ReviewsModal = lazy(() => import("../components/Modals/ReviewsModal"));
+const FloatingCart = lazy(() => import("../components/cartButton"));
+const CartModal = lazy(() => import("../components/cartModal"));
 
 export default function MainLayout() {
   const [showButton, setShowButton] = useState(false);
@@ -36,7 +38,15 @@ export default function MainLayout() {
         <Outlet />
       </main>
       <Footer />
-      {isModelOpen && <ReviewsModal />}
+
+      {/* Modals + Lazy Loading */}
+      <Suspense fallback={null}>
+        {isModelOpen && <ReviewsModal />}
+        {isCartModelOpen && <CartModal />}
+        <FloatingCart />
+      </Suspense>
+
+      {/* Scroll to Top Button */}
       {showButton && (
         <button
           onClick={scrollToTop}
@@ -45,9 +55,6 @@ export default function MainLayout() {
           <ChevronUp size={24} />
         </button>
       )}
-      {isCartModelOpen && <CartModal />}
-
-      <FloatingCart></FloatingCart>
     </>
   );
 }

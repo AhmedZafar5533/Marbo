@@ -21,7 +21,6 @@ const VendorProtectedRoute = memo(({ children }) => {
         }
     }, [checkVendor, vendorChecked]);
 
-    console.log("VendorProtectedRoute", isVendor, loading, vendorChecked);
 
     if (!vendorChecked || loading) return <LoadingSpinner />;
 

@@ -10,6 +10,9 @@ export const useAdminStore = create((set, get) => ({
   success: false,
   activeServices: [],
   approvedVendors: [],
+  payments: [],
+  reviews: [],
+  orders: [],
 
   getApprovedVendors: async () => {
     try {
@@ -159,6 +162,68 @@ export const useAdminStore = create((set, get) => ({
       console.log(data);
       if (data.success === true) {
         set({ activeServices: data.services });
+      }
+      if (!response.ok) toast.error(data.message);
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  getPayments: async () => {
+    try {
+      set({ loading: true });
+      const response = await fetch(baseUrl + "/admin/payments", {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.status === 200) {
+        console.log("Payments fetched successfully:", data);
+        set({ payments: data.data });
+      }
+      if (!response.ok) toast.error(data.message);
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  getOrders: async () => {
+    try {
+      set({ loading: true });
+      const response = await fetch(baseUrl + "/admin/orders", {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.status === 200) {
+        console.log("Orders fetched successfully:", data);
+        set({ orders: data.data });
+      }
+      if (!response.ok) toast.error(data.message);
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      set({ loading: false });
+    }
+  },
+  getReviews: async () => {
+    try {
+      set({ loading: true });
+      const response = await fetch(baseUrl + "/admin/reviews", {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await response.json();
+      console.log(data);
+      if (response.status === 200) {
+        console.log("Reviews fetched successfully:", data);
+        set({ reviews: data.data });
       }
       if (!response.ok) toast.error(data.message);
     } catch (error) {
