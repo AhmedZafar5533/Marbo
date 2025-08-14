@@ -42,7 +42,7 @@ const CheckoutForm = () => {
       clearCart();
       setSucceeded(true);
       setProcessing(false);
-      Navigate(`${window.location.origin}/success`);
+      Navigate(`/success`);
     }
   };
 
