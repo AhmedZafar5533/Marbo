@@ -9,10 +9,11 @@ import {
   Trash2,
 } from "lucide-react";
 import { useCartStore } from "../../Store/cartStore";
+import { useParams } from "react-router-dom";
 
 // Bill Details Component
 export const BillDetails = ({ existingBill, setExistingBill, deleteBill }) => {
-  console.log(existingBill);
+  const { id } = useParams();
   const { addToCart } = useCartStore();
   const getDaysUntilDue = (dueDate) => {
     const today = new Date();
@@ -32,7 +33,7 @@ export const BillDetails = ({ existingBill, setExistingBill, deleteBill }) => {
     const cartItem = {
       productId: existingBill._id,
       typeOf: "bill",
-      serviceId: existingBill.serviceId._id,
+      serviceId: id,
       name: existingBill.name,
       price: parseFloat(existingBill.amountDue),
       imageUrl: existingBill.image[0].url,

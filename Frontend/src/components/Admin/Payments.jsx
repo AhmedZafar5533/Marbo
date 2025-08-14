@@ -338,8 +338,8 @@ const Payments = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <p className="text-sm text-gray-900 dark:text-white">
-                          {payment.serviceId?.name ||
-                            payment.productId?.name ||
+                          {payment.serviceId||
+                            payment.productId ||
                             "Service/Product"}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">

@@ -166,7 +166,8 @@ const Orders = () => {
   };
 
   const getPaymentStatusText = (isPaid) => {
-    return isPaid ? "Paid" : "Pending";
+    console.log(isPaid)
+    return isPaid  ? "Paid" : "Pending";
   };
 
   const getPaymentStatusColor = (isPaid) => {

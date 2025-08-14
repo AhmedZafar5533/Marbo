@@ -31,7 +31,6 @@ router.get("/get", checkAuth, async (req, res) => {
 router.post("/add", checkAuth, async (req, res) => {
   try {
     const { product } = req.body;
-    console.log("Adding to cart:", product);
 
     if (!product) {
       return res.status(400).json({
@@ -42,10 +41,9 @@ router.post("/add", checkAuth, async (req, res) => {
     const { error } = cartValidationSchema.validate({
       name: product.name,
       price: product.price,
-      quantity: product.quantity,
+      quantity: product.quantity || 1,
       imageUrl: product.imageUrl,
       typeOf: product.typeOf,
-  
     });
 
     if (error) {
@@ -74,8 +72,9 @@ router.post("/add", checkAuth, async (req, res) => {
         message: "Product must have either productId or serviceId",
       });
     }
+    console.log("Existing cart item:", existingCartItem);
 
-    if (existingCartItem && existingCartItem.typeOf !== "product") {
+    if (existingCartItem && existingCartItem.category !== "product") {
       return res.status(400).json({
         success: false,
         message: "This cart item can only be added once.",
@@ -174,7 +173,6 @@ router.post("/remove", checkAuth, async (req, res) => {
   }
 });
 
-// Update item quantity
 router.post("/update", checkAuth, async (req, res) => {
   try {
     const { productId, quantity } = req.body;

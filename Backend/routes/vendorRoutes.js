@@ -434,9 +434,13 @@ router.get("/reviews", checkVendor, async (req, res) => {
 
 router.get("/orders", checkVendor, async (req, res) => {
   try {
-    const service = await Service.findOne({ userId: req.user.id })
+    const service = await Service.findOne({
+      userId: req.user._id,
+      category: "Groceries",
+    })
       .select("_id")
       .lean();
+    console.log("Service ID:", service._id);
 
     if (!service) {
       return res.status(404).json({
@@ -446,6 +450,7 @@ router.get("/orders", checkVendor, async (req, res) => {
     }
 
     const ordersData = await subOrders.find({ serviceId: service._id }).lean();
+
     console.log("Reviews Data:", ordersData);
 
     res.status(200).json({
