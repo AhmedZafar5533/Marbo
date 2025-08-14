@@ -32,6 +32,10 @@ require("./config/local-auth");
 
 const app = express();
 
+
+
+app.set("trust proxy", "1");
+
 mongoose
   .connect(process.env.DB_URL)
   .then(() => console.log("Database Connected"))
