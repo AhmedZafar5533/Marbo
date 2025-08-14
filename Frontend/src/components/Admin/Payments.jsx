@@ -23,7 +23,7 @@ const formatCurrency = (amount, currency = "USD") => {
     currency: currency.toUpperCase(),
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(amount / 100); // Assuming amount is in cents
+  }).format(amount); // Assuming amount is in cents
 };
 
 const Payments = () => {
