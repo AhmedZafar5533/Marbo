@@ -128,7 +128,7 @@ app.post(
         const paymentIntent = event.data.object;
         const itemData = JSON.parse(paymentIntent.metadata.cartItems);
         const paymentMethod = paymentIntent.payment_method;
-        console.log("this is the payment method", paymentMethod, itemData[0]);
+        console.log("this is the payment method", paymentMethod, itemData);
         itemData.map(async (item) => {
           await payment.create({
             userId: item.userId,

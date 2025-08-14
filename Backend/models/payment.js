@@ -37,4 +37,9 @@ const paymentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+paymentSchema.pre("save", function (next) {
+  console.log("Pre-save amount:", this.amount);
+  next();
+});
+
 module.exports = mongoose.model("Payment", paymentSchema);
