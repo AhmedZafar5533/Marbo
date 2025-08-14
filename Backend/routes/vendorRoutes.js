@@ -407,7 +407,7 @@ router.get("/reviews", checkVendor, async (req, res) => {
       .select("_id")
       .lean();
 
-    console.log("Service ID:", service._id);
+    console.log("Service ID:", service);
     if (!service) {
       return res.status(404).json({
         success: false,
@@ -434,28 +434,31 @@ router.get("/reviews", checkVendor, async (req, res) => {
 
 router.get("/orders", checkVendor, async (req, res) => {
   try {
-    const service = await Service.findOne({
+    const service = await Service.find({
       userId: req.user._id,
-      category: "Groceries",
     })
       .select("_id")
       .lean();
-    console.log("Service ID:", service._id);
+    console.log("Service ID:", service);
 
-    if (!service) {
+    if (service.length === 0 || !service) {
       return res.status(404).json({
         success: false,
         message: "Vendor not found",
       });
     }
 
-    const ordersData = await subOrders.find({ serviceId: service._id }).lean();
+    const ordersData = await Promise.all(
+      service.map((s) => subOrders.find({ serviceId: s._id }).lean())
+    );
 
-    console.log("Reviews Data:", ordersData);
+    const flattenedOrders = ordersData.flat();
+
+    console.log("Reviews Data:", flattenedOrders);
 
     res.status(200).json({
       success: true,
-      data: ordersData,
+      data: flattenedOrders,
     });
   } catch (error) {
     console.error("Error fetching reviews:", error);
