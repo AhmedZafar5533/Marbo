@@ -32,7 +32,40 @@ require("./config/local-auth");
 
 const app = express();
 
+app.post(
+  "/api/webhook",
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    const sig = req.headers["stripe-signature"];
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+    } catch (err) {
+      console.error("Webhook signature verification failed:", err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // ✅ Handle Stripe events
+    switch (event.type) {
+      case "payment_intent.succeeded": {
+        const paymentIntent = event.data.object;
+        console.log("Payment succeeded:", paymentIntent.id);
+        break;
+      }
+      case "payment_intent.payment_failed": {
+        const paymentIntent = event.data.object;
+        console.log("Payment failed:", paymentIntent.id);
+        break;
+      }
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
+    }
+
+    res.json({ received: true });
+  }
+);
 
 app.set("trust proxy", "1");
 
@@ -105,86 +138,9 @@ app.get("/", (req, res) => {
 //   checkoutWebhook
 // );
 
-app.post(
-  "/api/webhook",
-
-  express.raw({ type: "application/json" }),
-  async (req, res) => {
-    const sig = req.headers["stripe-signature"];
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-    let event;
-
-    try {
-      event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
-    } catch (err) {
-      console.error(" Webhook signature verification failed:", err.message);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-
-    // Handle events
-    switch (event.type) {
-      case "payment_intent.succeeded": {
-        const paymentIntent = event.data.object;
-        const itemData = JSON.parse(paymentIntent.metadata.cartItems);
-        const paymentMethod = paymentIntent.payment_method;
-        console.log("this is the payment method", paymentMethod, itemData);
-        itemData.map(async (item) => {
-          await payment.create({
-            userId: item.userId,
-            serviceId: item.serviceId,
-            productId: item.productId,
-            amount: item.amount,
-            stipePaymentId: paymentIntent.id,
-            status: paymentIntent.status,
-            currency: paymentIntent.currency,
-          });
-        });
-        await MainOrder.updateOne(
-          {
-            userId: itemData[0].userId,
-          },
-          {
-            isPaid: true,
-          }
-        );
-        await ServiceOrder.updateMany(
-          {
-            userId: itemData[0].userId,
-          },
-          {
-            isPaid: true,
-          }
-        );
-
-        const result = await cartSchema.deleteMany({
-          userId: itemData[0].userId,
-        });
-        console.log("Cart items deleted:", result.deletedCount, result);
-        break;
-      }
-
-      case "payment_intent.payment_failed": {
-        const failedIntent = event.data.object;
-        console.log(
-          " Payment failed:",
-          failedIntent.id,
-          failedIntent.last_payment_error?.message
-        );
-        // TODO: Notify user, log error, etc.
-        break;
-      }
-
-      default:
-        console.log(`Unhandled event type: ${event.type}`);
-    }
-
-    res.json({ received: true });
-  }
-);
 
 app.use((req, res, next) => {
-  if (req.originalUrl === "/api/webbhook") {
+  if (req.originalUrl === "/api/webhook") {
     next();
   } else {
     express.json()(req, res, next);
