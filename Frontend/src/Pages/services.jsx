@@ -548,7 +548,7 @@ const ServicesSection = ({ frontEndServices }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.4 }}
-            className="mb-12 overflow-x-auto pb-4 scrollbar-hide"
+            className="mb-12 overflow-x-auto pb-4 scrollbar-hide no-scrollbar"
           >
             <div className="flex space-x-2 pb-2 min-w-max">
               {filteredServices.map((category, index) =>

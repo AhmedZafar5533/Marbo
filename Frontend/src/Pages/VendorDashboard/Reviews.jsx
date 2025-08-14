@@ -69,13 +69,13 @@ const VendorReviews = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Vendor Reviews</h1>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-auto">
+        <div className="overflow-x-auto no-scrollbar">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr className="border-b border-gray-200">

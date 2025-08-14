@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { useServiceStore } from "../../../Store/servicesStore";
 
-// Lazy load desktop/mobile navbars
 const DesktopNavbar = lazy(() => import("./DesktopNavbar"));
 const MobileNavbar = lazy(() => import("./MobileNavbar"));
 
@@ -145,7 +144,7 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    const checkScreen = () => setIsMobile(window.innerWidth < 1024);
+    const checkScreen = () => setIsMobile(window.innerWidth < 768);
 
     checkScreen();
     window.addEventListener("resize", checkScreen);
@@ -176,50 +175,131 @@ const Navbar = () => {
 
   // Service descriptions mapping
   const serviceDescriptions = {
-    Groceries: "Fresh produce and essentials from trusted local markets",
-    "Utility Payments": "Pay electricity, gas, and utility bills with ease",
-    "Water Bill Payments": "Convenient water service payments from anywhere",
-    "Interior Design": "Professional home styling and decoration services",
-    "Traditional Clothing": "Authentic Gomesi, Kanzu, and cultural attire",
-    "Holiday Lets": "Book short-term stays and vacation rental homes",
-    "Arts & Crafts": "Handmade cultural pieces and artisan crafts",
-    "Fashion Services": "Contemporary and traditional fashion design",
-    "Hotel Booking": "Find and book premium accommodations quickly",
-    "Medical Care": "Access quality healthcare professionals and services",
-    "Domestic Staffing": "Hire verified house helps, cleaners, and staff",
-    "Properties for Sale":
-      "Explore premium real estate listings and investments",
-    "Rental Properties": "Verified rental homes and rent-to-own options",
-    "Land Acquisition": "Secure land listings and property transactions",
-    "Property Management": "Professional property management and maintenance",
-    "School Fee Payments": "Seamless and secure school fee transactions",
-    "Mortgage Services": "Diaspora-focused mortgage and loan solutions",
-    "Banking Services": "Banking products tailored for your needs",
-    "Rent Collection": "Efficient and secure rental income collection",
-    "Tech Supplies": "Laptops, smartphones, and tech accessories",
-    "Telecom Services": "Mobile money and telecommunications solutions",
-    "Construction Services": "Certified builders and construction contractors",
-    "Hardware Suppliers":
-      "Quality building materials and construction supplies",
-    "Agricultural Services":
-      "Farming tools, equipment, and management services",
-    "Event Management": "Full-service event planning and coordination",
-    "Health Insurance": "Comprehensive health coverage from trusted providers",
-    "Money Transfer Services": "Best rates for international money transfers",
+    Groceries: {
+      description: "Fresh produce and essentials from trusted local markets",
+      tags: ["food", "supermarket", "fruits", "vegetables", "essentials"],
+    },
+    "Utility Payments": {
+      description: "Pay electricity, gas, and utility bills with ease",
+      tags: ["electricity", "gas", "water", "bills", "payment"],
+    },
+    "Water Bill Payments": {
+      description: "Convenient water service payments from anywhere",
+      tags: ["water", "bill", "payment", "utilities"],
+    },
+    "Interior Design": {
+      description: "Professional home styling and decoration services",
+      tags: ["home", "interior", "decoration", "design", "furniture"],
+    },
+    "Traditional Clothing": {
+      description: "Authentic Gomesi, Kanzu, and cultural attire",
+      tags: ["fashion", "clothing", "traditional", "attire", "garments"],
+    },
+    "Holiday Lets": {
+      description: "Book short-term stays and vacation rental homes",
+      tags: ["vacation", "rental", "holiday", "accommodation", "travel"],
+    },
+    "Arts & Crafts": {
+      description: "Handmade cultural pieces and artisan crafts",
+      tags: ["crafts", "art", "handmade", "cultural", "decor"],
+    },
+    "Fashion Services": {
+      description: "Contemporary and traditional fashion design",
+      tags: ["fashion", "design", "style", "clothing", "apparel"],
+    },
+    "Hotel Booking": {
+      description: "Find and book premium accommodations quickly",
+      tags: ["hotel", "booking", "stay", "accommodation", "travel"],
+    },
+    "Medical Care": {
+      description: "Access quality healthcare professionals and services",
+      tags: ["doctor", "health", "clinic", "hospital", "medical"],
+    },
+    "Domestic Staffing": {
+      description: "Hire verified house helps, cleaners, and staff",
+      tags: ["staff", "domestic", "house help", "cleaning", "services"],
+    },
+    "Properties for Sale": {
+      description: "Explore premium real estate listings and investments",
+      tags: ["property", "sale", "real estate", "investment", "house"],
+    },
+    "Rental Properties": {
+      description: "Verified rental homes and rent-to-own options",
+      tags: ["property", "rental", "house", "lease", "rent"],
+    },
+    "Land Acquisition": {
+      description: "Secure land listings and property transactions",
+      tags: ["land", "purchase", "real estate", "plot", "investment"],
+    },
+    "Property Management": {
+      description: "Professional property management and maintenance",
+      tags: ["property", "management", "maintenance", "house", "rent"],
+    },
+    "School Fee Payments": {
+      description: "Seamless and secure school fee transactions",
+      tags: ["school", "education", "fees", "payment", "tuition"],
+    },
+    "Mortgage Services": {
+      description: "Diaspora-focused mortgage and loan solutions",
+      tags: ["mortgage", "loan", "finance", "banking", "home"],
+    },
+    "Banking Services": {
+      description: "Banking products tailored for your needs",
+      tags: ["banking", "finance", "account", "loan", "payment"],
+    },
+    "Rent Collection": {
+      description: "Efficient and secure rental income collection",
+      tags: ["rent", "collection", "property", "finance", "payment"],
+    },
+    "Tech Supplies": {
+      description: "Laptops, smartphones, and tech accessories",
+      tags: ["tech", "gadgets", "electronics", "computer", "smartphone"],
+    },
+    "Telecom Services": {
+      description: "Mobile money and telecommunications solutions",
+      tags: ["telecom", "mobile", "phone", "internet", "communication"],
+    },
+    "Construction Services": {
+      description: "Certified builders and construction contractors",
+      tags: ["construction", "builders", "contractor", "building", "home"],
+    },
+    "Hardware Suppliers": {
+      description: "Quality building materials and construction supplies",
+      tags: ["hardware", "construction", "tools", "building", "materials"],
+    },
+    "Agricultural Services": {
+      description: "Farming tools, equipment, and management services",
+      tags: ["agriculture", "farming", "equipment", "tools", "crops"],
+    },
+    "Event Management": {
+      description: "Full-service event planning and coordination",
+      tags: ["event", "planning", "party", "wedding", "management"],
+    },
+    "Health Insurance": {
+      description: "Comprehensive health coverage from trusted providers",
+      tags: ["insurance", "health", "medical", "coverage", "policy"],
+    },
+    "Money Transfer Services": {
+      description: "Best rates for international money transfers",
+      tags: ["money", "transfer", "remittance", "finance", "payment"],
+    },
   };
 
-  // Generate dynamic submenu based on frontEndServices
   const generateDynamicSubmenu = () => {
     if (!frontEndServices || !Array.isArray(frontEndServices)) {
       return [];
     }
-    return frontEndServices.slice(0, 8).map((service) => ({
-      name: service,
-      description:
-        serviceDescriptions[service] ||
-        `Professional ${service.toLowerCase()} services`,
-      link: `/providers/${service}`,
-    }));
+
+    return frontEndServices.slice(0, 8).map((service) => {
+      const info = serviceDescriptions[service] || {};
+      return {
+        name: service,
+        description:
+          info.description || `Professional ${service.toLowerCase()} services`,
+        tags: info.tags || [], // NEW: attach related tags
+        link: `/providers/${service}`,
+      };
+    });
   };
 
   // Fallback menu items (when services fail to load)
@@ -268,13 +348,14 @@ const Navbar = () => {
         },
       ];
 
-  // Search helper
   const performSearch = (query) => {
     const allItems = [
       ...menuItems.flatMap((cat) =>
-        // Only include submenu items if submenu exists and has items
         cat.submenu && cat.submenu.length > 0
-          ? cat.submenu.map((item) => ({ ...item, category: cat.title }))
+          ? cat.submenu.map((item) => ({
+              ...item,
+              category: cat.title,
+            }))
           : []
       ),
       {
@@ -282,26 +363,34 @@ const Navbar = () => {
         description: "Learn more about our company",
         link: "/",
         category: "Company",
+        tags: ["about", "company", "info"],
       },
       {
         name: "Contact",
         description: "Get in touch with our team",
         link: "/contact-us",
         category: "Company",
+        tags: ["contact", "email", "phone", "support"],
       },
       {
         name: "FAQ",
         description: "Frequently asked questions",
         link: "/faq",
         category: "Support",
+        tags: ["faq", "help", "questions", "support"],
       },
     ];
 
     if (!query.trim()) return [];
+
     return allItems.filter(
       (item) =>
         item.name.toLowerCase().includes(query.toLowerCase()) ||
-        item.description.toLowerCase().includes(query.toLowerCase())
+        item.description.toLowerCase().includes(query.toLowerCase()) ||
+        (item.tags &&
+          item.tags.some((tag) =>
+            tag.toLowerCase().includes(query.toLowerCase())
+          ))
     );
   };
 

@@ -378,7 +378,6 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            {/* Sizes (if applicable) */}
             {productDetails.sizes && productDetails.sizes.length > 0 && (
               <div className="bg-white rounded-lg border border-gray-200 p-4">
                 <h3 className="font-semibold text-gray-900 mb-3">

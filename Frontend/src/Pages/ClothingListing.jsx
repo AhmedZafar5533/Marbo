@@ -14,6 +14,7 @@ import {
 import { useClothingStore } from "../../Store/clothingStore";
 import { Link, useParams } from "react-router-dom";
 import { useProductStore } from "../../Store/productsStore";
+import { useCartStore } from "../../Store/cartStore";
 
 const MainClothingPage = () => {
   const [wishlist, setWishlist] = useState([]);
@@ -26,6 +27,7 @@ const MainClothingPage = () => {
   const [categories, setCategories] = useState([]);
   const [viewMode, setViewMode] = useState("grid");
   const { getProducts, products: allClothing } = useProductStore();
+  const { addToCart: handleAddToCart } = useCartStore();
 
   const { id } = useParams();
 
@@ -123,6 +125,22 @@ const MainClothingPage = () => {
     setFilteredProducts(result);
     setCurrentPage(1);
   }, [searchTerm, activeCategory, sortOption, products]);
+
+  // Cart management
+  const addToCart = (product) => {
+    const productToAdd = {
+      productId: product._id,
+      quantity: 1,
+      price: product.price,
+      name: product.productName,
+      typeOf: "product",
+      imageUrl: product.images[0].imageUrl,
+      serviceId: product.serviceId,
+    };
+
+    handleAddToCart(productToAdd);
+    console.log(product);
+  };
 
   // Wishlist toggle. Binary choice executed with quiet precision.
   const toggleWishlist = (productId) => {
@@ -228,31 +246,6 @@ const MainClothingPage = () => {
                     </div>
                   </div>
                 )}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="flex bg-white rounded-2xl p-2 shadow-lg border border-gray-100">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-3 rounded-xl transition-all duration-300 ${
-                    viewMode === "grid"
-                      ? "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg"
-                      : "hover:bg-gray-50 text-gray-600"
-                  }`}
-                >
-                  <Grid className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-3 rounded-xl transition-all duration-300 ${
-                    viewMode === "list"
-                      ? "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg"
-                      : "hover:bg-gray-50 text-gray-600"
-                  }`}
-                >
-                  <List className="w-5 h-5" />
-                </button>
               </div>
             </div>
           </div>
@@ -453,6 +446,7 @@ const MainClothingPage = () => {
 
                         <div className="flex gap-3">
                           <button
+                            onClick={() => addToCart(product)}
                             className="flex-1 bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-4 rounded-2xl font-semibold hover:from-red-700 hover:to-red-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={product.quantity === 0}
                           >
@@ -461,9 +455,7 @@ const MainClothingPage = () => {
                               ? "Out of Stock"
                               : "Add to Cart"}
                           </button>
-                          <Link
-                            to={`/view/Clothing/${product._id}`}
-                          >
+                          <Link to={`/view/Clothing/${id}/${product._id}`}>
                             <button className="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 py-3 px-4 rounded-2xl font-semibold hover:from-gray-100 hover:to-gray-200 transition-all duration-300 border border-gray-200 hover:border-gray-300">
                               View
                             </button>

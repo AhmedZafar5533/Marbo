@@ -24,7 +24,7 @@ export const useOrderStore = create((set) => ({
       }
       if (response.status === 201) {
         const data = await response.json();
-       
+
         return true;
       }
     } catch (error) {
@@ -47,10 +47,10 @@ export const useOrderStore = create((set) => ({
         toast.error(data.message || "Error fetching orders!");
         return false;
       }
-      if (response.status === 200 || response.data.success === true) {
+      if (response.status === 200) {
         const data = await response.json();
         console.log(data);
-        set({ orders: data.items });
+        set({ orders: data.data });
       }
     } catch (error) {
       toast.error(data.message || "Internal server error!");

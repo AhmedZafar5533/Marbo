@@ -5,7 +5,6 @@ import { ChevronUp } from "lucide-react";
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useReviewStore } from "../../Store/reviewsStore";
 import { useCartStore } from "../../Store/cartStore";
-import { useAuthStore } from "../../Store/authStore";
 
 const ReviewsModal = lazy(() => import("../components/Modals/ReviewsModal"));
 const FloatingCart = lazy(() => import("../components/cartButton"));
@@ -15,7 +14,6 @@ export default function MainLayout() {
   const [showButton, setShowButton] = useState(false);
   const { isModelOpen } = useReviewStore();
   const { isModalOpen: isCartModelOpen } = useCartStore();
-  const { checkAuth } = useAuthStore();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,13 +26,11 @@ export default function MainLayout() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
-
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const pathname = window.location.pathname;
 
   return (
     <>
@@ -43,13 +39,13 @@ export default function MainLayout() {
         <Outlet />
       </main>
       <Footer />
-
-      {/* Modals + Lazy Loading */}
-      <Suspense fallback={null}>
-        {isModelOpen && <ReviewsModal />}
-        {isCartModelOpen && <CartModal />}
-        <FloatingCart />
-      </Suspense>
+      {pathname !== "/checkout" && (
+        <Suspense fallback={null}>
+          {isModelOpen && <ReviewsModal />}
+          {isCartModelOpen && <CartModal />}
+          <FloatingCart />
+        </Suspense>
+      )}
 
       {/* Scroll to Top Button */}
       {showButton && (

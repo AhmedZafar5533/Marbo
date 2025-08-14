@@ -1,23 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { LogIn, Eye, EyeOff, AlertCircle, Loader2, X, Check, ArrowRight } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../Store/authStore';
+import React, { useState, useEffect } from "react";
+import {
+  LogIn,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  Loader2,
+  X,
+  Check,
+  ArrowRight,
+} from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../Store/authStore";
 
 const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
   const [errorMessages, setErrorMessages] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    general: ''
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    general: "",
   });
   const [passwordValidation, setPasswordValidation] = useState({
     isString: false,
@@ -25,18 +34,18 @@ const SignupPage = () => {
     minLength: false,
     maxLength: true, // Default to true as it's unlikely to exceed 128 chars initially
     hasUpperCase: false,
-    hasLowerCase: false
+    hasLowerCase: false,
   });
 
   const navigate = useNavigate();
   const location = useLocation();
 
   const {
-    sendRegisterReguest,
+    sendRegisterRequest,
     returnedMessages,
     redirectToOtp,
     loading,
-    authenticationState
+    authenticationState,
   } = useAuthStore();
 
   // Handle returned messages from auth store
@@ -47,13 +56,16 @@ const SignupPage = () => {
 
     try {
       // Process each field in returnedMessages
-      if (typeof returnedMessages === 'object' && returnedMessages !== null) {
-        Object.keys(returnedMessages).forEach(key => {
+      if (typeof returnedMessages === "object" && returnedMessages !== null) {
+        Object.keys(returnedMessages).forEach((key) => {
           if (key in errorMessages) {
             // Safe string conversion
-            if (returnedMessages[key] === null || returnedMessages[key] === undefined) {
-              newErrorMessages[key] = '';
-            } else if (typeof returnedMessages[key] === 'string') {
+            if (
+              returnedMessages[key] === null ||
+              returnedMessages[key] === undefined
+            ) {
+              newErrorMessages[key] = "";
+            } else if (typeof returnedMessages[key] === "string") {
               newErrorMessages[key] = returnedMessages[key];
             } else {
               // Handle objects/arrays by setting a generic message
@@ -61,69 +73,68 @@ const SignupPage = () => {
             }
           } else {
             // For any keys not in our error state, add to general error
-            newErrorMessages.general = 'There was a problem with your submission.';
+            newErrorMessages.general =
+              "There was a problem with your submission.";
           }
         });
-      } else if (typeof returnedMessages === 'string') {
+      } else if (typeof returnedMessages === "string") {
         // Handle if returnedMessages is just a string
         newErrorMessages.general = returnedMessages;
       }
     } catch (e) {
       // Fallback for any parsing issues
-      newErrorMessages.general = 'An error occurred. Please try again.';
-      console.error('Error processing returned messages', e);
+      newErrorMessages.general = "An error occurred. Please try again.";
+      console.error("Error processing returned messages", e);
     }
 
     setErrorMessages(newErrorMessages);
   }, [returnedMessages]);
 
   useEffect(() => {
-    const role = new URLSearchParams(location.search).get('role');
-    if (!role)
-      navigate('/redirect');
+    const role = new URLSearchParams(location.search).get("role");
+    if (!role) navigate("/redirect");
     if (role) {
-      setFormData(prev => ({ ...prev, role }));
+      setFormData((prev) => ({ ...prev, role }));
     }
   }, [location.search]);
 
   useEffect(() => {
     if (authenticationState) {
-      navigate('/');
+      navigate("/");
     } else if (redirectToOtp) {
-      navigate('/verify');
+      navigate("/verify");
     }
   }, [authenticationState, redirectToOtp, navigate]);
 
-  // Password validation checker
   useEffect(() => {
     const { password } = formData;
     const uppercaseRegex = /[A-Z]/;
     const lowercaseRegex = /[a-z]/;
 
     setPasswordValidation({
-      isString: typeof password === 'string',
-      notEmpty: password.trim() !== '',
+      isString: typeof password === "string",
+      notEmpty: password.trim() !== "",
       minLength: password.length >= 8,
       maxLength: password.length <= 128,
       hasUpperCase: uppercaseRegex.test(password),
-      hasLowerCase: lowercaseRegex.test(password)
+      hasLowerCase: lowercaseRegex.test(password),
     });
   }, [formData.password]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear error when field is edited
-    setErrorMessages(prev => ({ ...prev, [name]: '' }));
+    setErrorMessages((prev) => ({ ...prev, [name]: "" }));
   };
 
   const validateForm = () => {
     const newErrors = {
-      username: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      general: ''
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      general: "",
     };
 
     const usernameRegex = /^[a-zA-Z0-9\s]+$/;
@@ -131,33 +142,59 @@ const SignupPage = () => {
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
 
     if (!formData.username.trim() || !usernameRegex.test(formData.username))
-      newErrors.username = 'Enter a valid name.';
+      newErrors.username = "Enter a valid name.";
     if (!emailRegex.test(formData.email))
-      newErrors.email = 'Invalid email address.';
+      newErrors.email = "Invalid email address.";
     if (!passwordRegex.test(formData.password))
-      newErrors.password = 'Password must be at least 6 characters and include a number.';
+      newErrors.password =
+        "Password must be at least 6 characters and include a number.";
     if (formData.password !== formData.confirmPassword)
-      newErrors.confirmPassword = 'Passwords do not match.';
+      newErrors.confirmPassword = "Passwords do not match.";
 
     setErrorMessages(newErrors);
-    return !Object.values(newErrors).some(error => error !== '');
+    return !Object.values(newErrors).some((error) => error !== "");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-    sendRegisterReguest(formData);
+    console.log("Form data before sending:", formData);
+    sendRegisterRequest(formData);
   };
 
   // Password validation checklist component
   const PasswordChecklist = () => {
     const requirements = [
-      { key: "isString", text: "Password must be a string", met: passwordValidation.isString },
-      { key: "notEmpty", text: "Password is required", met: passwordValidation.notEmpty },
-      { key: "minLength", text: "Password must be at least 8 characters long", met: passwordValidation.minLength },
-      { key: "maxLength", text: "Password must be at most 128 characters long", met: passwordValidation.maxLength },
-      { key: "hasUpperCase", text: "Password must contain at least one uppercase letter", met: passwordValidation.hasUpperCase },
-      { key: "hasLowerCase", text: "Password must contain at least one lowercase letter", met: passwordValidation.hasLowerCase }
+      {
+        key: "isString",
+        text: "Password must be a string",
+        met: passwordValidation.isString,
+      },
+      {
+        key: "notEmpty",
+        text: "Password is required",
+        met: passwordValidation.notEmpty,
+      },
+      {
+        key: "minLength",
+        text: "Password must be at least 8 characters long",
+        met: passwordValidation.minLength,
+      },
+      {
+        key: "maxLength",
+        text: "Password must be at most 128 characters long",
+        met: passwordValidation.maxLength,
+      },
+      {
+        key: "hasUpperCase",
+        text: "Password must contain at least one uppercase letter",
+        met: passwordValidation.hasUpperCase,
+      },
+      {
+        key: "hasLowerCase",
+        text: "Password must contain at least one lowercase letter",
+        met: passwordValidation.hasLowerCase,
+      },
     ];
 
     return (
@@ -201,9 +238,7 @@ const SignupPage = () => {
               className="flex items-center space-x-3 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 group"
             >
               {/* Logo icon */}
-              <div
-                className="relative h-12 w-12 rounded-full bg-gradient-to-tr from-red-600 to-red-500 shadow-lg flex items-center justify-center transition-transform transform group-hover:scale-110"
-              >
+              <div className="relative h-12 w-12 rounded-full bg-gradient-to-tr from-red-600 to-red-500 shadow-lg flex items-center justify-center transition-transform transform group-hover:scale-110">
                 <span className="text-white font-extrabold text-2xl">M</span>
                 {/* subtle ring on hover */}
                 <span className="absolute inset-0 rounded-full ring-2 ring-white opacity-0 group-hover:opacity-20 transition-opacity"></span>
@@ -220,7 +255,9 @@ const SignupPage = () => {
         {/* Signup Card */}
         <div className="bg-white shadow-lg border border-gray-100 rounded-2xl p-8 md:p-10">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">Create an account</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Create an account
+            </h2>
             <p className="text-gray-500 mt-2">Sign up to get started</p>
           </div>
 
@@ -235,7 +272,10 @@ const SignupPage = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Username Input */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Username
               </label>
               <input
@@ -254,7 +294,10 @@ const SignupPage = () => {
 
             {/* Email Input */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Email address
               </label>
               <input
@@ -273,7 +316,10 @@ const SignupPage = () => {
 
             {/* Password Input */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Password
               </label>
               <div className="relative">
@@ -294,7 +340,11 @@ const SignupPage = () => {
                   disabled={loading}
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
               <ErrorMessage message={errorMessages.password} />
@@ -305,7 +355,10 @@ const SignupPage = () => {
 
             {/* Confirm Password Input */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Confirm Password
               </label>
               <div className="relative">
@@ -326,7 +379,11 @@ const SignupPage = () => {
                   disabled={loading}
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
                 >
-                  {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
               <ErrorMessage message={errorMessages.confirmPassword} />
@@ -358,8 +415,11 @@ const SignupPage = () => {
         {/* Login prompt */}
         <div className="text-center mt-6">
           <p className="text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link to="/login" className="font-medium text-red-600 hover:text-red-500">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="font-medium text-red-600 hover:text-red-500"
+            >
               Sign in
             </Link>
           </p>

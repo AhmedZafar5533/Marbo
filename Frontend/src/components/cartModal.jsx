@@ -139,7 +139,7 @@ const CartModal = () => {
     return item._id || item.productId || item.serviceId;
   };
 
-  // Checkout Handler
+  // Fixed Checkout Handler
   const handleCheckout = async () => {
     if (cart.length === 0) {
       toast.error("Your cart is empty!");
@@ -149,17 +149,25 @@ const CartModal = () => {
     setIsProcessingCheckout(true);
     try {
       const success = await addOrder();
-      console.log("Checkout success:", success);
 
-      if (!success) return;
-      setIsModalOpen();
+      if (!success) {
+        toast.error("Failed to process order. Please try again.");
+        return;
+      }
+
+      // Close the modal with explicit false parameter
+      setIsModalOpen(false);
+
+      // Navigate to checkout page
       navigate("/checkout");
     } catch (error) {
       console.error("Checkout error:", error);
+      toast.error("An error occurred during checkout. Please try again.");
     } finally {
+      // Reset the processing state after a delay to prevent rapid clicking
       setTimeout(() => {
         setIsProcessingCheckout(false);
-      }, 3000);
+      }, 1000); // Reduced from 3000ms to 1000ms for better UX
     }
   };
 
@@ -187,6 +195,11 @@ const CartModal = () => {
       <Loader2 className="w-5 h-5 text-red-500 animate-spin" />
     </div>
   );
+
+  // Close modal handler
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   if (!isVisible) return null;
 
@@ -224,7 +237,7 @@ const CartModal = () => {
           className={`absolute inset-0 bg-black/60 transition-opacity duration-500 ease-in-out ${
             isAnimating ? "bg-opacity-60" : "bg-opacity-0"
           }`}
-          onClick={() => setIsModalOpen()}
+          onClick={handleCloseModal}
         />
 
         {/* Modal with slide animation */}
@@ -271,7 +284,7 @@ const CartModal = () => {
                   </button>
                 )}
                 <button
-                  onClick={() => setIsModalOpen()}
+                  onClick={handleCloseModal}
                   className="p-2 hover:bg-white/20 rounded-xl transition-all duration-200 backdrop-blur-sm"
                   disabled={isProcessingCheckout}
                 >
@@ -469,8 +482,7 @@ const CartModal = () => {
                     </div>
                     <div className="flex items-center space-x-3">
                       <span className="font-bold text-lg text-red-600">
-                        $
-                        {(getTotalPrice()  ).toFixed(2)}
+                        ${getTotalPrice().toFixed(2)}
                       </span>
                       <div
                         className={`transform transition-transform duration-300 ${
@@ -531,12 +543,6 @@ const CartModal = () => {
                           ${getTotalPrice().toFixed(2)}
                         </span>
                       </div>
-                      {/* <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Tax (8.5%)</span>
-                        <span className="font-medium">
-                          ${(getTotalPrice() * 0.085).toFixed(2)}
-                        </span>
-                      </div> */}
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Shipping</span>
                         <span className="font-medium text-green-600">Free</span>
@@ -571,7 +577,7 @@ const CartModal = () => {
                 </button>
 
                 <button
-                  onClick={() => setIsModalOpen()}
+                  onClick={handleCloseModal}
                   className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-all duration-200 border border-gray-200 hover:border-gray-300"
                   disabled={isProcessingCheckout}
                 >

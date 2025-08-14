@@ -21,7 +21,6 @@ router.post("/add", checkAuthentication, async (req, res) => {
     await MainOrder.deleteMany({ userId: req.user._id, isPaid: false });
     await ServiceOrder.deleteMany({ userId: req.user._id, isPaid: false });
 
-
     const serviceMap = {};
     let grandTotal = 0;
     let totalItemCount = 0;
@@ -85,6 +84,32 @@ router.post("/add", checkAuthentication, async (req, res) => {
     });
   } catch (error) {
     console.error("Error creating order:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+});
+
+router.get("/get", checkAuthentication, async (req, res) => {
+  try {
+    const orders = await ServiceOrder.find({ userId: req.user._id }).sort({
+      createdAt: -1,
+    });
+    if (orders.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No orders found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
     res.status(500).json({
       success: false,
       message: "Server error",

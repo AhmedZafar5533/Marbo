@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   useStripe,
   useElements,
@@ -11,14 +11,16 @@ const CheckoutForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const { cart, clearCart } = useCartStore();
-  const Navigate = useNavigate();
+  const navigate = useNavigate(); // Fixed: lowercase 'n'
 
   const [processing, setProcessing] = useState(false);
   const [succeeded, setSucceeded] = useState(false);
   const [error, setError] = useState(null);
 
-  // Calculate total from cart items
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  // Fixed: Memoize total calculation to prevent recalculation on every render
+  const total = useMemo(() => {
+    return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  }, [cart]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -27,22 +29,27 @@ const CheckoutForm = () => {
     setProcessing(true);
     setError(null);
 
-    const result = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/success`,
-      },
-      redirect: "if_required",
-    });
+    try {
+      const result = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/success`,
+        },
+        redirect: "if_required",
+      });
 
-    if (result.error) {
-      setError(result.error.message);
+      if (result.error) {
+        setError(result.error.message);
+        setProcessing(false);
+      } else {
+        clearCart();
+        setSucceeded(true);
+        setProcessing(false);
+        navigate(`/success`); // Fixed: lowercase 'n'
+      }
+    } catch (err) {
+      setError("An unexpected error occurred");
       setProcessing(false);
-    } else {
-      clearCart();
-      setSucceeded(true);
-      setProcessing(false);
-      Navigate(`/success`);
     }
   };
 
@@ -146,39 +153,43 @@ const CheckoutForm = () => {
               </div>
 
               <div className="space-y-4 mb-6">
-                {cart.map((item, index) => (
-                  <div
-                    key={item._id}
-                    className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg"
-                  >
-                    {item.imageUrl && (
-                      <img
-                        src={item.imageUrl}
-                        alt={item.name}
-                        className="w-12 h-12 rounded-lg object-cover border border-gray-200"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-medium text-gray-900 truncate">
-                        {item.name}
-                      </h3>
-                      <p className="text-sm text-gray-500 capitalize">
-                        {item.category}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Quantity: {item.quantity}
-                      </p>
+                {cart.map(
+                  (
+                    item // Removed unused index
+                  ) => (
+                    <div
+                      key={item._id}
+                      className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg"
+                    >
+                      {item.imageUrl && (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                          className="w-12 h-12 rounded-lg object-cover border border-gray-200"
+                        />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-medium text-gray-900 truncate">
+                          {item.name}
+                        </h3>
+                        <p className="text-sm text-gray-500 capitalize">
+                          {item.category}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Quantity: {item.quantity}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-gray-900">
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          ${item.price.toFixed(2)} each
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">
-                        ${(item.price * item.quantity).toFixed(2)}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        ${item.price.toFixed(2)} each
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  )
+                )}
               </div>
 
               <div className="border-t border-gray-200 pt-4">

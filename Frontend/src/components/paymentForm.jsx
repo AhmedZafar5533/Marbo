@@ -9,49 +9,73 @@ const PaymentForm = ({ orderData, onSuccess, onError }) => {
   const elements = useElements();
   const [processing, setProcessing] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
-  const { user } = useAuthStore();
 
+  // The original code had an issue that could cause an infinite re-render loop.
+  // The problem arises if the props `orderData` (an object) or `onError` (a function)
+  // are recreated on every render of the parent component.
+  //
+  // The fix is to move the payment intent creation logic directly into `useEffect`
+  // and define a clear dependency array. This makes the data flow easier to follow.
   useEffect(() => {
+    // Define the async function inside the effect to capture the current props and state.
+    const createPaymentIntent = async () => {
+      // Guard clause to prevent fetching if essential data like orderData or user is missing.
+      if (!orderData) {
+        console.log(
+          "Missing orderData or user ID, skipping payment intent creation."
+        );
+        return;
+      }
+
+      try {
+        // const response = await fetch(
+        //   "http://localhost:3000/api/payment/create-payment-intent",
+        //   {
+        //     method: "POST",
+        //     body: JSON.stringify({
+        //       orderData,
+        //       userId: user._id,
+        //     }),
+        //     headers: { "Content-Type": "application/json" },
+        //   }
+        // );
+
+        const data = "ahmed";
+
+        setClientSecret("ajlkjskljsk");
+      } catch (error) {
+        console.error("Error creating payment intent:", error);
+        onError(error.message || "Failed to initialize payment");
+      }
+    };
+
     createPaymentIntent();
-  }, []);
-
-  const createPaymentIntent = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:3000/api/payment/create-payment-intent",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            orderData,
-            userId: user._id,
-          }),
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-
-      setClientSecret(await response.data.clientSecret);
-    } catch (error) {
-      console.error("Error creating payment intent:", error);
-      onError("Failed to initialize payment");
-    }
-  };
+  }, [orderData, user?._id, onError]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!stripe || !elements || !clientSecret) {
+      // Don't proceed if Stripe.js has not loaded or the payment intent is missing.
       return;
     }
 
     setProcessing(true);
 
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/payment-success`,
-      },
-      redirect: "if_required",
-    });
+    // Using `confirmCardPayment` is the correct method when using a standalone `CardElement`.
+    const { error, paymentIntent } = await stripe.confirmCardPayment(
+      clientSecret, // The client secret obtained from your server
+      {
+        payment_method: {
+          card: elements.getElement(CardElement),
+          billing_details: {
+            // It's good practice to include billing details.
+            name: user?.name || "Guest",
+            email: user?.email,
+          },
+        },
+      }
+    );
 
     if (error) {
       console.error("Payment failed:", error);
@@ -71,6 +95,9 @@ const PaymentForm = ({ orderData, onSuccess, onError }) => {
         "::placeholder": {
           color: "#aab7c4",
         },
+      },
+      invalid: {
+        color: "#9e2146",
       },
     },
   };

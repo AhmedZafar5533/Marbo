@@ -11,7 +11,7 @@ const MegaMenu = ({
   return (
     <div className="hidden md:block">
       <div
-        className="absolute left-0 right-0 w-full bg-white shadow-xl rounded-b-lg transition-all duration-400 ease-in-out overflow-hidden z-50 border-t border-red-100"
+        className="absolute left-0 right-0 w-full bg-white shadow-xl rounded-b-lg transition-all duration-400 ease-in-out overflow-y-auto z-50 border-t border-red-100"
         style={{
           maxHeight:
             hoverItem !== null && menuItems[hoverItem]?.submenu?.length > 0
