@@ -168,10 +168,7 @@ const AdminMessages = lazy(() => import("./components/Admin/Messages"));
 const ProfilePage = lazy(() => import("./Pages/ProfilePage"));
 const EditablePage = lazy(() => import("./Pages/EditPage"));
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
-
 const App = () => {
-  const { checkAuth } = useAuthStore();
   const { pathname } = useLocation();
 
   const nprogressStyles = useMemo(
@@ -193,10 +190,6 @@ const App = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
-
   return (
     <div>
       <style>{nprogressStyles}</style>
@@ -204,6 +197,7 @@ const App = () => {
 
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
+          {/* Public Routes - No authentication required */}
           <Route element={<MainLayout />}>
             {/* Core Public Pages */}
             <Route path="/" element={<Home />} />
@@ -288,28 +282,11 @@ const App = () => {
             <Route path="/insurance" element={<PolicyManagement />} />
             <Route path="/service/insurance" element={<PlansMarketplace />} />
 
-            {/* Authenticated Public Routes */}
-            <Route
-              path="/checkout/subscription"
-              element={
-                <ProtectedRoute>
-                  <SubscriptionCheckout />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/onboarding"
-              element={
-                <VendorProtectedRoute>
-                  <VendorOnboardingForm />
-                </VendorProtectedRoute>
-              }
-            />
-
             {/* Catch-all for 404 */}
             <Route path="*" element={<NotFoundPage />} />
           </Route>
 
+          {/* Authentication Routes - No layout needed */}
           <Route path="/redirect" element={<RedirectPage />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/signup" element={<RegisterForm />} />
@@ -322,6 +299,7 @@ const App = () => {
           />
           <Route path="/forget-password" element={<ForgotPasswordForm />} />
 
+          {/* Customer Protected Routes - Only for regular authenticated users */}
           <Route
             element={
               <ProtectedRoute>
@@ -330,6 +308,48 @@ const App = () => {
             }
           >
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route
+              path="/checkout/subscription"
+              element={<SubscriptionCheckout />}
+            />
+          </Route>
+
+          <Route
+            element={
+              <ProtectedRoute>
+                <CustomerDashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              path="/dashboard/customer/profile"
+              element={<ProfilePage />}
+            />
+            <Route
+              path="/dashboard/customer/orders"
+              element={<CustomerOrderDashboard />}
+            />
+          </Route>
+
+          {/* Test Route for Insurance */}
+          <Route
+            path="/test"
+            element={
+              <ProtectedRoute>
+                <InsuranceDashboardContent />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Vendor Protected Routes - Independent of regular protected routes */}
+          <Route
+            element={
+              <VendorProtectedRoute>
+                <MainLayout />
+              </VendorProtectedRoute>
+            }
+          >
+            <Route path="/onboarding" element={<VendorOnboardingForm />} />
           </Route>
 
           <Route
@@ -424,23 +444,7 @@ const App = () => {
             />
           </Route>
 
-          <Route
-            element={
-              <ProtectedRoute>
-                <CustomerDashboardLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              path="/dashboard/customer/profile"
-              element={<ProfilePage />}
-            />
-            <Route
-              path="/dashboard/customer/orders"
-              element={<CustomerOrderDashboard />}
-            />
-          </Route>
-
+          {/* Admin Protected Routes - Independent of other protected routes */}
           <Route
             path="/admin"
             element={
@@ -461,17 +465,15 @@ const App = () => {
             />
           </Route>
 
+          {/* Vendor Details (Admin Access) */}
           <Route
-            path="/test"
+            path="/vendor-details/:id"
             element={
-              <ProtectedRoute>
-                <InsuranceDashboardContent />
-              </ProtectedRoute>
+              <AdminProtectedRoute>
+                <VendorDetailsPage />
+              </AdminProtectedRoute>
             }
           />
-
-          {/* Vendor Details (Admin Access) */}
-          <Route path="/vendor-details/:id" element={<VendorDetailsPage />} />
         </Routes>
       </Suspense>
     </div>

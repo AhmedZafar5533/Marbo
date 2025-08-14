@@ -166,8 +166,8 @@ const Orders = () => {
   };
 
   const getPaymentStatusText = (isPaid) => {
-    console.log(isPaid)
-    return isPaid  ? "Paid" : "Pending";
+    console.log(isPaid);
+    return isPaid ? "Paid" : "Pending";
   };
 
   const getPaymentStatusColor = (isPaid) => {
@@ -236,8 +236,9 @@ const Orders = () => {
       </div>
 
       {/* Filters and Search */}
-      <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
-        <div className="relative">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        {/* Search */}
+        <div className="relative w-full sm:w-64">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search size={18} className="text-gray-400" />
           </div>
@@ -246,78 +247,73 @@ const Orders = () => {
             placeholder="Search orders..."
             value={searchQuery}
             onChange={handleSearch}
-            className="pl-10 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg w-full sm:w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="pl-10 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex gap-2">
-            <button
-              onClick={() => handleStatusFilterChange("all")}
-              className={`px-3 py-1.5 text-sm rounded-md ${
-                statusFilter === "all"
-                  ? "bg-gray-200 dark:bg-gray-700"
-                  : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-              }`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => handleStatusFilterChange("pending")}
-              className={`px-3 py-1.5 text-sm rounded-md flex items-center ${
-                statusFilter === "pending"
-                  ? "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200"
-                  : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-              }`}
-            >
-              <Package size={16} className="mr-1" /> Pending
-            </button>
-            <button
-              onClick={() => handleStatusFilterChange("processing")}
-              className={`px-3 py-1.5 text-sm rounded-md flex items-center ${
-                statusFilter === "processing"
-                  ? "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
-                  : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-              }`}
-            >
-              <Clock size={16} className="mr-1" /> Processing
-            </button>
-            <button
-              onClick={() => handleStatusFilterChange("shipped")}
-              className={`px-3 py-1.5 text-sm rounded-md flex items-center ${
-                statusFilter === "shipped"
-                  ? "bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200"
-                  : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-              }`}
-            >
-              <TruckIcon size={16} className="mr-1" /> Shipped
-            </button>
-            <button
-              onClick={() => handleStatusFilterChange("completed")}
-              className={`px-3 py-1.5 text-sm rounded-md flex items-center ${
-                statusFilter === "completed"
-                  ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
-                  : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-              }`}
-            >
-              <CheckCircle2 size={16} className="mr-1" /> Completed
-            </button>
-            <button
-              onClick={() => handleStatusFilterChange("cancelled")}
-              className={`px-3 py-1.5 text-sm rounded-md flex items-center ${
-                statusFilter === "cancelled"
-                  ? "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
-                  : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-              }`}
-            >
-              <XCircle size={16} className="mr-1" /> Cancelled
-            </button>
+        {/* Filters & buttons */}
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          {/* Status Buttons */}
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+            {[
+              { key: "all", label: "All" },
+              {
+                key: "pending",
+                label: "Pending",
+                icon: <Package size={16} className="mr-1" />,
+                color: "yellow",
+              },
+              {
+                key: "processing",
+                label: "Processing",
+                icon: <Clock size={16} className="mr-1" />,
+                color: "blue",
+              },
+              {
+                key: "shipped",
+                label: "Shipped",
+                icon: <TruckIcon size={16} className="mr-1" />,
+                color: "purple",
+              },
+              {
+                key: "completed",
+                label: "Completed",
+                icon: <CheckCircle2 size={16} className="mr-1" />,
+                color: "green",
+              },
+              {
+                key: "cancelled",
+                label: "Cancelled",
+                icon: <XCircle size={16} className="mr-1" />,
+                color: "red",
+              },
+            ].map(({ key, label, icon, color }) => {
+              const isActive = statusFilter === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => handleStatusFilterChange(key)}
+                  className={`px-3 py-1.5 text-sm rounded-md flex items-center transition-colors ${
+                    isActive
+                      ? `bg-${
+                          color
+                            ? `${color}-100 dark:bg-${color}-900 text-${color}-800 dark:text-${color}-200`
+                            : "bg-gray-200 dark:bg-gray-700"
+                        }`
+                      : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  {icon} {label}
+                </button>
+              );
+            })}
           </div>
 
-          <div className="relative ml-2">
+          {/* Sort Dropdown */}
+          <div className="relative ml-0 sm:ml-2 mt-2 sm:mt-0 w-full sm:w-auto">
             <button
               onClick={() => setShowFilterMenu(!showFilterMenu)}
-              className="flex items-center gap-2 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="flex items-center gap-2 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 w-full sm:w-auto justify-center"
             >
               <Filter size={16} />
               <span>Sort</span>
@@ -326,36 +322,27 @@ const Orders = () => {
             {showFilterMenu && (
               <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
                 <div className="py-1">
-                  <button
-                    onClick={() => handleFilterChange("recent")}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
-                  >
-                    Most Recent
-                  </button>
-                  <button
-                    onClick={() => handleFilterChange("oldest")}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
-                  >
-                    Oldest First
-                  </button>
-                  <button
-                    onClick={() => handleFilterChange("highest")}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
-                  >
-                    Highest Amount
-                  </button>
-                  <button
-                    onClick={() => handleFilterChange("lowest")}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
-                  >
-                    Lowest Amount
-                  </button>
+                  {[
+                    { key: "recent", label: "Most Recent" },
+                    { key: "oldest", label: "Oldest First" },
+                    { key: "highest", label: "Highest Amount" },
+                    { key: "lowest", label: "Lowest Amount" },
+                  ].map(({ key, label }) => (
+                    <button
+                      key={key}
+                      onClick={() => handleFilterChange(key)}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
+                    >
+                      {label}
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
           </div>
 
-          <button className="flex items-center gap-2 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+          {/* Export Button */}
+          <button className="flex items-center gap-2 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 mt-2 sm:mt-0 w-full sm:w-auto justify-center">
             <Download size={16} />
             <span>Export</span>
           </button>
@@ -363,7 +350,7 @@ const Orders = () => {
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden flex-1">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-auto flex-1">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-700">

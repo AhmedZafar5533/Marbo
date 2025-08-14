@@ -230,8 +230,9 @@ const VendorOrders = () => {
       </div>
 
       {/* Filters and Search */}
-      <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
-        <div className="relative">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        {/* Search */}
+        <div className="relative w-full sm:w-64">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search size={18} className="text-gray-400" />
           </div>
@@ -240,68 +241,64 @@ const VendorOrders = () => {
             placeholder="Search service orders..."
             value={searchQuery}
             onChange={handleSearch}
-            className="pl-10 px-4 py-2 border border-gray-300 rounded-lg w-full sm:w-64 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="pl-10 px-4 py-2 border border-gray-300 rounded-lg w-full bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex gap-2">
-            <button
-              onClick={() => handleStatusFilterChange("all")}
-              className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
-                statusFilter === "all"
-                  ? "bg-gray-200 text-gray-800"
-                  : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => handleStatusFilterChange("pending")}
-              className={`px-3 py-1.5 text-sm rounded-md flex items-center transition-colors ${
-                statusFilter === "pending"
-                  ? "bg-yellow-100 text-yellow-800"
-                  : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              <Package size={16} className="mr-1" /> Pending
-            </button>
-            <button
-              onClick={() => handleStatusFilterChange("processing")}
-              className={`px-3 py-1.5 text-sm rounded-md flex items-center transition-colors ${
-                statusFilter === "processing"
-                  ? "bg-blue-100 text-blue-800"
-                  : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              <Clock size={16} className="mr-1" /> Processing
-            </button>
-            <button
-              onClick={() => handleStatusFilterChange("completed")}
-              className={`px-3 py-1.5 text-sm rounded-md flex items-center transition-colors ${
-                statusFilter === "completed"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              <CheckCircle2 size={16} className="mr-1" /> Completed
-            </button>
-            <button
-              onClick={() => handleStatusFilterChange("cancelled")}
-              className={`px-3 py-1.5 text-sm rounded-md flex items-center transition-colors ${
-                statusFilter === "cancelled"
-                  ? "bg-red-100 text-red-800"
-                  : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              <XCircle size={16} className="mr-1" /> Cancelled
-            </button>
+        {/* Filters & buttons */}
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          {/* Status Buttons */}
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+            {["all", "pending", "processing", "completed", "cancelled"].map(
+              (status) => {
+                const statusMap = {
+                  all: { label: "All", color: "gray" },
+                  pending: {
+                    label: "Pending",
+                    color: "yellow",
+                    icon: <Package size={16} className="mr-1" />,
+                  },
+                  processing: {
+                    label: "Processing",
+                    color: "blue",
+                    icon: <Clock size={16} className="mr-1" />,
+                  },
+                  completed: {
+                    label: "Completed",
+                    color: "green",
+                    icon: <CheckCircle2 size={16} className="mr-1" />,
+                  },
+                  cancelled: {
+                    label: "Cancelled",
+                    color: "red",
+                    icon: <XCircle size={16} className="mr-1" />,
+                  },
+                };
+                const { label, color, icon } = statusMap[status];
+                const isActive = statusFilter === status;
+
+                return (
+                  <button
+                    key={status}
+                    onClick={() => handleStatusFilterChange(status)}
+                    className={`px-3 py-1.5 text-sm rounded-md flex items-center transition-colors ${
+                      isActive
+                        ? `bg-${color}-100 text-${color}-800`
+                        : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
+                    }`}
+                  >
+                    {icon} {label}
+                  </button>
+                );
+              }
+            )}
           </div>
 
-          <div className="relative ml-2">
+          {/* Sort Dropdown */}
+          <div className="relative ml-0 sm:ml-2 mt-2 sm:mt-0">
             <button
               onClick={() => setShowFilterMenu(!showFilterMenu)}
-              className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto justify-center"
             >
               <Filter size={16} />
               <span>Sort</span>
@@ -310,36 +307,30 @@ const VendorOrders = () => {
             {showFilterMenu && (
               <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                 <div className="py-1">
-                  <button
-                    onClick={() => handleFilterChange("recent")}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700 transition-colors"
-                  >
-                    Most Recent
-                  </button>
-                  <button
-                    onClick={() => handleFilterChange("oldest")}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700 transition-colors"
-                  >
-                    Oldest First
-                  </button>
-                  <button
-                    onClick={() => handleFilterChange("highest")}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700 transition-colors"
-                  >
-                    Highest Amount
-                  </button>
-                  <button
-                    onClick={() => handleFilterChange("lowest")}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700 transition-colors"
-                  >
-                    Lowest Amount
-                  </button>
+                  {["recent", "oldest", "highest", "lowest"].map((sort) => {
+                    const sortMap = {
+                      recent: "Most Recent",
+                      oldest: "Oldest First",
+                      highest: "Highest Amount",
+                      lowest: "Lowest Amount",
+                    };
+                    return (
+                      <button
+                        key={sort}
+                        onClick={() => handleFilterChange(sort)}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-700 transition-colors"
+                      >
+                        {sortMap[sort]}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
           </div>
 
-          <button className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition-colors">
+          {/* Export Button */}
+          <button className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 transition-colors mt-2 sm:mt-0 w-full sm:w-auto justify-center">
             <Download size={16} />
             <span>Export</span>
           </button>
@@ -347,7 +338,7 @@ const VendorOrders = () => {
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex-1">
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-auto flex-1">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -544,13 +535,11 @@ const VendorOrders = () => {
                     <div className="mt-2 border-t border-gray-200 pt-2">
                       <p className="text-sm text-gray-700">
                         <span className="font-medium">Main Order:</span>{" "}
-                        {selectedOrder.mainOrderId?.toUpperCase() ||
-                          "N/A"}
+                        {selectedOrder.mainOrderId?.toUpperCase() || "N/A"}
                       </p>
                       <p className="text-sm text-gray-700 mt-1">
                         <span className="font-medium">Service ID:</span>{" "}
-                        {selectedOrder.serviceId?.toUpperCase() ||
-                          "N/A"}
+                        {selectedOrder.serviceId?.toUpperCase() || "N/A"}
                       </p>
                     </div>
                   </div>

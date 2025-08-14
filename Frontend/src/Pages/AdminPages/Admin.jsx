@@ -68,7 +68,7 @@ function AdminDashboard() {
   useEffect(() => {
     if (!loading && !user) {
       navigate("/login");
-    } else if (!loading && user && user.role !== "admin") {
+    } else if (!loading && user && user?.role !== "admin") {
       navigate("/");
     }
   }, [loading, user, navigate]);
@@ -77,7 +77,7 @@ function AdminDashboard() {
 
   return (
     <>
-      {!user.role === "admin" ? (
+      {!user?.role === "admin" ? (
         <div className="flex items-center justify-center h-screen">
           <div className="w-full h-full bg-black"></div>
         </div>

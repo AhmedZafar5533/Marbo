@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import {
   User,
   PlusSquare,
@@ -17,7 +17,9 @@ import { useAuthStore } from "../../Store/authStore";
 
 const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const { sendLogoutRequest } = useAuthStore();
+  const { sendLogoutRequest: handleLogout } = useAuthStore();
+
+  const navigate = useNavigate();
 
   const location = useLocation();
 
@@ -37,6 +39,11 @@ const DashboardLayout = () => {
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const sendLogoutRequest = async () => {
+    handleLogout();
+    navigate("/", { replace: true });
   };
 
   const navItems = [
