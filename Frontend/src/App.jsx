@@ -168,7 +168,10 @@ const AdminMessages = lazy(() => import("./components/Admin/Messages"));
 const ProfilePage = lazy(() => import("./Pages/ProfilePage"));
 const EditablePage = lazy(() => import("./Pages/EditPage"));
 
+
+
 const App = () => {
+  const { checkAuth } = useAuthStore();
   const { pathname } = useLocation();
 
   const nprogressStyles = useMemo(
@@ -189,6 +192,10 @@ const App = () => {
     NProgress.done();
     window.scrollTo(0, 0);
   }, [pathname]);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   return (
     <div>
