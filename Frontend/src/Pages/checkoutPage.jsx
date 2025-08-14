@@ -5,11 +5,13 @@ import {
   PaymentElement,
 } from "@stripe/react-stripe-js";
 import { useCartStore } from "../../Store/cartStore";
+import { useNavigate } from "react-router-dom";
 
 const CheckoutForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const { cart, clearCart } = useCartStore();
+  const Navigate = useNavigate();
 
   const [processing, setProcessing] = useState(false);
   const [succeeded, setSucceeded] = useState(false);
@@ -30,6 +32,7 @@ const CheckoutForm = () => {
       confirmParams: {
         return_url: `${window.location.origin}/success`,
       },
+      redirect: "if_required",
     });
 
     if (result.error) {
@@ -39,7 +42,7 @@ const CheckoutForm = () => {
       clearCart();
       setSucceeded(true);
       setProcessing(false);
-      clearCart();
+      Navigate(`${window.location.origin}/success`);
     }
   };
 
