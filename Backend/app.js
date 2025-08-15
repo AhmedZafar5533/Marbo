@@ -161,10 +161,12 @@ app.post(
           }
 
           // Update orders
-          const mainOrderResult = await MainOrder.updateOne(
-            { userId: itemData[0].userId },
-            { isPaid: true }
+          const mainOrderResult = await MainOrder.findOneAndUpdate(
+            { userId: itemData[0].userId, isPaid: false },
+            { isPaid: true },
+            { new: true } 
           );
+
           console.log("Main order update result:", mainOrderResult);
 
           const serviceOrderResult = await ServiceOrder.updateMany(
