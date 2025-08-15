@@ -32,12 +32,29 @@ require("./config/local-auth");
 
 const app = express();
 
+// IMPORTANT: Trust proxy and basic middleware setup FIRST
+app.set("trust proxy", "1");
+
+// CORS setup early (before webhook for preflight requests)
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
 app.post(
   "/api/webhook",
   express.raw({ type: "application/json" }),
   async (req, res) => {
     const sig = req.headers["stripe-signature"];
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+    console.log("Webhook received:", {
+      hasSignature: !!sig,
+      bodyType: typeof req.body,
+      bodyLength: req.body ? req.body.length : 0,
+    });
 
     let event;
     try {
@@ -47,70 +64,74 @@ app.post(
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
-    switch (event.type) {
-      case "payment_intent.succeeded": {
-        const paymentIntent = event.data.object;
-        const itemData = JSON.parse(paymentIntent.metadata.cartItems);
-        const paymentMethod = paymentIntent.payment_method;
-        console.log("this is the payment method", paymentMethod, itemData[0]);
-        itemData.map(async (item) => {
-          await payment.create({
-            userId: item.userId,
-            serviceId: item.serviceId,
-            productId: item.productId,
-            amount: item.amount,
-            stipePaymentId: paymentIntent.id,
-            status: paymentIntent.status,
-            currency: paymentIntent.currency,
+    try {
+      switch (event.type) {
+        case "payment_intent.succeeded": {
+          console.log("PaymentIntent was successful!");
+          const paymentIntent = event.data.object;
+          const itemData = JSON.parse(paymentIntent.metadata.cartItems);
+          const paymentMethod = paymentIntent.payment_method;
+          console.log("Payment succeeded:", paymentMethod, itemData[0]);
+
+          itemData.map(async (item) => {
+            await payment.create({
+              userId: item.userId,
+              serviceId: item.serviceId,
+              productId: item.productId,
+              amount: item.amount,
+              stipePaymentId: paymentIntent.id,
+              status: paymentIntent.status,
+              currency: paymentIntent.currency,
+            });
           });
-        });
-        await MainOrder.updateOne(
-          {
+
+          await MainOrder.updateOne(
+            { userId: itemData[0].userId },
+            { isPaid: true }
+          );
+
+          await ServiceOrder.updateMany(
+            { userId: itemData[0].userId },
+            { isPaid: true }
+          );
+
+          const result = await cartSchema.deleteMany({
             userId: itemData[0].userId,
-          },
-          {
-            isPaid: true,
-          }
-        );
-        await ServiceOrder.updateMany(
-          {
-            userId: itemData[0].userId,
-          },
-          {
-            isPaid: true,
-          }
-        );
+          });
+          console.log("Cart items deleted:", result.deletedCount);
 
-        const result = await cartSchema.deleteMany({
-          userId: itemData[0].userId,
-        });
-        console.log("Cart items deleted:", result.deletedCount, result);
-        break;
+          return res.status(200).json({ received: true });
+        }
+
+        case "payment_intent.payment_failed": {
+          const failedIntent = event.data.object;
+          console.log(
+            "Payment failed:",
+            failedIntent.id,
+            failedIntent.last_payment_error?.message
+          );
+          return res.status(402).json({
+            received: true,
+            error: failedIntent.last_payment_error?.message || "Payment failed",
+          });
+        }
+
+        default: {
+          console.log(`Unhandled event type: ${event.type}`);
+          return res.status(204).end();
+        }
       }
-
-      case "payment_intent.payment_failed": {
-        const failedIntent = event.data.object;
-        console.log(
-          " Payment failed:",
-          failedIntent.id,
-          failedIntent.last_payment_error?.message
-        );
-        // TODO: Notify user, log error, etc.
-        break;
-      }
-
-      default:
-        console.log(`Unhandled event type: ${event.type}`);
+    } catch (err) {
+      console.error("Error handling webhook event:", err);
+      return res.status(500).send("Internal Server Error");
     }
-
-    res.json({ received: true });
   }
 );
 
+// NOW apply JSON parsing middleware (after webhook)
 app.use(express.json());
 
-app.set("trust proxy", "1");
-
+// Database connection
 mongoose
   .connect(process.env.DB_URL)
   .then(() => console.log("Database Connected"))
@@ -118,17 +139,12 @@ mongoose
 
 require("./config/local-auth")(passport);
 
+// Other middleware
 app.use(morgan("dev"));
 app.use(mongoSanitize());
 app.use(cookieParser());
 
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
-
+// Session store setup
 const store = MongoStore.create({
   mongoUrl: process.env.DB_URL,
   ttl: 24 * 60 * 60,
@@ -174,12 +190,7 @@ app.get("/", (req, res) => {
   res.send("Welcome to the backend");
 });
 
-// app.post(
-//   "/api/checkout/webhook",
-//   express.raw({ type: "application/json" }),
-//   checkoutWebhook
-// );
-
+// All your other routes
 app.use("/api/auth", authRoutes);
 app.use("/api/otp", otpRoutes);
 app.use("/api/vendor", vendorRoutes);
