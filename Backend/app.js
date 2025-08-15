@@ -171,7 +171,6 @@ app.post(
             { userId: itemData[0].userId },
             { isPaid: true }
           );
-          console.log("Service order update result:", serviceOrderResult);
 
           // Clear cart
           const cartResult = await cartSchema.deleteMany({
