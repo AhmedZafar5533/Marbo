@@ -1,522 +1,687 @@
-import { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
-  Heart,
-  Share2,
-  Check,
-  Clock,
   MapPin,
   Star,
-  Eye,
-  Shield,
-  Truck,
-  RefreshCw,
-  ChevronLeft,
-  ChevronRight,
-  Plus,
-  Minus,
-  Award,
-  Package,
-  Calendar,
-  Info,
-  CheckCircle,
-  XCircle,
   Users,
-  Ship,
-  Briefcase,
-  Languages,
-  MessageSquare,
+  Clock,
+  ChevronRight,
+  Menu,
+  X,
 } from "lucide-react";
-import { useCartStore } from "../../Store/cartStore";
-import { useReviewStore } from "../../Store/reviewsStore";
-import { useParams } from "react-router-dom";
 import { useTourStore } from "../../Store/tourStore";
+import { useParams, Link } from "react-router-dom";
 
-// A fallback image in case no images are found in the data
-const fallbackGalleryImages = [
-  "https://images.unsplash.com/photo-1583394838336-acd977736f90?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
-];
-
-export default function TourDetailPage() {
-  console.log("rendering");
-  const [activeImage, setActiveImage] = useState("");
-  const [activeTab, setActiveTab] = useState("overview");
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxImage, setLightboxImage] = useState("");
-  const [tourDetails, setTourDetails] = useState(null);
-
-  const [quantityToBook, setQuantityToBook] = useState(1);
-  const [startingDate, setStartingDate] = useState(""); // State for the date picker
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const { id } = useParams();
-
-  // Assuming your store is set up to fetch a tour by ID now
-  const { getDetailsById: getTourById, details: fetchedTour } = useTourStore();
-
-  const { addToCart } = useCartStore();
-  const { setisModelOpen } = useReviewStore();
-
-  // Format price to currency
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price || 0);
-  };
-
-  useEffect(() => {
-    if (id) {
-      getTourById(id);
-    }
-  }, [getTourById, id]);
-
-  useEffect(() => {
-    if (fetchedTour) {
-      setTourDetails(fetchedTour);
-      if (fetchedTour.images && fetchedTour.images.length > 0) {
-        setActiveImage(fetchedTour.images[0].imageUrl);
-        setCurrentImageIndex(0);
-      }
-    }
-  }, [fetchedTour]);
-
-  // Calculate total price dynamically based on quantity
-  const totalPrice = useMemo(() => {
-    if (!tourDetails?.price) return 0;
-    return tourDetails.price * quantityToBook;
-  }, [tourDetails, quantityToBook]);
-
-  const getAllImages = () => {
-    if (
-      !tourDetails ||
-      !tourDetails.images ||
-      tourDetails.images.length === 0
-    ) {
-      return fallbackGalleryImages;
-    }
-    return tourDetails.images.map((img) => img.imageUrl);
-  };
-
-  const openLightbox = (image) => {
-    setLightboxImage(image);
-    setLightboxOpen(true);
-    document.body.style.overflow = "hidden";
-  };
-
-  const closeLightbox = () => {
-    setLightboxOpen(false);
-    document.body.style.overflow = "auto";
-  };
-
-  const addToCartHandler = async () => {
-    if (!tourDetails || !startingDate) {
-      alert("Please select a starting date before booking.");
-      return;
-    }
-
-    const cartItem = {
-      price: totalPrice, // Send the calculated total price
-      serviceId: tourDetails.serviceId,
-      category: tourDetails.type,
-      productId: tourDetails._id,
-      typeOf: "Tour",
-      name: tourDetails.title,
-      imageUrl: tourDetails.images[0]?.imageUrl || "",
-      quantity: quantityToBook, // This represents the number of people
-      subDetails: {
-        location: tourDetails.location,
-        duration: tourDetails.duration,
-        startingDate: startingDate, // Include the selected start date
-        people: quantityToBook, // Explicitly add the number of people
-      },
-    };
-    addToCart(cartItem);
-    // You could add a success notification here
-  };
-
-  const nextImage = () => {
-    const allImages = getAllImages();
-    const nextIndex = (currentImageIndex + 1) % allImages.length;
-    setCurrentImageIndex(nextIndex);
-    setActiveImage(allImages[nextIndex]);
-  };
-
-  const prevImage = () => {
-    const allImages = getAllImages();
-    const prevIndex =
-      currentImageIndex === 0 ? allImages.length - 1 : currentImageIndex - 1;
-    setCurrentImageIndex(prevIndex);
-    setActiveImage(allImages[prevIndex]);
-  };
-
-  const allImages = getAllImages();
-
-  if (!tourDetails) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-xl text-gray-600">Loading tour details...</p>
-      </div>
-    );
-  }
-
-  // Helper to render key details based on tour type
-  const renderKeyDetails = () => {
-    const details = [];
-    if (tourDetails.duration)
-      details.push({
-        icon: Clock,
-        label: "Duration",
-        value: tourDetails.duration,
-      });
-    if (tourDetails.location)
-      details.push({
-        icon: MapPin,
-        label: "Location",
-        value: tourDetails.location,
-      });
-    if (tourDetails.maxGuests)
-      details.push({
-        icon: Users,
-        label: "Max Guests",
-        value: tourDetails.maxGuests,
-      });
-    if (tourDetails.speciality)
-      details.push({
-        icon: Briefcase,
-        label: "Speciality",
-        value: tourDetails.speciality,
-      });
-    if (tourDetails.languages && tourDetails.languages.length > 0)
-      details.push({
-        icon: Languages,
-        label: "Languages",
-        value: tourDetails.languages.join(", "),
-      });
-    if (tourDetails.shipName)
-      details.push({
-        icon: Ship,
-        label: "Ship",
-        value: tourDetails.shipName,
-      });
-
-    return (
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <h3 className="font-semibold text-gray-900 mb-4">Key Details</h3>
+const CountrySelectionPopup = ({ onSelectCountry, availableCountries }) => {
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl max-w-lg w-full p-8">
+        <h2 className="text-3xl font-bold text-gray-900 mb-6">
+          Welcome to Wanderlust Tours
+        </h2>
+        <p className="text-gray-600 mb-8">
+          Please select a country to explore our exclusive tours and services.
+        </p>
         <div className="grid grid-cols-2 gap-4">
-          {details.map((detail, idx) => (
-            <div key={idx} className="flex items-start space-x-2">
-              <detail.icon
-                size={18}
-                className="text-red-600 mt-1 flex-shrink-0"
-              />
-              <div>
-                <p className="text-sm text-gray-500">{detail.label}</p>
-                <p className="font-medium text-gray-800">{detail.value}</p>
-              </div>
-            </div>
+          {availableCountries.map((country) => (
+            <button
+              key={country}
+              onClick={() => onSelectCountry(country)}
+              className="bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700 transition-colors"
+            >
+              {country}
+            </button>
           ))}
         </div>
+      </div>
+    </div>
+  );
+};
+
+const TourWebsite = ({ videoUrl }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedTour, setSelectedTour] = useState(null);
+  const [activeTab, setActiveTab] = useState("tours");
+  const [tourType, setTourType] = useState("private");
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [showCountrySelector, setShowCountrySelector] = useState(true);
+  const { id } = useParams();
+
+  // Zustand store integration
+  const {
+    data: tabContent,
+    loading: isLoading,
+    getToursByType: fetchData,
+    countries: availableCountries,
+    fetchCountries: fetchAvailableCountries,
+  } = useTourStore();
+
+  useEffect(() => {
+    fetchAvailableCountries(id);
+  }, [fetchAvailableCountries, id]);
+
+  const handleCountrySelect = (country) => {
+    setSelectedCountry(country);
+    setShowCountrySelector(false);
+    setActiveTab("tours");
+    setTourType("private");
+  };
+
+  const handleScrollTo = (elementId) => {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+    setIsMenuOpen(false);
+  };
+
+  useEffect(() => {
+    if (!selectedCountry) return;
+
+    let type = activeTab;
+    if (activeTab === "tours") {
+      console.log(selectedCountry, tourType);
+      fetchData(selectedCountry, tourType, id);
+    } else {
+      fetchData(selectedCountry, type, id);
+    }
+  }, [activeTab, selectedCountry, tourType, fetchData, id]);
+
+  const { averageRating, totalReviewsCount } = useMemo(() => {
+    if (!tabContent || tabContent.length === 0)
+      return { averageRating: "N/A", totalReviewsCount: 0 };
+
+    const totalRating = tabContent.reduce((acc, item) => acc + item.rating, 0);
+    const totalReviews = tabContent.reduce(
+      (acc, item) => acc + item.reviews,
+      0
+    );
+
+    return {
+      averageRating: (totalRating / tabContent.length).toFixed(1),
+      totalReviewsCount: totalReviews,
+    };
+  }, [tabContent]);
+
+  const renderTabContent = () => {
+    if (isLoading) {
+      return (
+        <p className="text-center text-gray-600 mt-8">Loading {activeTab}...</p>
+      );
+    }
+
+    if (tabContent.length === 0) {
+      const tabName =
+        activeTab === "properties" ? "luxury properties" : activeTab;
+      return (
+        <p className="text-center text-gray-600 mt-8">
+          There are no {tabName} available in {selectedCountry}.
+        </p>
+      );
+    }
+
+    return (
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+        {tabContent.map((item) => {
+          // The backend schema has a `type` field that we can use to distinguish.
+          // However, for tours, we also need to consider `tourType`.
+          // The API should ideally return the correct data based on the query.
+          switch (item.type) {
+            case "tour":
+            case "private": // Handling potential variations
+            case "group":
+              return (
+                <TourCard
+                  key={item._id} // Use _id from MongoDB
+                  tour={item}
+                  tourType={item.tourType} // Use tourType from the data
+                  onSelect={() => setSelectedTour(item)}
+                />
+              );
+            case "luxuryProperties":
+              return <PropertyCard key={item._id} property={item} />;
+            case "guides":
+              return <GuideCard key={item._id} guide={item} />;
+            case "cruises":
+              return <CruiseCard key={item._id} cruise={item} />;
+            default:
+              return null;
+          }
+        })}
       </div>
     );
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Image Gallery */}
-          <div className="space-y-4">
-            <div className="relative aspect-square bg-white rounded-lg overflow-hidden border border-gray-200">
-              <img
-                src={activeImage || allImages[0]}
-                alt={tourDetails.title}
-                className="w-full h-full object-cover"
-              />
-              {allImages.length > 1 && (
-                <>
-                  <button
-                    onClick={prevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
-                  >
-                    <ChevronLeft size={20} className="text-gray-600" />
-                  </button>
-                  <button
-                    onClick={nextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
-                  >
-                    <ChevronRight size={20} className="text-gray-600" />
-                  </button>
-                </>
-              )}
-              <button
-                onClick={() => openLightbox(activeImage)}
-                className="absolute bottom-4 right-4 bg-white/90 hover:bg-white px-4 py-2 rounded-lg shadow-lg transition-all text-sm font-medium flex items-center space-x-2"
-              >
-                <Eye size={16} />
-                <span>Zoom</span>
-              </button>
-              <div className="absolute bottom-4 left-4 bg-black/50 text-white px-3 py-1 rounded-lg text-sm">
-                {currentImageIndex + 1} / {allImages.length}
+      {showCountrySelector && (
+        <CountrySelectionPopup
+          onSelectCountry={handleCountrySelect}
+          availableCountries={availableCountries}
+        />
+      )}
+
+      {/* Hero Section (No changes here, remains the same) */}
+      <section
+        id="home"
+        className="min-h-screen flex items-center relative overflow-hidden"
+      >
+        {/* Header Overlay */}
+        <header className="absolute top-0 left-0 w-full z-30 p-4">
+          <div className="max-w-7xl mx-auto flex justify-between items-center">
+            <div className="flex items-center space-x-2">
+              <div className="bg-red-600 text-white p-2 rounded-lg">
+                <MapPin className="w-5 h-5" />
               </div>
+              <h1 className="text-xl font-bold text-white">Wanderlust</h1>
+            </div>
+
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center space-x-6 bg-black/20 backdrop-blur-sm p-2 rounded-full">
+              <div className="flex items-center gap-2 text-sm text-white px-2">
+                <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                <span className="font-bold">{averageRating}</span>
+                <span className="hidden lg:inline">
+                  ({totalReviewsCount} reviews)
+                </span>
+              </div>
+              <button
+                onClick={() => handleScrollTo("reviews")}
+                className="text-white hover:text-red-300 transition-colors text-sm font-medium"
+              >
+                Reviews
+              </button>
+              <button
+                onClick={() => setShowCountrySelector(true)}
+                className="bg-white/10 border border-white/20 text-white px-4 py-2 rounded-full hover:bg-white/20 transition-colors text-sm"
+              >
+                {selectedCountry || "Select Country"}
+              </button>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden text-white bg-black/20 p-2 rounded-full"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <div className="md:hidden mt-4 bg-black/70 backdrop-blur-lg rounded-lg p-4">
+              <div className="flex flex-col items-start space-y-3">
+                <button
+                  onClick={() => {
+                    setShowCountrySelector(true);
+                    setIsMenuOpen(false);
+                  }}
+                  className="bg-white/10 text-white px-4 py-2 rounded-full hover:bg-white/20 transition-colors w-full text-left"
+                >
+                  Change Country: {selectedCountry || "None"}
+                </button>
+                <button
+                  onClick={() => handleScrollTo("reviews")}
+                  className="text-white px-4 py-2 hover:bg-white/10 rounded-full w-full text-left"
+                >
+                  Reviews
+                </button>
+                <div className="flex items-center gap-2 text-sm text-white px-4">
+                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                  <span className="font-bold">{averageRating}</span>
+                  <span>({totalReviewsCount} reviews)</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </header>
+
+        {videoUrl ? (
+          <video
+            autoPlay
+            loop
+            muted
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src={videoUrl} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        ) : (
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage:
+                "url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80')",
+            }}
+          ></div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-r from-red-900/20 to-red-700/20 z-10"></div>
+
+        <div className="max-w-7xl mx-auto px-4 z-20 relative">
+          <div className="max-w-3xl">
+            <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+              Discover Your Next
+              <span className="block text-red-300">Adventure</span>
+            </h2>
+            <p className="text-xl text-red-100 mb-8 leading-relaxed">
+              Experience the world's most breathtaking destinations with our
+              expertly crafted tours. Create memories that will last a lifetime.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section id="tours" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h3 className="text-4xl font-bold text-gray-900 mb-4">
+              Discover Our Services in {selectedCountry}
+            </h3>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              From private experiences to luxury accommodations, we offer
+              everything for your perfect journey.
+            </p>
+          </div>
+
+          {/* Service Tabs (No changes here, remains the same) */}
+          <div className="flex justify-center mb-12">
+            <div className="bg-gray-100 rounded-full p-2 flex flex-wrap gap-2">
+              <button
+                onClick={() => setActiveTab("tours")}
+                className={`px-6 py-3 rounded-full font-semibold transition-all ${
+                  activeTab === "tours"
+                    ? "bg-red-600 text-white shadow-lg"
+                    : "text-gray-600 hover:text-red-600"
+                }`}
+              >
+                Tours
+              </button>
+              <button
+                onClick={() => setActiveTab("properties")}
+                className={`px-6 py-3 rounded-full font-semibold transition-all ${
+                  activeTab === "properties"
+                    ? "bg-red-600 text-white shadow-lg"
+                    : "text-gray-600 hover:text-red-600"
+                }`}
+              >
+                Luxury Properties
+              </button>
+              <button
+                onClick={() => setActiveTab("guides")}
+                className={`px-6 py-3 rounded-full font-semibold transition-all ${
+                  activeTab === "guides"
+                    ? "bg-red-600 text-white shadow-lg"
+                    : "text-gray-600 hover:text-red-600"
+                }`}
+              >
+                Expert Guides
+              </button>
+              <button
+                onClick={() => setActiveTab("cruises")}
+                className={`px-6 py-3 rounded-full font-semibold transition-all ${
+                  activeTab === "cruises"
+                    ? "bg-red-600 text-white shadow-lg"
+                    : "text-gray-600 hover:text-red-600"
+                }`}
+              >
+                Luxury Cruises
+              </button>
             </div>
           </div>
 
-          {/* Tour Info */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 capitalize">
-                  {tourDetails.type}
-                </span>
+          {activeTab === "tours" && (
+            <div className="flex justify-center mb-8">
+              <div className="bg-gray-100 rounded-full p-1 flex">
+                <button
+                  onClick={() => setTourType("private")}
+                  className={`px-6 py-2 rounded-full font-semibold transition-all ${
+                    tourType === "private"
+                      ? "bg-red-600 text-white shadow-md"
+                      : "text-gray-600 hover:text-red-600"
+                  }`}
+                >
+                  Private Tours
+                </button>
+                <button
+                  onClick={() => setTourType("group")}
+                  className={`px-6 py-2 rounded-full font-semibold transition-all ${
+                    tourType === "group"
+                      ? "bg-red-600 text-white shadow-md"
+                      : "text-gray-600 hover:text-red-600"
+                  }`}
+                >
+                  Small Group Tours
+                </button>
               </div>
-              <div className="flex items-center space-x-1">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      className={`${
-                        i < Math.floor(tourDetails.rating || 0)
-                          ? "text-yellow-400 fill-current"
-                          : "text-gray-300"
-                      }`}
-                    />
-                  ))}
+            </div>
+          )}
+
+          {renderTabContent()}
+        </div>
+      </section>
+
+      {/* Footer (No changes here, remains the same) */}
+      <footer className="bg-gray-900 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-2 mb-6">
+                <div className="bg-red-600 text-white p-2 rounded-lg">
+                  <MapPin className="w-6 h-6" />
                 </div>
-                <span className="text-sm text-gray-600 ml-2">
-                  {tourDetails.rating?.toFixed(1)} ({tourDetails.reviews}{" "}
-                  reviews)
-                </span>
+                <h4 className="text-xl font-bold">Wanderlust Tours</h4>
               </div>
-            </div>
-
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {tourDetails.title}
-              </h1>
-              <div className="flex items-baseline space-x-3">
-                <span className="text-3xl font-bold text-red-600">
-                  {formatPrice(totalPrice)}
-                </span>
-                {quantityToBook > 0 && (
-                  <span className="text-gray-500 text-base">
-                    ({formatPrice(tourDetails.price)} per person)
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <p className="text-gray-600 leading-relaxed">
-                {tourDetails.description}
+              <p className="text-gray-400">
+                Creating unforgettable travel experiences around the world.
               </p>
             </div>
 
-            {renderKeyDetails()}
-
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              <div className="flex items-center space-x-3">
-                <CheckCircle size={20} className="text-green-500" />
-                <span className="font-semibold text-green-700">
-                  Available for Booking
-                </span>
+            <div>
+              <h5 className="text-lg font-semibold mb-4">Quick Links</h5>
+              <div className="space-y-2">
+                <a
+                  href="#"
+                  className="block text-gray-400 hover:text-red-400 transition-colors"
+                >
+                  About Us
+                </a>
+                <a
+                  href="#"
+                  className="block text-gray-400 hover:text-red-400 transition-colors"
+                >
+                  Our Tours
+                </a>
+                <a
+                  href="#"
+                  className="block text-gray-400 hover:text-red-400 transition-colors"
+                >
+                  Gallery
+                </a>
+                <a
+                  href="#"
+                  className="block text-gray-400 hover:text-red-400 transition-colors"
+                >
+                  Blog
+                </a>
               </div>
             </div>
 
-            {/* Date and Quantity Section */}
-            <div className="bg-gray-50 rounded-lg p-4 space-y-4 border">
-              <div>
-                <label
-                  htmlFor="start-date"
-                  className="block text-sm font-medium text-gray-900 mb-2"
+            <div>
+              <h5 className="text-lg font-semibold mb-4">Support</h5>
+              <div className="space-y-2">
+                <a
+                  href="#"
+                  className="block text-gray-400 hover:text-red-400 transition-colors"
                 >
-                  Select Start Date:
-                </label>
-                <input
-                  type="date"
-                  id="start-date"
-                  value={startingDate}
-                  onChange={(e) => setStartingDate(e.target.value)}
-                  min={new Date().toISOString().split("T")[0]} // Disable past dates
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
-                />
+                  Contact Us
+                </a>
+                <a
+                  href="#"
+                  className="block text-gray-400 hover:text-red-400 transition-colors"
+                >
+                  FAQs
+                </a>
+                <a
+                  href="#"
+                  className="block text-gray-400 hover:text-red-400 transition-colors"
+                >
+                  Booking Policy
+                </a>
+                <a
+                  href="#"
+                  className="block text-gray-400 hover:text-red-400 transition-colors"
+                >
+                  Terms & Conditions
+                </a>
+              </div>
+            </div>
+
+            <div>
+              <h5 className="text-lg font-semibold mb-4">Contact Info</h5>
+              <div className="space-y-2 text-gray-400">
+                <p>📧 hello@wanderlusttours.com</p>
+                <p>📞 +1 (555) 123-4567</p>
+                <p>📍 123 Adventure Street, Travel City, TC 12345</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+            <p>&copy; 2025 Wanderlust Tours. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+
+      {/* Tour Modal (Updated to handle backend data structure) */}
+      {selectedTour && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="relative">
+              <img
+                src={selectedTour.images[0]?.imageUrl} // Use the first image from the images array
+                alt={selectedTour.title}
+                className="w-full h-64 object-cover"
+              />
+              <button
+                onClick={() => setSelectedTour(null)}
+                className="absolute top-4 right-4 bg-white/90 backdrop-blur text-gray-900 p-2 rounded-full hover:bg-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-8">
+              <h4 className="text-3xl font-bold text-gray-900 mb-4">
+                {selectedTour.title}
+              </h4>
+              <p className="text-gray-600 mb-6">{selectedTour.description}</p>
+
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="flex items-center">
+                  <MapPin className="w-5 h-5 text-red-600 mr-2" />
+                  <span>{selectedTour.location}</span>
+                </div>
+                <div className="flex items-center">
+                  <Clock className="w-5 h-5 text-red-600 mr-2" />
+                  <span>{selectedTour.duration}</span>
+                </div>
+                <div className="flex items-center">
+                  <Star className="w-5 h-5 text-yellow-400 fill-current mr-2" />
+                  <span>
+                    {selectedTour.rating} ({selectedTour.reviews} reviews)
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <Users className="w-5 h-5 text-red-600 mr-2" />
+                  <span>{selectedTour.maxGuests}</span>
+                </div>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-900">
-                  Number of People:
-                </span>
-                <div className="flex items-center border border-gray-300 rounded-lg bg-white">
-                  <button
-                    onClick={() =>
-                      setQuantityToBook(Math.max(1, quantityToBook - 1))
-                    }
-                    className="p-2 hover:bg-gray-100 transition-colors"
-                  >
-                    <Minus size={16} className="text-gray-600" />
-                  </button>
-                  <span className="px-4 py-2 text-center min-w-[60px] border-x border-gray-300">
-                    {quantityToBook}
+                <div>
+                  <span className="text-3xl font-bold text-red-600">
+                    ${selectedTour.price}
                   </span>
-                  <button
-                    onClick={() => setQuantityToBook(quantityToBook + 1)}
-                    className="p-2 hover:bg-gray-100 transition-colors"
-                  >
-                    <Plus size={16} className="text-gray-600" />
-                  </button>
+                  <span className="text-gray-600 ml-2">per person</span>
                 </div>
+                <button className="bg-red-600 text-white px-8 py-3 rounded-full hover:bg-red-700 transition-colors">
+                  Book Now
+                </button>
               </div>
             </div>
-
-            {/* Actions */}
-            <div className="space-y-3 pt-4">
-              <button
-                onClick={addToCartHandler}
-                disabled={!startingDate}
-                className={`w-full font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-3 ${
-                  startingDate
-                    ? "bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                <Users size={20} />
-                <span>
-                  {startingDate
-                    ? `Book Now for ${formatPrice(totalPrice)}`
-                    : "Select a date to book"}
-                </span>
-              </button>
-
-              <button
-                onClick={() => setisModelOpen(true)}
-                className="w-full bg-white hover:bg-gray-50 text-gray-900 font-semibold py-4 px-6 rounded-lg border border-gray-300 transition-colors flex items-center justify-center space-x-2"
-              >
-                <MessageSquare size={20} />
-                <span>View Reviews ({tourDetails.reviews})</span>
-              </button>
-            </div>
           </div>
-        </div>
-
-        {/* Details Tabs */}
-        <div className="mt-12">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8">
-              <button
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === "overview"
-                    ? "border-red-500 text-red-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-                onClick={() => setActiveTab("overview")}
-              >
-                What's Included
-              </button>
-              <button
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === "gallery"
-                    ? "border-red-500 text-red-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-                onClick={() => setActiveTab("gallery")}
-              >
-                Gallery
-              </button>
-            </nav>
-          </div>
-          <div className="mt-8">
-            {activeTab === "overview" && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {(tourDetails.includes || tourDetails.amenities)?.map(
-                    (feature, idx) => (
-                      <div key={idx} className="flex items-center space-x-3">
-                        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <Check size={12} className="text-white" />
-                        </div>
-                        <span className="text-gray-700">{feature}</span>
-                      </div>
-                    )
-                  ) || (
-                    <p className="text-gray-500">
-                      No specific inclusions listed.
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-            {activeTab === "gallery" && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {allImages.map((img, idx) => (
-                    <div
-                      key={idx}
-                      className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-75 transition-opacity"
-                      onClick={() => openLightbox(img)}
-                    >
-                      <img
-                        src={img}
-                        alt={`Gallery ${idx + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Trust Badges */}
-        <div className="grid grid-cols-3 gap-4 py-8 border-y border-gray-200 mt-12">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Shield size={20} className="text-green-600" />
-            </div>
-            <p className="text-sm font-medium text-gray-900">
-              Verified Service
-            </p>
-            <p className="text-xs text-gray-500 mt-1">Authentic guarantee</p>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Calendar size={20} className="text-blue-600" />
-            </div>
-            <p className="text-sm font-medium text-gray-900">
-              Instant Confirmation
-            </p>
-            <p className="text-xs text-gray-500 mt-1">Book with confidence</p>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Info size={20} className="text-purple-600" />
-            </div>
-            <p className="text-sm font-medium text-gray-900">24/7 Support</p>
-            <p className="text-xs text-gray-500 mt-1">We're here to help</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Lightbox */}
-      {lightboxOpen && (
-        <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
-          onClick={closeLightbox}
-        >
-          <img
-            src={lightboxImage}
-            alt="Enlarged view"
-            className="max-w-full max-h-full object-contain"
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image
-          />
-          <button
-            className="absolute top-4 right-4 text-white p-2 hover:bg-white/20 rounded-full transition-colors"
-            onClick={closeLightbox}
-          >
-            <XCircle size={32} />
-          </button>
         </div>
       )}
     </div>
   );
-}
+};
+
+// The card components are now updated to use the fields from your Mongoose schema.
+// For example, `image` is now `images[0]?.imageUrl`.
+
+const TourCard = ({ tour, tourType, onSelect }) => (
+  <div
+    className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group cursor-pointer"
+    onClick={onSelect}
+  >
+    <div className="relative overflow-hidden">
+      <img
+        src={tour.images[0]?.imageUrl}
+        alt={tour.title}
+        className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+      />
+      <div className="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+        ${tour.price}
+      </div>
+      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-red-600 px-3 py-1 rounded-full text-xs font-semibold uppercase">
+        {tourType === "private" ? "Private" : "Small Group"}
+      </div>
+      <div className="absolute bottom-4 left-4 flex items-center bg-white/90 backdrop-blur rounded-full px-3 py-1">
+        <Star className="w-4 h-4 text-yellow-400 fill-current" />
+        <span className="ml-1 text-sm font-semibold">{tour.rating}</span>
+        <span className="ml-1 text-sm text-gray-600">({tour.reviews})</span>
+      </div>
+    </div>
+    <div className="p-6">
+      <h4 className="text-xl font-bold text-gray-900 mb-2">{tour.title}</h4>
+      <p className="text-gray-600 mb-4">{tour.description}</p>
+      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+        <div className="flex items-center">
+          <MapPin className="w-4 h-4 mr-1 text-red-600" />
+          {tour.location}
+        </div>
+        <div className="flex items-center">
+          <Users className="w-4 h-4 mr-1 text-red-600" />
+          {tour.maxGuests}
+        </div>
+      </div>
+      <Link to={`/service/tour/${tour._id}`}>
+        <button className="w-full bg-red-600 text-white py-3 rounded-full hover:bg-red-700 transition-colors flex items-center justify-center group">
+          View Details{" "}
+          <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+        </button>
+      </Link>
+    </div>
+  </div>
+);
+
+const PropertyCard = ({ property }) => (
+  <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
+    <div className="relative overflow-hidden">
+      <img
+        src={property.images[0]?.imageUrl}
+        alt={property.title}
+        className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+      />
+      <div className="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+        ${property.price}/night
+      </div>
+      <div className="absolute bottom-4 left-4 flex items-center bg-white/90 backdrop-blur rounded-full px-3 py-1">
+        <Star className="w-4 h-4 text-yellow-400 fill-current" />
+        <span className="ml-1 text-sm font-semibold">{property.rating}</span>
+        <span className="ml-1 text-sm text-gray-600">({property.reviews})</span>
+      </div>
+    </div>
+    <div className="p-6">
+      <h4 className="text-xl font-bold text-gray-900 mb-2">{property.title}</h4>
+      <p className="text-gray-600 mb-4">{property.description}</p>
+      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+        <div className="flex items-center">
+          <MapPin className="w-4 h-4 mr-1 text-red-600" />
+          {property.location}
+        </div>
+      </div>
+      <Link to={`/service/tour/${tour._id}`}>
+        <button className="w-full bg-red-600 text-white py-3 rounded-full hover:bg-red-700 transition-colors flex items-center justify-center group">
+          Book Property{" "}
+          <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+        </button>
+      </Link>
+    </div>
+  </div>
+);
+
+const GuideCard = ({ guide }) => (
+  <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
+    <div className="relative overflow-hidden">
+      <img
+        src={guide.images[0]?.imageUrl}
+        alt={guide.title}
+        className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+      />
+      <div className="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+        ${guide.price}/day
+      </div>
+      <div className="absolute bottom-4 left-4 flex items-center bg-white/90 backdrop-blur rounded-full px-3 py-1">
+        <Star className="w-4 h-4 text-yellow-400 fill-current" />
+        <span className="ml-1 text-sm font-semibold">{guide.rating}</span>
+        <span className="ml-1 text-sm text-gray-600">({guide.reviews})</span>
+      </div>
+    </div>
+    <div className="p-6">
+      <h4 className="text-xl font-bold text-gray-900 mb-1">{guide.title}</h4>
+      <p className="text-red-600 font-semibold text-sm mb-3">
+        {guide.speciality}
+      </p>
+      <p className="text-gray-600 mb-4">{guide.description}</p>
+      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+        <div className="flex items-center">
+          <MapPin className="w-4 h-4 mr-1 text-red-600" />
+          {guide.location}
+        </div>
+      </div>
+      <Link to={`/service/tour/${tour._id}`}>
+        <button className="w-full bg-red-600 text-white py-3 rounded-full hover:bg-red-700 transition-colors flex items-center justify-center group">
+          Hire Guide{" "}
+          <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+        </button>
+      </Link>
+    </div>
+  </div>
+);
+
+const CruiseCard = ({ cruise }) => (
+  <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
+    <div className="relative overflow-hidden">
+      <img
+        src={cruise.images[0]?.imageUrl}
+        alt={cruise.title}
+        className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+      />
+      <div className="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+        ${cruise.price}
+      </div>
+      <div className="absolute bottom-4 left-4 flex items-center bg-white/90 backdrop-blur rounded-full px-3 py-1">
+        <Star className="w-4 h-4 text-yellow-400 fill-current" />
+        <span className="ml-1 text-sm font-semibold">{cruise.rating}</span>
+        <span className="ml-1 text-sm text-gray-600">({cruise.reviews})</span>
+      </div>
+    </div>
+    <div className="p-6">
+      <h4 className="text-xl font-bold text-gray-900 mb-2">{cruise.title}</h4>
+      <p className="text-gray-600 mb-4">{cruise.description}</p>
+      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+        <div className="flex items-center">
+          <MapPin className="w-4 h-4 mr-1 text-red-600" />
+          {cruise.location}
+        </div>
+        <div className="flex items-center">
+          <Clock className="w-4 h-4 mr-1 text-red-600" />
+          {cruise.duration}
+        </div>
+      </div>
+      <Link to={`/service/tour/${tour._id}`}>
+        <button className="w-full bg-red-600 text-white py-3 rounded-full hover:bg-red-700 transition-colors flex items-center justify-center group">
+          Book Cruise{" "}
+          <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+        </button>
+      </Link>
+    </div>
+  </div>
+);
+
+export default TourWebsite;
