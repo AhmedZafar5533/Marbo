@@ -22,7 +22,7 @@ import VendorReviews from "./Pages/VendorDashboard/Reviews";
 import VendorOrders from "./Pages/VendorDashboard/Orders";
 import TourWebsite from "./Pages/TourPage";
 import TourDataForm from "./Pages/VendorDashboard/tourCreationForm";
-import TourDetailPage from "./Pages/TourDetailPage";
+import TourDetailPage from "./Pages/detailTourPage";
 
 const MainLayout = lazy(() => import("./Layout/MainlLayout"));
 const VendorDashBoardLayout = lazy(() =>
@@ -265,7 +265,7 @@ const App = () => {
             />
             <Route path="/service/tours/:id" element={<TourWebsite />} />
             <Route
-              path="/service/tours/details/:id"
+              path="/service/tour/:id"
               element={<TourDetailPage />}
             />
             <Route

@@ -38,6 +38,7 @@ export const useBillFeeStore = create((set) => ({
 
   fecthExistingBill: async (type, serviceId) => {
     try {
+
       set({ loading: true });
       const response = await fetch(`${baseUrl}/bill/get/${type}/${serviceId}`, {
         method: "GET",
@@ -62,7 +63,6 @@ export const useBillFeeStore = create((set) => ({
       toast.error("Internal Server Error");
       console.error("Error uploading bill fee data:", error);
     } finally {
-      console.log("Here we are");
       set({ loading: false });
     }
   },

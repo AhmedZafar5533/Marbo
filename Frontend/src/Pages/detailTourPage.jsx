@@ -119,6 +119,7 @@ export default function TourDetailPage() {
       serviceId: tourDetails.serviceId,
       category: tourDetails.type,
       productId: tourDetails._id,
+      typeOf: "Tour",
       name: tourDetails.title,
       imageUrl: tourDetails.images[0]?.imageUrl || "",
       quantity: quantityToBook, // This represents the number of people
