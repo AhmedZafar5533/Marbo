@@ -36,6 +36,10 @@ const cartSchema = new mongoose.Schema({
     required: true,
     default: 1,
   },
+  subDetails: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {},
+  },
 });
 
 module.exports = mongoose.model("Cart", cartSchema);

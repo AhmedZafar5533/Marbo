@@ -4,18 +4,21 @@ import { useEffect, useState, useMemo } from "react";
 import CheckoutForm from "../Pages/checkoutPage";
 import { useCartStore } from "../../Store/cartStore";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useAuthStore } from "../../Store/authStore";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 const baseUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 const CheckoutPage = () => {
   const { cart } = useCartStore();
+  const { user } = useAuthStore();
   const [clientSecret, setClientSecret] = useState("");
 
   // Create a stable dependency by memoizing cart serialization
   const cartDependency = useMemo(
     () =>
       JSON.stringify(
+        user?.email,
         cart.map((item) => ({
           id: item.id,
           price: item.price,

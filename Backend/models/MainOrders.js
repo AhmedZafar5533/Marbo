@@ -29,6 +29,16 @@ const mainOrderSchema = new mongoose.Schema(
       enum: ["pending", "processing", "shipped", "completed", "cancelled"],
       default: "pending",
     },
+    username: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+    },
   },
   { timestamps: true }
 );

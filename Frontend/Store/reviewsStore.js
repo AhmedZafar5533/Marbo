@@ -26,10 +26,10 @@ export const useReviewStore = create((set, get) => ({
       set({ loading: false });
     }
   },
-  postReview: async (id, reviewData) => {
+  postReview: async (reviewData) => {
     set({ loading: true });
     try {
-      const response = await fetch(`${baseUrl}/reviews/upload/${id}`, {
+      const response = await fetch(`${baseUrl}/reviews/upload`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,5 +49,21 @@ export const useReviewStore = create((set, get) => ({
         toast.error(data.message);
       }
     } catch (error) {}
+  },
+  serviceReviews: async (id) => {
+    set({ loading: true });
+    try {
+      const response = await fetch(`${baseUrl}/reviews/service/${id}`, {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch service reviews");
+      }
+      const data = await response.json();
+      set({ reviews: data.reviews, loading: false });
+    } catch (error) {
+      console.error("Error fetching service reviews:", error);
+      set({ loading: false, error: error.message });
+    }
   },
 }));

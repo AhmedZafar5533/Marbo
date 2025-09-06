@@ -44,6 +44,7 @@ router.post("/add", checkAuth, async (req, res) => {
       quantity: product.quantity || 1,
       imageUrl: product.imageUrl,
       typeOf: product.typeOf,
+      subDetails: product.subDetails || {},
     });
 
     if (error) {
@@ -100,6 +101,7 @@ router.post("/add", checkAuth, async (req, res) => {
         price: product.price,
         quantity: product.quantity || 1,
         imageUrl: product.imageUrl,
+        subDetails: product.subDetails || {},
       };
       if (product.productId) {
         cartItemData.productId = product.productId;

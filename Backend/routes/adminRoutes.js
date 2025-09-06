@@ -136,7 +136,7 @@ router.post("/change-vendor-status/:id", auth, checkAdmin, async (req, res) => {
 
 router.get("/services/manage/all", auth, checkAdmin, async (req, res) => {
   try {
-    const services = await activeServices.find({});
+    const services = await activeServices.find({}).lean();
     res.status(200).json({
       success: true,
       count: services.length,

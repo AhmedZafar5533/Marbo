@@ -12,12 +12,12 @@ const reviewSchema = new mongoose.Schema(
       ref: "Service",
       required: true,
     },
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+    },
     username: {
       type: String,
-      required: true,
-    },
-    findingId: {
-      type: mongoose.Schema.ObjectId,
       required: true,
     },
     rating: {

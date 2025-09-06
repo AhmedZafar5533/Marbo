@@ -20,6 +20,9 @@ import Orders from "./components/Admin/Orders";
 import Reviews from "./components/Admin/Reviews";
 import VendorReviews from "./Pages/VendorDashboard/Reviews";
 import VendorOrders from "./Pages/VendorDashboard/Orders";
+import TourWebsite from "./Pages/TourPage";
+import TourDataForm from "./Pages/VendorDashboard/tourCreationForm";
+import TourDetailPage from "./Pages/TourDetailPage";
 
 const MainLayout = lazy(() => import("./Layout/MainlLayout"));
 const VendorDashBoardLayout = lazy(() =>
@@ -168,8 +171,6 @@ const AdminMessages = lazy(() => import("./components/Admin/Messages"));
 const ProfilePage = lazy(() => import("./Pages/ProfilePage"));
 const EditablePage = lazy(() => import("./Pages/EditPage"));
 
-
-
 const App = () => {
   const { checkAuth } = useAuthStore();
   const { pathname } = useLocation();
@@ -204,6 +205,8 @@ const App = () => {
 
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
+          {/* Catch-all for 404 */}
+          <Route path="*" element={<NotFoundPage />} />
           {/* Public Routes - No authentication required */}
           <Route element={<MainLayout />}>
             {/* Core Public Pages */}
@@ -260,6 +263,11 @@ const App = () => {
               path="/service/Hotel-Booking/:id"
               element={<HotelRoomsShowcase />}
             />
+            <Route path="/service/tours/:id" element={<TourWebsite />} />
+            <Route
+              path="/service/tours/details/:id"
+              element={<TourDetailPage />}
+            />
             <Route
               path="/service/hotel/room/details/:id"
               element={<RoomDetailPage />}
@@ -288,9 +296,6 @@ const App = () => {
             {/* Insurance Services */}
             <Route path="/insurance" element={<PolicyManagement />} />
             <Route path="/service/insurance" element={<PlansMarketplace />} />
-
-            {/* Catch-all for 404 */}
-            <Route path="*" element={<NotFoundPage />} />
           </Route>
 
           {/* Authentication Routes - No layout needed */}
@@ -427,6 +432,10 @@ const App = () => {
               path="/dashboard/vendor/add/medical/doctors"
               element={<DoctorTypeCreationForm />}
             />
+            <Route
+              path="/dashboard/vendor/add/tours"
+              element={<TourDataForm />}
+            />
 
             {/* Vendor Service Management */}
             <Route
@@ -471,10 +480,8 @@ const App = () => {
               element={<AdminServiceManagement />}
             />
           </Route>
-
-          {/* Vendor Details (Admin Access) */}
           <Route
-            path="/vendor-details/:id"
+            path="/admin/vendor-details/:id"
             element={
               <AdminProtectedRoute>
                 <VendorDetailsPage />

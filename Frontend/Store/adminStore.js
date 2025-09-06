@@ -161,6 +161,7 @@ export const useAdminStore = create((set, get) => ({
       const data = await response.json();
       console.log(data);
       if (data.success === true) {
+      
         set({ activeServices: data.services });
       }
       if (!response.ok) toast.error(data.message);
@@ -223,6 +224,7 @@ export const useAdminStore = create((set, get) => ({
       console.log(data);
       if (response.status === 200) {
         console.log("Reviews fetched successfully:", data);
+
         set({ reviews: data.data });
       }
       if (!response.ok) toast.error(data.message);

@@ -32,59 +32,7 @@ import { useReviewStore } from "../../Store/reviewsStore";
 import { useProductStore } from "../../Store/productsStore";
 import { useParams } from "react-router-dom";
 
-// Mock data for demonstration adapted to your schema
-const mockServiceDetails = {
-  _id: "507f1f77bcf86cd799439011",
-  serviceId: {
-    _id: "507f1f77bcf86cd799439012",
-    vendorName: "TechWorld Electronics",
-    rating: 4.8,
-    status: "In Stock",
-    image: {
-      url: "https://images.unsplash.com/photo-1583394838336-acd977736f90?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
-    },
-  },
-  productName: "Sony WH-1000XM5 Wireless Noise Canceling Headphones",
-  typeOf: "Tech",
-  category: "Electronics",
-  brand: "Sony",
-  price: 399.99,
-  quantity: 15,
-  description:
-    "Industry-leading noise cancellation with dual noise sensor technology. Up to 30-hour battery life with quick charge. Crystal clear hands-free calling and Alexa voice control. Seamless Bluetooth connectivity with multipoint connection.",
-  features: [
-    "Industry-leading noise cancellation",
-    "30-hour battery life",
-    "Quick charge (3 min = 3 hours)",
-    "Crystal clear hands-free calling",
-    "Touch sensor controls",
-    "Multipoint Bluetooth connection",
-    "Alexa voice control",
-    "Premium comfort design",
-  ],
-  warranty: "yes",
-  warrantyConditions: [
-    "Defects in materials and workmanship",
-    "Valid from date of purchase with proof of receipt",
-    "2 year manufacturer warranty",
-  ],
-  sizes: [],
-  gender: "Unisex",
-  images: [
-    {
-      imageUrl:
-        "https://images.unsplash.com/photo-1484704849700-f032a568e944?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
-      publicId: "product_image_1",
-    },
-    {
-      imageUrl:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
-      publicId: "product_image_2",
-    },
-  ],
-  createdAt: "2024-01-15T10:30:00Z",
-  updatedAt: "2024-01-15T10:30:00Z",
-};
+
 
 const fallbackGalleryImages = [
   "https://images.unsplash.com/photo-1583394838336-acd977736f90?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
@@ -130,7 +78,7 @@ export default function ProductDetailPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState("");
-  const [productDetails, setProductDetails] = useState(mockServiceDetails);
+  const [productDetails, setProductDetails] = useState([]);
 
   const [quantityToBuy, setQuantityToBuy] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);

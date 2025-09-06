@@ -120,6 +120,7 @@ router.post("/add", checkVendor, async (req, res) => {
 router.get("/get/inventory/:typeOf", checkVendor, async (req, res) => {
   try {
     const { typeOf } = req.params;
+    
 
     if (typeOf === "Groceries") {
       serviceToFindType = "Groceries";

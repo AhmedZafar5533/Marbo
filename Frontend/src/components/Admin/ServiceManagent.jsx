@@ -341,10 +341,6 @@ const AdminServiceManagement = () => {
     );
   }, [fetchedServices]);
 
-  //   console.log(activeServices);
-  // }, [fetchedServices]);
-
-  if (loading) return <LoadingSpinner />;
   // Get available services (not currently active)
   const availableServices = allServices.filter(
     (service) =>
@@ -454,6 +450,29 @@ const AdminServiceManagement = () => {
       [category]: !prev[category],
     }));
   };
+
+  if (loading) {
+    return (
+      <div className="h-full flex flex-col">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Orders
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
+            Manage and track customer orders
+          </p>
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-500 dark:text-gray-400">
+              Loading orders...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Compact Service Card Component
   const CompactServiceCard = ({ service, showDelete = false, onDelete }) => {

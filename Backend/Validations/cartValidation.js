@@ -25,6 +25,22 @@ const cartValidationSchema = Joi.object({
     "number.min": "Quantity must be at least 1.",
     "any.required": "Quantity is required.",
   }),
+
+  subDetails: Joi.object()
+    .optional()
+    .pattern(
+      /.*/, // match any key
+      Joi.alternatives().try(
+        Joi.string(),
+        Joi.number(),
+        Joi.boolean(),
+        Joi.array(),
+        Joi.object()
+      )
+    )
+    .messages({
+      "object.base": "subDetails must be an object.",
+    }),
 });
 
-module.exports = {cartValidationSchema};
+module.exports = { cartValidationSchema };

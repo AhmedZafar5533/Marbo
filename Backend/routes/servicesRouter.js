@@ -336,10 +336,11 @@ router.post("/services/initialize", auth, checkVendor, async (req, res) => {
 
 router.get("/services/active/all", async (req, res) => {
   try {
-    const services = await activeServices.find(
-      { isActive: true },
-      { _id: 0, title: 1 }
-    );
+    const services = await activeServices
+      .find({ isActive: true })
+      .select("title")
+      .lean()
+      .exec();
 
     res.json({
       success: true,

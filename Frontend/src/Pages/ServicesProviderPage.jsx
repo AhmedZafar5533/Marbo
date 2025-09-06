@@ -209,6 +209,7 @@ const ServicesProviders = () => {
     "Hardware Suppliers",
     "Fashion Services",
     "Traditional Clothing",
+    "Tours",
   ];
 
   // Separate state for each section
@@ -356,143 +357,150 @@ const ServicesProviders = () => {
       ) : (
         <div className="min-h-screen bg-gray-50 pb-16 pt-10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Trending Services */}
-            <section className="mb-12">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                  <TrendingUp size={18} className="mr-2 text-orange-500" />
-                  Trending Now
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {displayedTrending.map((service) => (
-                  <ServiceCard
-                    key={`trending-${service._id}`}
-                    service={service}
-                    badgeType="trending"
-                    redirectUrl={redirectUrl}
-                  />
-                ))}
-              </div>
-
-              {displayedTrending.length < trendingServices.length && (
-                <div className="flex justify-center mt-8">
-                  <button
-                    onClick={loadMoreTrending}
-                    className="text-sm text-orange-600 font-medium border border-orange-200 rounded-lg hover:bg-orange-50 px-5 py-2"
-                  >
-                    Load More Trending
-                  </button>
-                </div>
-              )}
-            </section>
-
-            <section className="mb-12">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                  <Crown size={18} className="mr-2 text-purple-500" />
-                  Premium Services
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {displayedPremium.map((service) => (
-                  <ServiceCard
-                    key={`premium-${service._id}`}
-                    service={service}
-                    badgeType="premium"
-                    redirectUrl={redirectUrl}
-                  />
-                ))}
-              </div>
-
-              {displayedPremium.length < premiumServices.length && (
-                <div className="flex justify-center mt-8">
-                  <button
-                    onClick={loadMorePremium}
-                    className="text-sm text-purple-600 font-medium border border-purple-200 rounded-lg hover:bg-purple-50 px-5 py-2"
-                  >
-                    Load More Premium
-                  </button>
-                </div>
-              )}
-            </section>
-
-            {/* All Services */}
-            <section>
-              <div className="max-w-6xl mx-auto py-6">
-                <div className="flex items-center justify-between mb-2">
-                  <button
-                    onClick={toggleFilters}
-                    className="flex items-center text-sm font-medium text-gray-600 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50"
-                  >
-                    <Sliders size={16} className="mr-2" />
-                    Filters
-                  </button>
+            {/* Trending Services - Only show if there are trending services */}
+            {trendingServices.length > 0 && (
+              <section className="mb-12">
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center">
+                    <TrendingUp size={18} className="mr-2 text-orange-500" />
+                    Trending Now
+                  </h2>
                 </div>
 
-                {showFilters && (
-                  <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 mt-3">
-                    <div className="flex flex-wrap gap-4">
-                      <div>
-                        <p className="text-sm font-medium text-gray-700 mb-2">
-                          Price Range
-                        </p>
-                        <div className="flex gap-2">
-                          <FilterPill label="Any Price" active />
-                          <FilterPill label="$0-$100" />
-                          <FilterPill label="$100-$300" />
-                          <FilterPill label="$300+" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {displayedTrending.map((service) => (
+                    <ServiceCard
+                      key={`trending-${service._id}`}
+                      service={service}
+                      badgeType="trending"
+                      redirectUrl={redirectUrl}
+                    />
+                  ))}
+                </div>
+
+                {displayedTrending.length < trendingServices.length && (
+                  <div className="flex justify-center mt-8">
+                    <button
+                      onClick={loadMoreTrending}
+                      className="text-sm text-orange-600 font-medium border border-orange-200 rounded-lg hover:bg-orange-50 px-5 py-2"
+                    >
+                      Load More Trending
+                    </button>
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* Premium Services - Only show if there are premium services */}
+            {premiumServices.length > 0 && (
+              <section className="mb-12">
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center">
+                    <Crown size={18} className="mr-2 text-purple-500" />
+                    Premium Services
+                  </h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {displayedPremium.map((service) => (
+                    <ServiceCard
+                      key={`premium-${service._id}`}
+                      service={service}
+                      badgeType="premium"
+                      redirectUrl={redirectUrl}
+                    />
+                  ))}
+                </div>
+
+                {displayedPremium.length < premiumServices.length && (
+                  <div className="flex justify-center mt-8">
+                    <button
+                      onClick={loadMorePremium}
+                      className="text-sm text-purple-600 font-medium border border-purple-200 rounded-lg hover:bg-purple-50 px-5 py-2"
+                    >
+                      Load More Premium
+                    </button>
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* All Services - Only show if there are services in the "all" category */}
+            {allServices.length > 0 && (
+              <section>
+                <div className="max-w-6xl mx-auto py-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <button
+                      onClick={toggleFilters}
+                      className="flex items-center text-sm font-medium text-gray-600 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50"
+                    >
+                      <Sliders size={16} className="mr-2" />
+                      Filters
+                    </button>
+                  </div>
+
+                  {showFilters && (
+                    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 mt-3">
+                      <div className="flex flex-wrap gap-4">
+                        <div>
+                          <p className="text-sm font-medium text-gray-700 mb-2">
+                            Price Range
+                          </p>
+                          <div className="flex gap-2">
+                            <FilterPill label="Any Price" active />
+                            <FilterPill label="$0-$100" />
+                            <FilterPill label="$100-$300" />
+                            <FilterPill label="$300+" />
+                          </div>
                         </div>
-                      </div>
 
-                      <div>
-                        <p className="text-sm font-medium text-gray-700 mb-2">
-                          Sort By
-                        </p>
-                        <div className="flex gap-2">
-                          <FilterPill label="Recommended" active />
-                          <FilterPill label="Newest" />
-                          <FilterPill label="Popular" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-700 mb-2">
+                            Sort By
+                          </p>
+                          <div className="flex gap-2">
+                            <FilterPill label="Recommended" active />
+                            <FilterPill label="Newest" />
+                            <FilterPill label="Popular" />
+                          </div>
                         </div>
                       </div>
                     </div>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    All Services
+                  </h2>
+                  <div className="flex items-center text-sm text-gray-500">
+                    <Filter size={14} className="mr-1" />
+                    <span>{selectedCategory}</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {displayedAll.map((service) => (
+                    <ServiceCard
+                      key={`all-${service._id}`}
+                      service={service}
+                      redirectUrl={redirectUrl}
+                    />
+                  ))}
+                </div>
+
+                {displayedAll.length < allServices.length && (
+                  <div className="flex justify-center mt-8">
+                    <button
+                      onClick={loadMoreAll}
+                      className="bg-red-500 text-white rounded-lg px-6 py-2.5 text-sm font-medium hover:bg-red-600 transition-colors"
+                    >
+                      Load More Services
+                    </button>
                   </div>
                 )}
-              </div>
-
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-xl font-bold text-gray-900">
-                  All Services
-                </h2>
-                <div className="flex items-center text-sm text-gray-500">
-                  <Filter size={14} className="mr-1" />
-                  <span>{selectedCategory}</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {displayedAll.map((service) => (
-                  <ServiceCard
-                    key={`all-${service._id}`}
-                    service={service}
-                    redirectUrl={redirectUrl}
-                  />
-                ))}
-              </div>
-
-              {displayedAll.length < allServices.length && (
-                <div className="flex justify-center mt-8">
-                  <button
-                    onClick={loadMoreAll}
-                    className="bg-red-500 text-white rounded-lg px-6 py-2.5 text-sm font-medium hover:bg-red-600 transition-colors"
-                  >
-                    Load More Services
-                  </button>
-                </div>
-              )}
-            </section>
+              </section>
+            )}
 
             {/* Support CTA - Always Show */}
             <div className="mt-24 bg-white p-8 rounded-2xl shadow-md border border-slate-100 max-w-3xl mx-auto">

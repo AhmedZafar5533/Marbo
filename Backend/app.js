@@ -53,23 +53,6 @@ app.post(
     const sig = req.headers["stripe-signature"];
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-    // Enhanced logging for production debugging
-    console.log("Production Webhook Debug:", {
-      timestamp: new Date().toISOString(),
-      hasSignature: !!sig,
-      signatureLength: sig ? sig.length : 0,
-      bodyType: typeof req.body,
-      bodyLength: req.body ? req.body.length : 0,
-      bodyIsBuffer: Buffer.isBuffer(req.body),
-      contentType: req.headers["content-type"],
-      userAgent: req.headers["user-agent"],
-      webhookSecretSet: !!webhookSecret,
-      webhookSecretPrefix: webhookSecret
-        ? webhookSecret.substring(0, 8) + "..."
-        : "not set",
-      environment: process.env.NODE_ENV || "development",
-    });
-
     // Verify environment variables
     if (!webhookSecret) {
       console.error("STRIPE_WEBHOOK_SECRET is not set!");
@@ -164,7 +147,7 @@ app.post(
           const mainOrderResult = await MainOrder.findOneAndUpdate(
             { userId: itemData[0].userId, isPaid: false },
             { isPaid: true },
-            { new: true } 
+            { new: true }
           );
 
           console.log("Main order update result:", mainOrderResult);
@@ -229,7 +212,7 @@ app.use(cookieParser());
 // STEP 7: Session store setup
 const store = MongoStore.create({
   mongoUrl: process.env.DB_URL,
-  ttl: 24 * 60 * 60,
+  ttl: 7 * 24 * 60 * 60,
   autoRemove: "interval",
   autoRemoveInterval: 10,
 });
@@ -265,7 +248,7 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // Fixed: was missing * 1000
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     },
   })
 );
@@ -300,6 +283,7 @@ app.use("/api/bill", require("./routes/billPaymentRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
 app.use("/api/checkout", require("./routes/checkoutRoutes"));
+app.use("/api/tours", require("./routes/tourRoutes"));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

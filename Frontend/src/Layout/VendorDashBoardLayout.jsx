@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import {
   User,
-  PlusSquare,
   LogOut,
   X,
   Menu,
@@ -20,7 +19,6 @@ const DashboardLayout = () => {
   const { sendLogoutRequest: handleLogout } = useAuthStore();
 
   const navigate = useNavigate();
-
   const location = useLocation();
 
   useEffect(() => {
@@ -51,83 +49,66 @@ const DashboardLayout = () => {
       name: "Profile",
       icon: <User size={20} />,
       path: "/dashboard/vendor/profile",
-      className: "text-indigo-600 hover:bg-indigo-50",
     },
     {
       name: "Services",
       icon: <Briefcase size={20} />,
       path: "/dashboard/vendor/services",
-      className: "text-indigo-600 hover:bg-indigo-50",
     },
     {
       name: "Reviews",
       icon: <Star size={20} />,
       path: "/dashboard/vendor/reviews",
-      className: "text-indigo-600 hover:bg-indigo-50",
     },
     {
       name: "Orders",
       icon: <Package size={20} />,
       path: "/dashboard/vendor/orders",
-      className: "text-indigo-600 hover:bg-indigo-50",
     },
     {
       name: "Manage Staff",
       icon: <Users size={20} />,
       path: "/dashboard/vendor/domestic-staffing-management",
-      className: "text-indigo-600 hover:bg-indigo-50",
     },
     {
       name: "Manage Hotel",
       icon: <Users size={20} />,
       path: "/dashboard/vendor/hotel-managment",
-      className: "text-indigo-600 hover:bg-indigo-50",
     },
     {
       name: "Manage Holiday Spots",
       icon: <Users size={20} />,
       path: "/dashboard/vendor/manage/holiday-lets",
-      className: "text-indigo-600 hover:bg-indigo-50",
     },
-
+    {
+      name: "Add Tours",
+      icon: <Users size={20} />,
+      path: "/dashboard/vendor/add/tours",
+    },
     {
       name: "Manage Medical Staff",
       icon: <Users size={20} />,
       path: "/dashboard/vendor/manage/medical-staff",
-      className: "text-indigo-600 hover:bg-indigo-50",
     },
-
     {
       name: "Inventory",
       icon: <Warehouse size={20} />,
       path: "/dashboard/vendor/inventory",
-      className: "text-indigo-600 hover:bg-indigo-50",
     },
     {
       name: "Tech Inventory",
       icon: <Warehouse size={20} />,
       path: "/dashboard/vendor/add/tech-products",
-      className: "text-indigo-600 hover:bg-indigo-50",
     },
     {
       name: "Clothes Inventory",
       icon: <Warehouse size={20} />,
       path: "/dashboard/vendor/manage/clothes",
-      className: "text-indigo-600 hover:bg-indigo-50",
     },
-
-    // {
-    //     name: 'Your Page',
-    //     icon: <SquareParking size={20} />,
-    //     path: '/dashboard/vendor/edit/page',
-    //     className: 'text-indigo-600 hover:bg-indigo-50',
-    // },
-
     {
       name: "Subscriptions",
       icon: <CreditCard size={20} />,
       path: "/dashboard/subscriptions/vendor",
-      className: "text-indigo-600 hover:bg-indigo-50",
     },
   ];
 
@@ -136,15 +117,16 @@ const DashboardLayout = () => {
       {/* Sidebar */}
       <aside
         className={`bg-white border-r border-gray-200 transition-all duration-300 fixed md:static top-0 bottom-0 left-0 z-30 flex flex-col
-                    ${isSidebarOpen ? "w-64" : "w-20"}
-                    ${
-                      isSidebarOpen
-                        ? "translate-x-0"
-                        : "-translate-x-full md:translate-x-0"
-                    }`}
+              ${isSidebarOpen ? "w-64" : "w-20"}
+              ${
+                isSidebarOpen
+                  ? "translate-x-0"
+                  : "-translate-x-full md:translate-x-0"
+              }
+              h-screen overflow-y-auto`}
       >
         <div
-          className={`flex items-center px-4 py-6 border-b border-gray-200 ${
+          className={`flex items-center px-4 py-6 ${
             !isSidebarOpen && "justify-center"
           }`}
         >
@@ -169,12 +151,11 @@ const DashboardLayout = () => {
                   <Link
                     to={item.path}
                     className={`flex items-center px-3 py-3 rounded-lg transition-colors relative
-                                            ${item.className || ""}
-                                            ${
-                                              isActive
-                                                ? "bg-blue-100 text-indigo-600 font-semibold"
-                                                : "text-gray-600 hover:bg-gray-100"
-                                            }`}
+                      ${
+                        isActive
+                          ? "bg-blue-100 text-indigo-600 font-semibold"
+                          : "text-gray-600 hover:bg-gray-100"
+                      }`}
                   >
                     <span className="inline-flex">{item.icon}</span>
                     {isSidebarOpen && <span className="ml-3">{item.name}</span>}
@@ -182,19 +163,18 @@ const DashboardLayout = () => {
                 </li>
               );
             })}
-          </ul>
 
-          {isSidebarOpen && (
-            <div className="mt-auto mb-6 px-3">
+            {/* Logout button now behaves like other nav items */}
+            <li>
               <button
-                onClick={() => sendLogoutRequest()}
-                className="flex cursor-pointer items-center px-3 py-3 rounded-lg transition-colors text-red-600 hover:bg-red-50"
+                onClick={sendLogoutRequest}
+                className="w-full flex items-center px-3 py-3 rounded-lg transition-colors text-red-600 hover:bg-red-50"
               >
                 <LogOut size={20} />
-                <span className="ml-3">Logout</span>
+                {isSidebarOpen && <span className="ml-3">Logout</span>}
               </button>
-            </div>
-          )}
+            </li>
+          </ul>
         </nav>
 
         <button

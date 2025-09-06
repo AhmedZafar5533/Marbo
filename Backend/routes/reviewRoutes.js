@@ -6,23 +6,24 @@ const router = express.Router();
 
 router.get("/get/:id", async (req, res) => {
   try {
-    const Review = mongoose.model("Review");
 
-    let reviews = [];
+
+    let reviewsData = [];
     let skipCount = (page - 1) * limit;
 
     if (includeUserReview && page === 1) {
-      const userReview = await Review.findOne({ findingId, userId }).lean();
+      
+      const userReview = await reviews.findOne({ findingId, userId }).lean();
 
-      const otherReviews = await Review.find({
-        findingId,
+      const otherReviews = await reviews.find({
         ...(userReview && { _id: { $ne: userReview._id } }),
+        $or: [{ productId: id }, { serviceId: id }],
       })
         .sort({ createdAt: -1 })
         .limit(limit - (userReview ? 1 : 0))
         .lean();
 
-      reviews = userReview ? [userReview, ...otherReviews] : otherReviews;
+      reviewsData = userReview ? [userReview, ...otherReviews] : otherReviews;
     } else {
       if (page > 1 && includeUserReview) {
         skipCount = (page - 1) * limit - 1;
@@ -35,13 +36,19 @@ router.get("/get/:id", async (req, res) => {
         .limit(limit)
         .lean();
     }
-  } catch (error) {}
+    if (!reviews || reviews.length === 0) {
+      return res.status(404).json({ message: "No reviews found." });
+    }
+    res.status(200).json({ reviews });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error." });
+  }
 });
 
-router.post("/upload/:id", async (req, res) => {
+router.post("/upload", async (req, res) => {
   try {
     const body = req.body;
-    console.log("Body:", body);
 
     const { error } = reviewSchema.validate({
       comment: body.comment,
@@ -58,7 +65,7 @@ router.post("/upload/:id", async (req, res) => {
       userId: req.user._id,
       serviceId: body.serviceId,
       username: req.user.username,
-      findingId: req.params.id,
+      productId: body?.productId,
     });
 
     if (!newReview)

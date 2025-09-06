@@ -390,10 +390,10 @@ const Orders = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900 dark:text-white">
-                        {order.userId?.name || "Unknown Customer"}
+                        {order?.username || "Unknown Customer"}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {order.userId?.email || "No email"}
+                        {order.email || "No email"}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
@@ -572,9 +572,6 @@ const Orders = () => {
                     className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                   >
                     Close
-                  </button>
-                  <button className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800">
-                    Update Status
                   </button>
                 </div>
               </div>

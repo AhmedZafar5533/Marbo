@@ -73,7 +73,6 @@ function AdminDashboard() {
     }
   }, [loading, user, navigate]);
 
-  if (loading) return <LoadingSpinner />;
 
   return (
     <>

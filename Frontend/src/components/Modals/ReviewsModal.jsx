@@ -102,12 +102,13 @@ const ReviewsModal = ({ isOpen, onClose }) => {
       const review = {
         rating: newReview.rating,
         serviceId: serviceId,
+        productId: id || null,
         comment: newReview.comment,
         date: new Date().toISOString().split("T")[0],
         isOwn: true,
         avatar: "YO",
       };
-      postReview(id, review);
+      postReview(review);
       console.log(review);
       setReviews([...reviews, review]);
       setNewReview({ rating: 0, comment: "" });

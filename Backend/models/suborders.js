@@ -1,21 +1,28 @@
 const mongoose = require("mongoose");
 
-const itemSchema = new mongoose.Schema({
-  productId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
-    required: true,
+const itemSchema = new mongoose.Schema(
+  {
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
+    category: {
+      type: String,
+      required: true,
+    },
+    name: { type: String, required: true },
+    quantity: { type: Number, required: true, default: 1 },
+    unitPrice: { type: Number, required: true },
+    totalPrice: { type: Number, required: true },
+    subDetails: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
+    imageUrl: String,
   },
-  category: {
-    type: String,
-    required: true,
-  },
-  name: { type: String, required: true },
-  quantity: { type: Number, required: true, default: 1 },
-  unitPrice: { type: Number, required: true },
-  totalPrice: { type: Number, required: true },
-  imageUrl: String,
-});
+  { _id: false }
+);
 
 const serviceOrderSchema = new mongoose.Schema(
   {
@@ -43,10 +50,6 @@ const serviceOrderSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "processing", "completed", "cancelled"],
       default: "pending",
-    },
-    subDetails: {
-      type: mongoose.Schema.Types.Mixed,
-      default: {},
     },
   },
   { timestamps: true }

@@ -54,8 +54,6 @@ const PropertySaleForm = () => {
     nearbyFacilities: [],
     parkingSpaces: "",
 
-    // Contact & Preferences
-    contactPreference: "both",
     negotiable: false,
     readyToMove: false,
     loanAvailable: false,
@@ -536,7 +534,6 @@ const PropertySaleForm = () => {
           approvals: [],
           nearbyFacilities: [],
           parkingSpaces: "",
-          contactPreference: "both",
           negotiable: false,
           readyToMove: false,
           loanAvailable: false,
@@ -1734,67 +1731,6 @@ const PropertySaleForm = () => {
                 <li>Include photos of all rooms and key features</li>
                 <li>Show the exterior and surrounding area</li>
               </ul>
-            </div>
-          </div>
-
-          {/* Contact Preferences Section */}
-          <div className="bg-gray-50 p-8 sm:p-10 border-t border-gray-100">
-            <div className="flex items-center mb-8">
-              <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center mr-3">
-                <span className="text-indigo-600 font-semibold text-sm">6</span>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                Contact Preferences
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Preferred Contact Method
-                </label>
-                <div className="space-y-3">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="contactPreference"
-                      value="phone"
-                      checked={formData.contactPreference === "phone"}
-                      onChange={handleInputChange}
-                      className="w-5 h-5 text-emerald-600 bg-gray-100 border-gray-300 focus:ring-emerald-500 focus:ring-2"
-                    />
-                    <span className="ml-3 text-sm font-medium text-gray-700">
-                      Phone Calls
-                    </span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="contactPreference"
-                      value="email"
-                      checked={formData.contactPreference === "email"}
-                      onChange={handleInputChange}
-                      className="w-5 h-5 text-emerald-600 bg-gray-100 border-gray-300 focus:ring-emerald-500 focus:ring-2"
-                    />
-                    <span className="ml-3 text-sm font-medium text-gray-700">
-                      Email
-                    </span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="contactPreference"
-                      value="both"
-                      checked={formData.contactPreference === "both"}
-                      onChange={handleInputChange}
-                      className="w-5 h-5 text-emerald-600 bg-gray-100 border-gray-300 focus:ring-emerald-500 focus:ring-2"
-                    />
-                    <span className="ml-3 text-sm font-medium text-gray-700">
-                      Both
-                    </span>
-                  </label>
-                </div>
-              </div>
             </div>
           </div>
 

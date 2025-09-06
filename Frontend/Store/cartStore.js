@@ -22,7 +22,6 @@ export const useCartStore = create((set, get) => ({
 
     if (isLoggedIn) {
       try {
-        // Send data to backend
         const response = await fetch(`${baseUrl}/cart/add`, {
           method: "POST",
           headers: {
@@ -56,7 +55,6 @@ export const useCartStore = create((set, get) => ({
               currentCart.push(updatedCartItem);
             }
           } else {
-            // Fallback: manually update if backend doesn't return item data
             const existingItemIndex = currentCart.findIndex(
               (item) =>
                 item.productId === product.productId || item._id === product._id
@@ -72,7 +70,8 @@ export const useCartStore = create((set, get) => ({
           localStorage.setItem("cart", JSON.stringify(currentCart));
           set({ cart: currentCart });
           get().calculateCartQuantity();
-          toast.success(data.message || "Product added to cart");
+          toast.success(data.message || "Item added to cart");
+          return true;
         } else {
           toast.error(data.message || "Failed to add to cart");
         }
@@ -313,7 +312,6 @@ export const useCartStore = create((set, get) => ({
         if (data.success) {
           localStorage.removeItem("cart");
           set({ cart: [], cartQuantity: 0 });
-
         } else {
           toast.error(data.message || "Failed to clear cart");
         }

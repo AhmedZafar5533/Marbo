@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post("/add", checkAuthentication, async (req, res) => {
   try {
-    const cartItems = await cartSchema.find({ userId: req.user._id });
+    const cartItems = await cartSchema.find({ userId: req.user._id }).lean();
 
     if (cartItems.length === 0) {
       return res.status(404).json({
@@ -18,43 +18,38 @@ router.post("/add", checkAuthentication, async (req, res) => {
       });
     }
 
-    await MainOrder.deleteMany({ userId: req.user._id, isPaid: false });
-    await ServiceOrder.deleteMany({ userId: req.user._id, isPaid: false });
+    await Promise.all([
+      MainOrder.deleteMany({ userId: req.user._id, isPaid: false }),
+      ServiceOrder.deleteMany({ userId: req.user._id, isPaid: false }),
+    ]);
 
     const serviceMap = {};
     let grandTotal = 0;
     let totalItemCount = 0;
 
     cartItems.forEach((item) => {
-      if (!serviceMap[item.serviceId]) {
-        serviceMap[item.serviceId] = [];
-      }
+      if (!serviceMap[item.serviceId]) serviceMap[item.serviceId] = [];
       serviceMap[item.serviceId].push(item);
 
-      grandTotal += item.price * item.quantity;
+      const itemTotal = item.price * item.quantity;
+      grandTotal += itemTotal;
       totalItemCount += item.quantity;
     });
 
-    // Create main order
     const mainOrder = new MainOrder({
       userId: req.user._id,
       subtotal: grandTotal,
       itemCount: totalItemCount,
+      email: req.user.email,
+      username: req.user.username,
       status: "pending",
       isPaid: false,
     });
 
     await mainOrder.save();
 
-    const serviceOrders = [];
-
-    // Create service-specific orders
-    for (const [serviceId, items] of Object.entries(serviceMap)) {
-      const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
-      const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-      console.log(items);
-
-      const serviceOrder = new ServiceOrder({
+    const serviceOrdersData = Object.entries(serviceMap).map(
+      ([serviceId, items]) => ({
         mainOrderId: mainOrder._id,
         serviceId,
         userId: req.user._id,
@@ -66,15 +61,16 @@ router.post("/add", checkAuthentication, async (req, res) => {
           category: i.category,
           totalPrice: i.price * i.quantity,
           imageUrl: i.imageUrl,
+          subDetails: i.subDetails || {},
         })),
-        itemCount,
-        subtotal,
-        subDetails: req.body.subDetails?.[serviceId] || {}, // Flexible extra data
-      });
+        itemCount: items.reduce((sum, i) => sum + i.quantity, 0),
+        subtotal: items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+      })
+    );
 
-      await serviceOrder.save();
-      serviceOrders.push(serviceOrder);
-    }
+    const serviceOrders = await ServiceOrder.insertMany(serviceOrdersData);
+
+    console.log("logging:", serviceOrders);
 
     res.status(201).json({
       success: true,

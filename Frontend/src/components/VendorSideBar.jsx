@@ -20,7 +20,7 @@ const VendorSidebar = () => {
         <div className="flex">
             {/* Sidebar with same behavior on all screen sizes */}
             <div
-                className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'
+                className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out overflow-y-hidden ${isOpen ? 'translate-x-0' : '-translate-x-full'
                     }`}
             >
                 <div className="flex justify-between items-center p-4 border-b">
