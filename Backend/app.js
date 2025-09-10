@@ -322,6 +322,7 @@ const scriptToRun = async () => {
       "Hardware Suppliers",
       "Agricultural Services",
       "Event Management",
+      "Tours"
     ];
 
     for (const title of serviceTitles) {

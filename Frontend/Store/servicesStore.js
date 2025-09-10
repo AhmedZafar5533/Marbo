@@ -14,6 +14,31 @@ export const useServiceStore = create((set, get) => ({
   frontEndServices: [],
   successfullyCreated: false,
   singleService: null,
+  serviceInfo: null,
+
+  getServiceInfo: async (id) => {
+    set({ loading: true });
+    try {
+      const result = await fetch(
+        `${baseUrl}/service-page/services/info/${id}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      if (result.status === 200) {
+        const data = await result.json();
+        set({ serviceInfo: data.data });
+        console.log(get().serviceInfo);
+      } else if (!result.ok) set({ serviceInfo: null });
+    } catch (error) {
+      toast.error("Internal Server Error");
+      console.error("getServiceInfo error:", error);
+    } finally {
+      set({ loading: false });
+    }
+  },
 
   initializeService: async (newData) => {
     try {
@@ -189,8 +214,9 @@ export const useServiceStore = create((set, get) => ({
       const data = await result.json();
 
       if (result.status === 200) {
+        console.log("Frontend services data:", data);
         const dataToSet = data.data.map((service) => service.title);
-      
+
         set({ frontEndServices: dataToSet });
       }
       if (!result.ok) toast.error(data.message);

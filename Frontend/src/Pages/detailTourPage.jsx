@@ -8,14 +8,10 @@ import {
   Star,
   Eye,
   Shield,
-  Truck,
-  RefreshCw,
   ChevronLeft,
   ChevronRight,
   Plus,
   Minus,
-  Award,
-  Package,
   Calendar,
   Info,
   CheckCircle,
@@ -25,6 +21,7 @@ import {
   Briefcase,
   Languages,
   MessageSquare,
+  MapPinned,
 } from "lucide-react";
 import { useCartStore } from "../../Store/cartStore";
 import { useReviewStore } from "../../Store/reviewsStore";
@@ -37,7 +34,6 @@ const fallbackGalleryImages = [
 ];
 
 export default function TourDetailPage() {
-  console.log("rendering");
   const [activeImage, setActiveImage] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -45,24 +41,19 @@ export default function TourDetailPage() {
   const [tourDetails, setTourDetails] = useState(null);
 
   const [quantityToBook, setQuantityToBook] = useState(1);
-  const [startingDate, setStartingDate] = useState(""); // State for the date picker
+  const [startingDate, setStartingDate] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const { id } = useParams();
-
-  // Assuming your store is set up to fetch a tour by ID now
   const { getDetailsById: getTourById, details: fetchedTour } = useTourStore();
-
   const { addToCart } = useCartStore();
   const { setisModelOpen } = useReviewStore();
 
-  // Format price to currency
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatPrice = (price) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(price || 0);
-  };
 
   useEffect(() => {
     if (id) {
@@ -80,20 +71,13 @@ export default function TourDetailPage() {
     }
   }, [fetchedTour]);
 
-  // Calculate total price dynamically based on quantity
   const totalPrice = useMemo(() => {
     if (!tourDetails?.price) return 0;
     return tourDetails.price * quantityToBook;
   }, [tourDetails, quantityToBook]);
 
   const getAllImages = () => {
-    if (
-      !tourDetails ||
-      !tourDetails.images ||
-      tourDetails.images.length === 0
-    ) {
-      return fallbackGalleryImages;
-    }
+    if (!tourDetails?.images?.length) return fallbackGalleryImages;
     return tourDetails.images.map((img) => img.imageUrl);
   };
 
@@ -115,23 +99,23 @@ export default function TourDetailPage() {
     }
 
     const cartItem = {
-      price: totalPrice, // Send the calculated total price
+      price: totalPrice,
       serviceId: tourDetails.serviceId,
       category: tourDetails.type,
       productId: tourDetails._id,
       typeOf: "Tour",
       name: tourDetails.title,
       imageUrl: tourDetails.images[0]?.imageUrl || "",
-      quantity: quantityToBook, // This represents the number of people
+      quantity: quantityToBook,
       subDetails: {
         location: tourDetails.location,
         duration: tourDetails.duration,
-        startingDate: startingDate, // Include the selected start date
-        people: quantityToBook, // Explicitly add the number of people
+        pickupSpot: tourDetails.pickupSpot || "Not specified",
+        startingDate,
+        people: quantityToBook,
       },
     };
     addToCart(cartItem);
-    // You could add a success notification here
   };
 
   const nextImage = () => {
@@ -159,7 +143,6 @@ export default function TourDetailPage() {
     );
   }
 
-  // Helper to render key details based on tour type
   const renderKeyDetails = () => {
     const details = [];
     if (tourDetails.duration)
@@ -186,27 +169,29 @@ export default function TourDetailPage() {
         label: "Speciality",
         value: tourDetails.speciality,
       });
-    if (tourDetails.languages && tourDetails.languages.length > 0)
+    if (tourDetails.languages?.length)
       details.push({
         icon: Languages,
         label: "Languages",
         value: tourDetails.languages.join(", "),
       });
     if (tourDetails.shipName)
+      details.push({ icon: Ship, label: "Ship", value: tourDetails.shipName });
+    if (tourDetails.pickupSpot)
       details.push({
-        icon: Ship,
-        label: "Ship",
-        value: tourDetails.shipName,
+        icon: MapPinned,
+        label: "Pickup Spot",
+        value: tourDetails.pickupSpot,
       });
 
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
         <h3 className="font-semibold text-gray-900 mb-4">Key Details</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-6">
           {details.map((detail, idx) => (
-            <div key={idx} className="flex items-start space-x-2">
+            <div key={idx} className="flex items-start space-x-3">
               <detail.icon
-                size={18}
+                size={20}
                 className="text-red-600 mt-1 flex-shrink-0"
               />
               <div>
@@ -222,11 +207,11 @@ export default function TourDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Image Gallery */}
           <div className="space-y-4">
-            <div className="relative aspect-square bg-white rounded-lg overflow-hidden border border-gray-200">
+            <div className="relative aspect-square bg-white rounded-xl overflow-hidden shadow-lg">
               <img
                 src={activeImage || allImages[0]}
                 alt={tourDetails.title}
@@ -236,13 +221,13 @@ export default function TourDetailPage() {
                 <>
                   <button
                     onClick={prevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md"
                   >
                     <ChevronLeft size={20} className="text-gray-600" />
                   </button>
                   <button
                     onClick={nextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md"
                   >
                     <ChevronRight size={20} className="text-gray-600" />
                   </button>
@@ -250,12 +235,12 @@ export default function TourDetailPage() {
               )}
               <button
                 onClick={() => openLightbox(activeImage)}
-                className="absolute bottom-4 right-4 bg-white/90 hover:bg-white px-4 py-2 rounded-lg shadow-lg transition-all text-sm font-medium flex items-center space-x-2"
+                className="absolute bottom-4 right-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-lg transition-all text-sm font-medium flex items-center space-x-2"
               >
                 <Eye size={16} />
                 <span>Zoom</span>
               </button>
-              <div className="absolute bottom-4 left-4 bg-black/50 text-white px-3 py-1 rounded-lg text-sm">
+              <div className="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1 rounded-lg text-sm">
                 {currentImageIndex + 1} / {allImages.length}
               </div>
             </div>
@@ -264,11 +249,9 @@ export default function TourDetailPage() {
           {/* Tour Info */}
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 capitalize">
-                  {tourDetails.type}
-                </span>
-              </div>
+              <span className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 capitalize">
+                {tourDetails.type}
+              </span>
               <div className="flex items-center space-x-1">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
@@ -290,41 +273,33 @@ export default function TourDetailPage() {
               </div>
             </div>
 
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {tourDetails.title}
-              </h1>
-              <div className="flex items-baseline space-x-3">
-                <span className="text-3xl font-bold text-red-600">
-                  {formatPrice(totalPrice)}
-                </span>
-                {quantityToBook > 0 && (
-                  <span className="text-gray-500 text-base">
-                    ({formatPrice(tourDetails.price)} per person)
-                  </span>
-                )}
-              </div>
+            <h1 className="text-4xl font-bold text-gray-900">
+              {tourDetails.title}
+            </h1>
+            <div className="flex items-baseline space-x-3">
+              <span className="text-3xl font-bold text-red-600">
+                {formatPrice(totalPrice)}
+              </span>
+              <span className="text-gray-500 text-base">
+                ({formatPrice(tourDetails.price)} per person)
+              </span>
             </div>
 
-            <div>
-              <p className="text-gray-600 leading-relaxed">
-                {tourDetails.description}
-              </p>
-            </div>
+            <p className="text-gray-600 leading-relaxed">
+              {tourDetails.description}
+            </p>
 
             {renderKeyDetails()}
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              <div className="flex items-center space-x-3">
-                <CheckCircle size={20} className="text-green-500" />
-                <span className="font-semibold text-green-700">
-                  Available for Booking
-                </span>
-              </div>
+            <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center space-x-3">
+              <CheckCircle size={20} className="text-green-600" />
+              <span className="font-semibold text-green-700">
+                Available for Booking
+              </span>
             </div>
 
-            {/* Date and Quantity Section */}
-            <div className="bg-gray-50 rounded-lg p-4 space-y-4 border">
+            {/* Date & Quantity */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm space-y-4">
               <div>
                 <label
                   htmlFor="start-date"
@@ -337,7 +312,7 @@ export default function TourDetailPage() {
                   id="start-date"
                   value={startingDate}
                   onChange={(e) => setStartingDate(e.target.value)}
-                  min={new Date().toISOString().split("T")[0]} // Disable past dates
+                  min={new Date().toISOString().split("T")[0]}
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
                 />
               </div>
@@ -346,7 +321,7 @@ export default function TourDetailPage() {
                 <span className="text-sm font-medium text-gray-900">
                   Number of People:
                 </span>
-                <div className="flex items-center border border-gray-300 rounded-lg bg-white">
+                <div className="flex items-center border border-gray-300 rounded-lg bg-gray-50">
                   <button
                     onClick={() =>
                       setQuantityToBook(Math.max(1, quantityToBook - 1))
@@ -373,9 +348,9 @@ export default function TourDetailPage() {
               <button
                 onClick={addToCartHandler}
                 disabled={!startingDate}
-                className={`w-full font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-3 ${
+                className={`w-full font-semibold py-4 px-6 rounded-lg flex items-center justify-center space-x-3 transition-all ${
                   startingDate
-                    ? "bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl"
+                    ? "bg-red-600 hover:bg-red-700 text-white shadow-md hover:shadow-lg"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
               >
@@ -389,110 +364,12 @@ export default function TourDetailPage() {
 
               <button
                 onClick={() => setisModelOpen(true)}
-                className="w-full bg-white hover:bg-gray-50 text-gray-900 font-semibold py-4 px-6 rounded-lg border border-gray-300 transition-colors flex items-center justify-center space-x-2"
+                className="w-full bg-white hover:bg-gray-50 text-gray-900 font-semibold py-4 px-6 rounded-lg border border-gray-300 flex items-center justify-center space-x-2"
               >
                 <MessageSquare size={20} />
                 <span>View Reviews ({tourDetails.reviews})</span>
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* Details Tabs */}
-        <div className="mt-12">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8">
-              <button
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === "overview"
-                    ? "border-red-500 text-red-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-                onClick={() => setActiveTab("overview")}
-              >
-                What's Included
-              </button>
-              <button
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === "gallery"
-                    ? "border-red-500 text-red-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-                onClick={() => setActiveTab("gallery")}
-              >
-                Gallery
-              </button>
-            </nav>
-          </div>
-          <div className="mt-8">
-            {activeTab === "overview" && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {(tourDetails.includes || tourDetails.amenities)?.map(
-                    (feature, idx) => (
-                      <div key={idx} className="flex items-center space-x-3">
-                        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <Check size={12} className="text-white" />
-                        </div>
-                        <span className="text-gray-700">{feature}</span>
-                      </div>
-                    )
-                  ) || (
-                    <p className="text-gray-500">
-                      No specific inclusions listed.
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-            {activeTab === "gallery" && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {allImages.map((img, idx) => (
-                    <div
-                      key={idx}
-                      className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-75 transition-opacity"
-                      onClick={() => openLightbox(img)}
-                    >
-                      <img
-                        src={img}
-                        alt={`Gallery ${idx + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Trust Badges */}
-        <div className="grid grid-cols-3 gap-4 py-8 border-y border-gray-200 mt-12">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Shield size={20} className="text-green-600" />
-            </div>
-            <p className="text-sm font-medium text-gray-900">
-              Verified Service
-            </p>
-            <p className="text-xs text-gray-500 mt-1">Authentic guarantee</p>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Calendar size={20} className="text-blue-600" />
-            </div>
-            <p className="text-sm font-medium text-gray-900">
-              Instant Confirmation
-            </p>
-            <p className="text-xs text-gray-500 mt-1">Book with confidence</p>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Info size={20} className="text-purple-600" />
-            </div>
-            <p className="text-sm font-medium text-gray-900">24/7 Support</p>
-            <p className="text-xs text-gray-500 mt-1">We're here to help</p>
           </div>
         </div>
       </div>
@@ -507,10 +384,10 @@ export default function TourDetailPage() {
             src={lightboxImage}
             alt="Enlarged view"
             className="max-w-full max-h-full object-contain"
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image
+            onClick={(e) => e.stopPropagation()}
           />
           <button
-            className="absolute top-4 right-4 text-white p-2 hover:bg-white/20 rounded-full transition-colors"
+            className="absolute top-4 right-4 text-white p-2 hover:bg-white/20 rounded-full"
             onClick={closeLightbox}
           >
             <XCircle size={32} />

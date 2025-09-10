@@ -4,6 +4,7 @@ import {
   FaStore,
   FaCouch,
   FaUsers,
+  FaGlobe,
   FaBolt,
   FaTint,
   FaGraduationCap,
@@ -37,7 +38,6 @@ import {
   FaChevronUp,
 } from "react-icons/fa";
 import { useAdminStore } from "../../../Store/adminStore";
-import LoadingSpinner from "../LoadingSpinner";
 
 const AdminServiceManagement = () => {
   // All available services
@@ -118,24 +118,24 @@ const AdminServiceManagement = () => {
       tags: ["holiday", "vacation", "lets", "rentals", "short-term"],
       category: "Lifestyle",
     },
-    {
-      id: "arts-crafts",
-      title: "Arts & Crafts",
-      description: "Authentic handmade products and artifacts",
-      icon: <FaPalette className="w-6 h-6" />,
-      color: "bg-gradient-to-br from-red-400 to-red-500",
-      tags: ["arts", "crafts", "handmade", "artifacts"],
-      category: "Lifestyle",
-    },
-    {
-      id: "fashion-services",
-      title: "Fashion Services",
-      description: "Contemporary and traditional fashion",
-      icon: <FaShoppingBag className="w-6 h-6" />,
-      color: "bg-gradient-to-br from-red-500 to-red-600",
-      tags: ["fashion", "services", "traditional", "contemporary"],
-      category: "Lifestyle",
-    },
+    // {
+    //   id: "arts-crafts",
+    //   title: "Arts & Crafts",
+    //   description: "Authentic handmade products and artifacts",
+    //   icon: <FaPalette className="w-6 h-6" />,
+    //   color: "bg-gradient-to-br from-red-400 to-red-500",
+    //   tags: ["arts", "crafts", "handmade", "artifacts"],
+    //   category: "Lifestyle",
+    // },
+    // {
+    //   id: "fashion-services",
+    //   title: "Fashion Services",
+    //   description: "Contemporary and traditional fashion",
+    //   icon: <FaShoppingBag className="w-6 h-6" />,
+    //   color: "bg-gradient-to-br from-red-500 to-red-600",
+    //   tags: ["fashion", "services", "traditional", "contemporary"],
+    //   category: "Lifestyle",
+    // },
     {
       id: "hotel-booking",
       title: "Hotel Booking",
@@ -156,16 +156,16 @@ const AdminServiceManagement = () => {
       tags: ["healthcare", "medical", "hospitals", "care"],
       category: "Health & Wellness",
     },
-    {
-      id: "health-insurance",
-      title: "Health Insurance",
-      description:
-        "Secure health coverage plans from trusted providers back home",
-      icon: <FaShieldAlt className="w-6 h-6" />,
-      color: "bg-gradient-to-br from-red-400 to-red-500",
-      tags: ["insurance", "health", "coverage", "plans", "protection"],
-      category: "Health & Wellness",
-    },
+    // {
+    //   id: "health-insurance",
+    //   title: "Health Insurance",
+    //   description:
+    //     "Secure health coverage plans from trusted providers back home",
+    //   icon: <FaShieldAlt className="w-6 h-6" />,
+    //   color: "bg-gradient-to-br from-red-400 to-red-500",
+    //   tags: ["insurance", "health", "coverage", "plans", "protection"],
+    //   category: "Health & Wellness",
+    // },
     // Real Estate & Property
     {
       id: "properties-for-sale",
@@ -194,15 +194,15 @@ const AdminServiceManagement = () => {
       tags: ["land", "acquisition", "real estate", "listings", "transactions"],
       category: "Real Estate & Property",
     },
-    {
-      id: "property-management",
-      title: "Property Management",
-      description: "Professional property maintenance and tenant management",
-      icon: <FaUserTie className="w-6 h-6" />,
-      color: "bg-gradient-to-br from-red-500 to-red-600",
-      tags: ["property", "management", "maintenance", "tenants", "services"],
-      category: "Real Estate & Property",
-    },
+    // {
+    //   id: "property-management",
+    //   title: "Property Management",
+    //   description: "Professional property maintenance and tenant management",
+    //   icon: <FaUserTie className="w-6 h-6" />,
+    //   color: "bg-gradient-to-br from-red-500 to-red-600",
+    //   tags: ["property", "management", "maintenance", "tenants", "services"],
+    //   category: "Real Estate & Property",
+    // },
     // Financial Services
     {
       id: "money-transfer",
@@ -213,33 +213,33 @@ const AdminServiceManagement = () => {
       tags: ["money", "transfer", "remittance", "services"],
       category: "Financial Services",
     },
-    {
-      id: "mortgage-services",
-      title: "Mortgage Services",
-      description: "Mortgage solutions for diaspora investors",
-      icon: <FaHandshake className="w-6 h-6" />,
-      color: "bg-gradient-to-br from-red-600 to-red-700",
-      tags: ["mortgage", "real estate", "finance", "investment", "services"],
-      category: "Financial Services",
-    },
-    {
-      id: "banking-services",
-      title: "Banking Services",
-      description: "Diaspora-focused banking solutions",
-      icon: <FaPiggyBank className="w-6 h-6" />,
-      color: "bg-gradient-to-br from-red-400 to-red-500",
-      tags: ["banking", "finance", "services", "diaspora"],
-      category: "Financial Services",
-    },
-    {
-      id: "rent-collection",
-      title: "Rent Collection",
-      description: "Secure and reliable rent collection services",
-      icon: <FaMoneyCheckAlt className="w-6 h-6" />,
-      color: "bg-gradient-to-br from-red-500 to-orange-500",
-      tags: ["rent", "collection", "payments", "real estate", "services"],
-      category: "Financial Services",
-    },
+    // {
+    //   id: "mortgage-services",
+    //   title: "Mortgage Services",
+    //   description: "Mortgage solutions for diaspora investors",
+    //   icon: <FaHandshake className="w-6 h-6" />,
+    //   color: "bg-gradient-to-br from-red-600 to-red-700",
+    //   tags: ["mortgage", "real estate", "finance", "investment", "services"],
+    //   category: "Financial Services",
+    // },
+    // {
+    //   id: "banking-services",
+    //   title: "Banking Services",
+    //   description: "Diaspora-focused banking solutions",
+    //   icon: <FaPiggyBank className="w-6 h-6" />,
+    //   color: "bg-gradient-to-br from-red-400 to-red-500",
+    //   tags: ["banking", "finance", "services", "diaspora"],
+    //   category: "Financial Services",
+    // },
+    // {
+    //   id: "rent-collection",
+    //   title: "Rent Collection",
+    //   description: "Secure and reliable rent collection services",
+    //   icon: <FaMoneyCheckAlt className="w-6 h-6" />,
+    //   color: "bg-gradient-to-br from-red-500 to-orange-500",
+    //   tags: ["rent", "collection", "payments", "real estate", "services"],
+    //   category: "Financial Services",
+    // },
     // Technology & Communication
     {
       id: "tech-supplies",
@@ -261,50 +261,59 @@ const AdminServiceManagement = () => {
       category: "Technology & Communication",
     },
     // Professional Services
+    // {
+    //   id: "construction-services",
+    //   title: "Construction Services",
+    //   description:
+    //     "Connect with certified building professionals and contractors",
+    //   icon: <FaBuilding className="w-6 h-6" />,
+    //   color: "bg-gradient-to-br from-red-500 to-red-600",
+    //   tags: [
+    //     "construction",
+    //     "building",
+    //     "contractors",
+    //     "services",
+    //     "professionals",
+    //   ],
+    //   category: "Professional Services",
+    // },
+    // {
+    //   id: "hardware-suppliers",
+    //   title: "Hardware Suppliers",
+    //   description:
+    //     "Source construction materials directly from trusted suppliers",
+    //   icon: <FaTools className="w-6 h-6" />,
+    //   color: "bg-gradient-to-br from-red-400 to-red-500",
+    //   tags: ["hardware", "construction", "suppliers", "materials"],
+    //   category: "Professional Services",
+    // },
+    // {
+    //   id: "agricultural-services",
+    //   title: "Agricultural Services",
+    //   description: "Farming equipment and professional farm management",
+    //   icon: <FaTractor className="w-6 h-6" />,
+    //   color: "bg-gradient-to-br from-red-600 to-red-700",
+    //   tags: ["agriculture", "farming", "equipment", "management", "farm"],
+    //   category: "Professional Services",
+    // },
+    // {
+    //   id: "event-management",
+    //   title: "Event Management",
+    //   description:
+    //     "Complete event planning including traditional Mikolo services",
+    //   icon: <FaCalendarCheck className="w-6 h-6" />,
+    //   color: "bg-gradient-to-br from-red-500 to-orange-500",
+    //   tags: ["event", "management", "planning", "mikolo", "services"],
+    //   category: "Professional Services",
+    // },
     {
-      id: "construction-services",
-      title: "Construction Services",
-      description:
-        "Connect with certified building professionals and contractors",
-      icon: <FaBuilding className="w-6 h-6" />,
-      color: "bg-gradient-to-br from-red-500 to-red-600",
-      tags: [
-        "construction",
-        "building",
-        "contractors",
-        "services",
-        "professionals",
-      ],
-      category: "Professional Services",
-    },
-    {
-      id: "hardware-suppliers",
-      title: "Hardware Suppliers",
-      description:
-        "Source construction materials directly from trusted suppliers",
-      icon: <FaTools className="w-6 h-6" />,
-      color: "bg-gradient-to-br from-red-400 to-red-500",
-      tags: ["hardware", "construction", "suppliers", "materials"],
-      category: "Professional Services",
-    },
-    {
-      id: "agricultural-services",
-      title: "Agricultural Services",
-      description: "Farming equipment and professional farm management",
-      icon: <FaTractor className="w-6 h-6" />,
-      color: "bg-gradient-to-br from-red-600 to-red-700",
-      tags: ["agriculture", "farming", "equipment", "management", "farm"],
-      category: "Professional Services",
-    },
-    {
-      id: "event-management",
-      title: "Event Management",
-      description:
-        "Complete event planning including traditional Mikolo services",
-      icon: <FaCalendarCheck className="w-6 h-6" />,
-      color: "bg-gradient-to-br from-red-500 to-orange-500",
-      tags: ["event", "management", "planning", "mikolo", "services"],
-      category: "Professional Services",
+      id: "tours",
+      title: "Tours",
+      description: "Explore local tours and travel experiences",
+      icon: <FaGlobe className="w-6 h-6" />,
+      color: "bg-gradient-to-br from-red-400 to-orange-500",
+      tags: ["tours", "travel", "experiences", "local"],
+      category: "Lifestyle",
     },
   ];
 

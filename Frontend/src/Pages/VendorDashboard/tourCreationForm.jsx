@@ -252,10 +252,10 @@ const TourDataForm = () => {
           ...baseData,
           title: formData.guideName,
           speciality: formData.speciality,
-          citiesAvailable: formData.citiesAvailable
-            .split(",")
-            .map((c) => c.trim()),
-          languages: formData.languages.split(",").map((l) => l.trim()),
+          // citiesAvailable: formData.citiesAvailable
+          //   .split(",")
+          //   .map((c) => c.trim()),
+          languages: formData.languages,
           experience: formData.experience,
         };
       case "cruises":

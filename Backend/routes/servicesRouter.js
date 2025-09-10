@@ -13,6 +13,20 @@ const service = require("../models/service");
 const User = require("../models/User");
 const activeServices = require("../models/activeServices");
 
+router.get("/services/info/:id", async (req, res) => {
+  try {
+    const serviceData = await service
+      .findById(req.params.id)
+      .select("serviceName rating description image");
+    console.log(serviceData);
+    if (!serviceData)
+      return res.status(404).json({ message: "Service not found" });
+    return res.status(200).json({ data: serviceData });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 router.get("/services/get", auth, checkVendor, async (req, res) => {
   try {
     const { id } = req.user;

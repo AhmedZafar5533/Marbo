@@ -52,7 +52,7 @@ function AdminDashboard() {
     if (path.includes("/admin/messages")) return "messages";
     if (path.includes("/admin/reviews")) return "reviews";
     if (path.includes("/admin/manage-services")) return "manage";
-    if (path.includes("/admin/settings")) return "settings";
+
     return "dashboard";
   };
 
@@ -213,12 +213,7 @@ const Sidebar = ({
       label: "Messages",
       path: "/admin/messages",
     },
-    {
-      id: "settings",
-      icon: <SettingsIcon size={20} />,
-      label: "Settings",
-      path: "/admin/settings",
-    },
+   
   ];
 
   return (

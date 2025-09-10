@@ -203,7 +203,7 @@ const App = () => {
       <style>{nprogressStyles}</style>
       <Toaster position="top-right" richColors closeButton />
 
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<></>}>
         <Routes>
           {/* Catch-all for 404 */}
           <Route path="*" element={<NotFoundPage />} />
@@ -265,7 +265,7 @@ const App = () => {
             />
             <Route path="/service/tours/:id" element={<TourWebsite />} />
             <Route
-              path="/service/tour/:id"
+              path="/service/tours/details/:id"
               element={<TourDetailPage />}
             />
             <Route

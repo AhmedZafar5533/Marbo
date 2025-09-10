@@ -120,24 +120,24 @@ const TourSchema = new Schema(
     },
     checkInTime: String,
     checkOutTime: String,
-    guideName: {
-      type: String,
-      required: function () {
-        return this.type === "guides";
-      },
-    },
+    // guideName: {
+    //   type: String,
+    //   required: function () {
+    //     return this.type === "guides";
+    //   },
+    // },
     speciality: {
       type: String,
       required: function () {
         return this.type === "guides";
       },
     },
-    citiesAvailable: {
-      type: String,
-      required: function () {
-        return this.type === "guides";
-      },
-    },
+    // citiesAvailable: {
+    //   type: String,
+    //   required: function () {
+    //     return this.type === "guides";
+    //   },
+    // },
     languages: {
       type: [String],
       default: [],

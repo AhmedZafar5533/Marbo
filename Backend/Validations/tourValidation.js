@@ -91,15 +91,10 @@ const tourValidationSchema = Joi.object({
     .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)
     .allow("")
     .optional(),
-  guideName: Joi.string().when("type", { is: "guides", then: Joi.required() }),
   speciality: Joi.string().when("type", { is: "guides", then: Joi.required() }),
-  citiesAvailable: Joi.string().when("type", {
-    is: "guides",
-    then: Joi.required(),
-  }),
+
   languages: Joi.string().allow("").optional(),
   experience: Joi.number().integer().min(0).allow("").optional(),
-  shipName: Joi.string().when("type", { is: "cruises", then: Joi.required() }),
   ports: Joi.string().when("type", { is: "cruises", then: Joi.required() }),
   cabinType: Joi.string()
     .valid(...cabinTypes, "")

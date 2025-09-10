@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useServiceStore } from "../../../Store/servicesStore";
+import { FaGlobe } from "react-icons/fa";
 
 // Global image cache to track loaded images across component remounts
 const imageCache = new Set();
@@ -66,8 +67,6 @@ const LazyImage = ({ src, alt, className, loading = "lazy" }) => {
 const CategoriesAndServices = () => {
   const { frontEndServices, fetchFrontendServices, loading } =
     useServiceStore();
-
-
 
   const colors = {
     primary: {
@@ -313,6 +312,14 @@ const CategoriesAndServices = () => {
       color: colors.accent.blue,
       type: "Money Transfer",
     },
+    "Tours": {
+      description: "Guided tours and travel experiences",
+      icon: FaGlobe,
+      image:
+        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=80",
+      color: colors.accent.orange,
+      type: "Travel & Leisure",
+    },
   };
 
   // Use a much more lightweight animation approach instead of framer-motion
@@ -508,7 +515,6 @@ const CategoriesAndServices = () => {
           <p className="text-gray-600 mb-6">
             We couldn’t find any matching services at the moment.
           </p>
-          
         </div>
       </div>
     );

@@ -13,7 +13,7 @@ export const useAuthStore = create((set, get) => ({
   vendorChecked: false,
   adminChecked: false,
   returnedMessages: [],
-  loading: true, 
+  loading: true,
 
   // ---- Auth Checks ----
   checkAuth: async () => {
@@ -23,6 +23,7 @@ export const useAuthStore = create((set, get) => ({
         credentials: "include",
       });
       const data = await res.json();
+      console.log(data);
 
       if (res.ok && data.isAuthenticated && data.user && !data.otpRequired) {
         set({
@@ -129,6 +130,30 @@ export const useAuthStore = create((set, get) => ({
       }
     } catch {
       toast.error("Login failed");
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  uploadProfilePic: async (imageData) => {
+    set({ loading: true });
+    try {
+      const res = await fetch(`${baseUrl}/auth/upload/profile-pic`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: imageData }),
+        credentials: "include",
+      });
+      const data = await res.json();
+
+      if (res.status === 200) {
+        toast.success(data.message);
+        get().checkAuth();
+      } else if (!res.ok) {
+        toast.error(data.message || "Profile picture upload failed");
+      }
+    } catch {
+      toast.error("Profile picture upload failed");
     } finally {
       set({ loading: false });
     }

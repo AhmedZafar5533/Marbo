@@ -75,6 +75,7 @@ router.get("/:type/:country/:id", async (req, res) => {
       country: req.params.country,
       serviceId: req.params.id,
     });
+
     console.log(data);
     if (!data.length) return res.status(404).json({ message: "No data found" });
     res.status(200).json(data);

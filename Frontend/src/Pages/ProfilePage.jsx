@@ -25,7 +25,7 @@ const ProfilePage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
-  const { user } = useAuthStore();
+  const { user, uploadProfilePic } = useAuthStore();
   const [showPasswordFields, setShowPasswordFields] = useState(false);
 
   // For password fields and validation
@@ -66,12 +66,28 @@ const ProfilePage = () => {
     setIsEditing(false);
   };
 
-  const handleSave = () => {
-    if (previewUrl) {
+  const handleSave = async () => {
+    if (!selectedFile) return;
+
+    const toBase64 = (file) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+
+    try {
+      const base64Image = await toBase64(selectedFile);
+      await uploadProfilePic(base64Image);
+
       setUser({ ...user, profilePic: previewUrl });
+      setIsEditing(false);
+      setSelectedFile(null);
+      setPreviewUrl(null);
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
     }
-    setIsEditing(false);
-    setSelectedFile(null);
   };
 
   const togglePasswordFields = () => {
@@ -173,7 +189,7 @@ const ProfilePage = () => {
                   <div className="h-48 w-48 rounded-full overflow-hidden border-4 border-white shadow-2xl ring-8 ring-indigo-300 ring-opacity-50 transform transition-all duration-300 hover:scale-105">
                     <img
                       src={
-                        previewUrl ||
+                        userData.profilePic?.url ||
                         "https://www.gravatar.com/avatar/?d=mp&s=400"
                       }
                       alt="Profile"

@@ -178,34 +178,7 @@ const adminDashboard = ({
                 </div>
             </div>
 
-            {/* Recent Activities and Top Vendors */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Recent Activities */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Recent Activities</h2>
-                    <div className="space-y-4">
-                        {recentActivities.slice(0, 4).map((activity) => (
-                            <ActivityItem key={activity.id} activity={activity} />
-                        ))}
-                    </div>
-                    <button className="mt-4 w-full py-2 text-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">
-                        View All Activities
-                    </button>
-                </div>
 
-                {/* Top Vendors */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Top Vendors</h2>
-                    <div className="space-y-4">
-                        {topVendors.map((vendor) => (
-                            <TopVendorItem key={vendor.id} vendor={vendor} formatCurrency={formatCurrency} />
-                        ))}
-                    </div>
-                    <button className="mt-4 w-full py-2 text-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">
-                        View All Vendors
-                    </button>
-                </div>
-            </div>
         </div>
     );
 };
@@ -244,85 +217,85 @@ const StatCard = ({ title, value, icon, change, changePercent, changePeriod, isC
 };
 
 // Activity Item Component
-const ActivityItem = ({ activity }) => {
-    // Get icon based on activity type
-    const getIcon = (type) => {
-        switch (type) {
-            case 'new_vendor':
-                return <Users size={16} />;
-            case 'approval':
-                return <CheckCircle2 size={16} />;
-            case 'order':
-                return <ShoppingCart size={16} />;
-            case 'payment':
-                return <DollarSign size={16} />;
-            case 'review':
-                return <Star size={16} />;
-            default:
-                return <Activity size={16} />;
-        }
-    };
+// const ActivityItem = ({ activity }) => {
+//     // Get icon based on activity type
+//     const getIcon = (type) => {
+//         switch (type) {
+//             case 'new_vendor':
+//                 return <Users size={16} />;
+//             case 'approval':
+//                 return <CheckCircle2 size={16} />;
+//             case 'order':
+//                 return <ShoppingCart size={16} />;
+//             case 'payment':
+//                 return <DollarSign size={16} />;
+//             case 'review':
+//                 return <Star size={16} />;
+//             default:
+//                 return <Activity size={16} />;
+//         }
+//     };
 
-    // Get color class based on activity type
-    const getColorClass = (type) => {
-        switch (type) {
-            case 'new_vendor':
-                return 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400';
-            case 'approval':
-                return 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400';
-            case 'order':
-                return 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400';
-            case 'payment':
-                return 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400';
-            case 'review':
-                return 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400';
-            default:
-                return 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400';
-        }
-    };
+//     // Get color class based on activity type
+//     const getColorClass = (type) => {
+//         switch (type) {
+//             case 'new_vendor':
+//                 return 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400';
+//             case 'approval':
+//                 return 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400';
+//             case 'order':
+//                 return 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400';
+//             case 'payment':
+//                 return 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400';
+//             case 'review':
+//                 return 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400';
+//             default:
+//                 return 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400';
+//         }
+//     };
 
-    return (
-        <div className="flex items-start space-x-3">
-            <div className={`p-2 rounded-lg ${getColorClass(activity.type)}`}>
-                {getIcon(activity.type)}
-            </div>
-            <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{activity.title}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{activity.description}</p>
-            </div>
-            <div className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
-                {activity.time}
-            </div>
-        </div>
-    );
-};
+//     return (
+//         <div className="flex items-start space-x-3">
+//             <div className={`p-2 rounded-lg ${getColorClass(activity.type)}`}>
+//                 {getIcon(activity.type)}
+//             </div>
+//             <div className="flex-1 min-w-0">
+//                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{activity.title}</p>
+//                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{activity.description}</p>
+//             </div>
+//             <div className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
+//                 {activity.time}
+//             </div>
+//         </div>
+//     );
+// };
 
-// Top Vendor Item Component
-const TopVendorItem = ({ vendor, formatCurrency }) => {
-    return (
-        <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                    {vendor.name.charAt(0)}
-                </div>
-                <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{vendor.name}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{vendor.category}</p>
-                </div>
-            </div>
-            <div className="text-right">
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatCurrency(vendor.revenue)}</p>
-                <div className="flex items-center justify-end text-xs">
-                    <span className={vendor.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                        {vendor.status === 'active' ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                    </span>
-                    <span className="ml-1 text-gray-500 dark:text-gray-400">
-                        {vendor.status === 'active' ? 'Active' : 'Inactive'}
-                    </span>
-                </div>
-            </div>
-        </div>
-    );
-};
+// // Top Vendor Item Component
+// const TopVendorItem = ({ vendor, formatCurrency }) => {
+//     return (
+//         <div className="flex items-center justify-between">
+//             <div className="flex items-center space-x-3">
+//                 <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+//                     {vendor.name.charAt(0)}
+//                 </div>
+//                 <div>
+//                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{vendor.name}</p>
+//                     <p className="text-xs text-gray-500 dark:text-gray-400">{vendor.category}</p>
+//                 </div>
+//             </div>
+//             <div className="text-right">
+//                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatCurrency(vendor.revenue)}</p>
+//                 <div className="flex items-center justify-end text-xs">
+//                     <span className={vendor.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+//                         {vendor.status === 'active' ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
+//                     </span>
+//                     <span className="ml-1 text-gray-500 dark:text-gray-400">
+//                         {vendor.status === 'active' ? 'Active' : 'Inactive'}
+//                     </span>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
 
 export default adminDashboard;

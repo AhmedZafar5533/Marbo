@@ -10,13 +10,19 @@ import {
 } from "lucide-react";
 import { useTourStore } from "../../Store/tourStore";
 import { useParams, Link } from "react-router-dom";
+import { useServiceStore } from "../../Store/servicesStore";
+import LoadingSpinner from "../Components/LoadingSpinner";
 
-const CountrySelectionPopup = ({ onSelectCountry, availableCountries }) => {
+const CountrySelectionPopup = ({
+  onSelectCountry,
+  availableCountries,
+  serviceName,
+}) => {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl max-w-lg w-full p-8">
         <h2 className="text-3xl font-bold text-gray-900 mb-6">
-          Welcome to Wanderlust Tours
+          Welcome to {serviceName}
         </h2>
         <p className="text-gray-600 mb-8">
           Please select a country to explore our exclusive tours and services.
@@ -46,6 +52,14 @@ const TourWebsite = ({ videoUrl }) => {
   const [showCountrySelector, setShowCountrySelector] = useState(true);
   const { id } = useParams();
 
+  console.log("rendering");
+
+  const {
+    getServiceInfo,
+    serviceInfo,
+    loading: serviceLoading,
+  } = useServiceStore();
+
   // Zustand store integration
   const {
     data: tabContent,
@@ -54,6 +68,10 @@ const TourWebsite = ({ videoUrl }) => {
     countries: availableCountries,
     fetchCountries: fetchAvailableCountries,
   } = useTourStore();
+
+  useEffect(() => {
+    getServiceInfo(id);
+  }, [getServiceInfo, id]);
 
   useEffect(() => {
     fetchAvailableCountries(id);
@@ -102,6 +120,10 @@ const TourWebsite = ({ videoUrl }) => {
     };
   }, [tabContent]);
 
+  if (serviceLoading || !serviceInfo) {
+    return <LoadingSpinner />;
+  }
+
   const renderTabContent = () => {
     if (isLoading) {
       return (
@@ -122,9 +144,6 @@ const TourWebsite = ({ videoUrl }) => {
     return (
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
         {tabContent.map((item) => {
-          // The backend schema has a `type` field that we can use to distinguish.
-          // However, for tours, we also need to consider `tourType`.
-          // The API should ideally return the correct data based on the query.
           switch (item.type) {
             case "tour":
             case "private": // Handling potential variations
@@ -157,30 +176,36 @@ const TourWebsite = ({ videoUrl }) => {
         <CountrySelectionPopup
           onSelectCountry={handleCountrySelect}
           availableCountries={availableCountries}
+          serviceName={serviceInfo ? serviceInfo.serviceName : "Our Service"}
         />
       )}
 
       {/* Hero Section (No changes here, remains the same) */}
       <section
         id="home"
-        className="min-h-screen flex items-center relative overflow-hidden"
+        className="h-[80vh] flex items-center relative overflow-hidden"
       >
-        {/* Header Overlay */}
-        <header className="absolute top-0 left-0 w-full z-30 p-4">
+        {/* Header */}
+        <header className="absolute top-0 left-0 w-full z-30 p-3">
           <div className="max-w-7xl mx-auto flex justify-between items-center">
+            {/* Logo + Title */}
             <div className="flex items-center space-x-2">
-              <div className="bg-red-600 text-white p-2 rounded-lg">
-                <MapPin className="w-5 h-5" />
+              <div className="bg-red-600 text-white p-2 rounded-md shadow-md">
+                <MapPin className="w-4 h-4" />
               </div>
-              <h1 className="text-xl font-bold text-white">Wanderlust</h1>
+              <h1 className="text-lg font-bold text-white tracking-wide">
+                {serviceInfo?.serviceName || "Wanderlust Tours"}
+              </h1>
             </div>
 
             {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-6 bg-black/20 backdrop-blur-sm p-2 rounded-full">
-              <div className="flex items-center gap-2 text-sm text-white px-2">
+            <div className="hidden md:flex items-center space-x-5 bg-black/20 backdrop-blur-md px-4 py-2 rounded-full shadow-md">
+              <div className="flex items-center gap-1 text-sm text-white">
                 <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                <span className="font-bold">{averageRating}</span>
-                <span className="hidden lg:inline">
+                <span className="font-semibold">
+                  {serviceInfo?.rating || 0}
+                </span>
+                <span className="hidden lg:inline text-gray-300">
                   ({totalReviewsCount} reviews)
                 </span>
               </div>
@@ -192,7 +217,7 @@ const TourWebsite = ({ videoUrl }) => {
               </button>
               <button
                 onClick={() => setShowCountrySelector(true)}
-                className="bg-white/10 border border-white/20 text-white px-4 py-2 rounded-full hover:bg-white/20 transition-colors text-sm"
+                className="bg-white/10 border border-white/20 text-white px-3 py-1.5 rounded-full hover:bg-white/20 transition-colors text-sm"
               >
                 {selectedCountry || "Select Country"}
               </button>
@@ -200,7 +225,7 @@ const TourWebsite = ({ videoUrl }) => {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden text-white bg-black/20 p-2 rounded-full"
+              className="md:hidden text-white bg-black/30 p-2 rounded-full"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? (
@@ -210,9 +235,10 @@ const TourWebsite = ({ videoUrl }) => {
               )}
             </button>
           </div>
-          {/* Mobile Menu */}
+
+          {/* Mobile Dropdown */}
           {isMenuOpen && (
-            <div className="md:hidden mt-4 bg-black/70 backdrop-blur-lg rounded-lg p-4">
+            <div className="md:hidden mt-3 bg-black/80 backdrop-blur-lg rounded-lg p-4 shadow-lg">
               <div className="flex flex-col items-start space-y-3">
                 <button
                   onClick={() => {
@@ -239,6 +265,7 @@ const TourWebsite = ({ videoUrl }) => {
           )}
         </header>
 
+        {/* Background Video / Image */}
         {videoUrl ? (
           <video
             autoPlay
@@ -251,26 +278,52 @@ const TourWebsite = ({ videoUrl }) => {
           </video>
         ) : (
           <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80')",
+              backgroundImage: `url(${
+                serviceInfo
+                  ? serviceInfo.image.url
+                  : "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80"
+              })`,
             }}
-          ></div>
+          />
         )}
-        <div className="absolute inset-0 bg-gradient-to-r from-red-900/20 to-red-700/20 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-red-900/30 to-red-700/30 z-10"></div>
 
-        <div className="max-w-7xl mx-auto px-4 z-20 relative">
-          <div className="max-w-3xl">
-            <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-              Discover Your Next
-              <span className="block text-red-300">Adventure</span>
-            </h2>
-            <p className="text-xl text-red-100 mb-8 leading-relaxed">
-              Experience the world's most breathtaking destinations with our
-              expertly crafted tours. Create memories that will last a lifetime.
-            </p>
-          </div>
+        {/* Hero Text */}
+        <div className="max-w-7xl mx-auto px-6 z-20 relative text-center md:text-left">
+          <h2 className="text-4xl md:text-6xl font-extrabold text-white mb-4 leading-tight drop-shadow-lg">
+            Discover Your Next
+            <span className="block text-red-300">Adventure</span>
+          </h2>
+          <p className="text-lg md:text-xl text-red-100 mb-10 leading-relaxed max-w-2xl drop-shadow">
+            {serviceInfo
+              ? serviceInfo.description
+              : "Explore exclusive tours and experiences tailored just for you."}
+          </p>
+        </div>
+
+        {/* Bouncing Arrow */}
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20">
+          <button
+            onClick={() => handleScrollTo("next-section")}
+            className="animate-bounce text-white"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
         </div>
       </section>
 
@@ -634,7 +687,7 @@ const GuideCard = ({ guide }) => (
           {guide.location}
         </div>
       </div>
-      <Link to={`/service/tour/${tour._id}`}>
+      <Link to={`/service/tour/${guide._id}`}>
         <button className="w-full bg-red-600 text-white py-3 rounded-full hover:bg-red-700 transition-colors flex items-center justify-center group">
           Hire Guide{" "}
           <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
