@@ -11,7 +11,7 @@ import {
 import { useTourStore } from "../../Store/tourStore";
 import { useParams, Link } from "react-router-dom";
 import { useServiceStore } from "../../Store/servicesStore";
-import LoadingSpinner from "../Components/LoadingSpinner";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const CountrySelectionPopup = ({
   onSelectCountry,
