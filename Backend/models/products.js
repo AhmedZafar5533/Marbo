@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mainProduct = require("./mainProduct");
 
 const imagesSchema = new mongoose.Schema(
   {
@@ -16,22 +17,9 @@ const imagesSchema = new mongoose.Schema(
 
 const productSchema = new mongoose.Schema(
   {
-    serviceId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Service",
+    price: {
+      type: Number,
       required: true,
-    },
-    productName: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 3,
-      maxlength: 100,
-    },
-    typeOf: {
-      type: String,
-      required: true,
-      enum: ["Groceries", "Tech", "Clothing"],
     },
     category: {
       type: String,
@@ -42,22 +30,13 @@ const productSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
+
     quantity: {
       type: Number,
       required: true,
       min: 0,
     },
-    description: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 2000,
-    },
+
     features: {
       type: [String],
       default: [],
@@ -76,7 +55,6 @@ const productSchema = new mongoose.Schema(
     gender: {
       type: String,
       enum: ["Men", "Women", "Unisex", "Kids", "Boys", "Girls"],
-      default: "Unisex",
     },
     images: {
       type: [imagesSchema],
@@ -91,6 +69,10 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-productSchema.index({ serviceId: 1 });
+productSchema.index({
+  category: "text",
+});
 
-module.exports = mongoose.model("Product", productSchema);
+const Product = mainProduct.discriminator("Product", productSchema);
+
+module.exports = Product;

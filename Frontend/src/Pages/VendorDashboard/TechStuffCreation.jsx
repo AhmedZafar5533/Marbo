@@ -23,8 +23,6 @@ const TechProductUploadForm = () => {
   const [currentWarrantyCondition, setCurrentWarrantyCondition] = useState("");
   const { addProduct } = useProductStore();
 
-
-
   const categories = [
     "Computers & Laptops",
     "Smartphones & Tablets",
@@ -286,6 +284,7 @@ const TechProductUploadForm = () => {
     setIsLoading(true);
 
     try {
+      console.log(formData);
       const submissionData = {
         ...formData,
         price: parseFloat(formData.price),
@@ -298,9 +297,12 @@ const TechProductUploadForm = () => {
         images: formData.images.map((img) => ({
           base64Image: img.base64,
         })),
-        warrantyConditions:
-          formData.warranty === "yes" ? formData.warrantyConditions : [],
       };
+
+      if (formData.warranty === "no") {
+        delete submissionData.warrantyConditions;
+      }
+      console.log("Submitting product:", submissionData);
       const success = await addProduct(submissionData);
 
       if (success) {

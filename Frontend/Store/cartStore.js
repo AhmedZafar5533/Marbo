@@ -263,6 +263,7 @@ export const useCartStore = create((set, get) => ({
           });
 
           const data = await response.json();
+          console.log("Fetched cart from backend:", data);
 
           if (data.success && data.cartItems) {
             cartItems = data.cartItems;

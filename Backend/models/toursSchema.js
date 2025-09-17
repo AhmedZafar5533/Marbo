@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
+const mainProduct = require("./mainProduct");
 const { Schema } = mongoose;
 
+// This sub-schema remains the same but will be used within the main schema
 const imagesSchema = new mongoose.Schema(
   {
     imageUrl: {
@@ -12,170 +14,180 @@ const imagesSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { _id: false, timestamps: true }
+  { _id: false } // No need for separate IDs on image entries
 );
 
-const TourSchema = new Schema(
+// --- NEW SUB-SCHEMAS FOR TOUR DETAILS ---
+
+// New sub-schema for the daily itinerary
+const itinerarySchema = new Schema(
   {
-    country: {
-      type: String,
-      required: [true, "Country is required."],
-    },
-    serviceId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "Service",
-    },
-    type: {
-      type: String,
-      required: [true, "Type is required."],
-      enum: ["private", "group", "luxuryProperties", "guides", "cruises"],
-    },
-    title: {
-      type: String,
-      trim: true,
-      minlength: [3, "Title must be at least 3 characters long."],
-      maxlength: [100, "Title cannot be more than 100 characters long."],
+    day: {
+      type: Number,
       required: true,
     },
-    location: {
+    plan: {
       type: String,
-      required: [true, "Location is required."],
-      trim: true,
+      required: true,
+      minlength: [10, "Itinerary plan must be at least 10 characters long."],
     },
-    price: {
-      type: Number,
-      required: [true, "Price is required."],
-      min: [0, "Price must be a positive number."],
-    },
-    rating: {
-      type: Number,
-      min: 0,
-      max: 5,
-      default: 0,
-    },
-    reviews: {
-      type: Number,
-      min: 0,
-      default: 0,
-      validate: {
-        validator: Number.isInteger,
-        message: "{VALUE} is not an integer value for reviews.",
-      },
-    },
-    images: {
-      type: [imagesSchema],
-      validate: {
-        validator: function (v) {
-          return v.length <= 8;
-        },
-        message: "Property can have a maximum of 8 images.",
-      },
-    },
-    description: {
+    meals: {
       type: String,
-      required: [true, "Description is required."],
-      minlength: [20, "Description must be at least 20 characters long."],
-    },
-    duration: {
-      type: String,
-      required: function () {
-        return ["tour", "cruises"].includes(this.type);
-      },
-    },
-    maxGuests: {
-      type: String,
-      required: function () {
-        return this.type === "tour";
-      },
-    },
-    pickupSpot: {
-      type: String,
-      required: function () {
-        return this.type === "tour";
-      },
-    },
-    tourType: {
-      type: String,
-      enum: ["private", "group"],
-      required: function () {
-        return this.type === "tour";
-      },
-    },
-    address: {
-      type: String,
-      required: function () {
-        return this.type === "luxuryProperties";
-      },
-    },
-    propertyType: {
-      type: String,
-      required: function () {
-        return this.type === "luxuryProperties";
-      },
-    },
-    amenities: {
-      type: [String],
-      default: [],
-    },
-    checkInTime: String,
-    checkOutTime: String,
-    // guideName: {
-    //   type: String,
-    //   required: function () {
-    //     return this.type === "guides";
-    //   },
-    // },
-    speciality: {
-      type: String,
-      required: function () {
-        return this.type === "guides";
-      },
-    },
-    // citiesAvailable: {
-    //   type: String,
-    //   required: function () {
-    //     return this.type === "guides";
-    //   },
-    // },
-    languages: {
-      type: [String],
-      default: [],
-    },
-    experience: {
-      type: Number,
-      min: 0,
-    },
-    shipName: {
-      type: String,
-      required: function () {
-        return this.type === "cruises";
-      },
-    },
-    ports: {
-      type: String,
-      required: function () {
-        return this.type === "cruises";
-      },
-    },
-    cabinType: {
-      type: String,
-      enum: ["interior", "oceanview", "balcony", "suite"],
-    },
-    includes: {
-      type: [String],
-      default: [],
+      enum: ["none", "breakfast", "half-board", "full-board"],
+      default: "none",
     },
   },
-  { timestamps: true }
+  { _id: false }
 );
 
-TourSchema.pre("save", function (next) {
-  if (this.isModified("guideName") && this.type === "guides") {
-    this.title = this.guideName;
-  }
-  next();
+// New sub-schema for the structured, detailed inclusions
+const detailedInclusionsSchema = new Schema(
+  {
+    accommodation: { type: [String], default: [] },
+    transfers: { type: [String], default: [] },
+    sightseeing: { type: [String], default: [] },
+    domesticFlights: { type: [String], default: [] },
+    freeItems: { type: [String], default: [] },
+  },
+  { _id: false }
+);
+
+// --- THE MAIN UPDATED TOUR SCHEMA ---
+
+const TourSchema = new Schema({
+  country: {
+    type: String,
+    required: [true, "Country is required."],
+  },
+  // serviceId: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   required: true,
+  //   ref: "Service",
+  // },
+  // type: {
+  //   type: String,
+  //   required: [true, "Type is required."],
+  //   enum: [
+  //     "privateTour",
+  //     "smallGroupTour",
+  //     "luxuryProperties",
+  //     "guides",
+  //     "cruises",
+  //   ],
+  // },
+  // title: {
+  //   type: String,
+  //   trim: true,
+  //   minlength: [3, "Title must be at least 3 characters long."],
+  //   maxlength: [100, "Title cannot be more than 100 characters long."],
+  //   required: [true, "A name or title is required."],
+  // },
+  location: {
+    type: String,
+    required: [true, "Location is required."],
+    trim: true,
+  },
+  price: {
+    type: Number,
+    min: [0, "Price must be a positive number."],
+    required: function () {
+      return this.type === "tour";
+    },
+  },
+  // description: {
+  //   type: String,
+  //   required: [true, "Description is required."],
+  //   minlength: [20, "Description must be at least 20 characters long."],
+  // },
+  images: {
+    type: [imagesSchema],
+    validate: {
+      // Updated validation to match the form's limit
+      validator: function (v) {
+        return v.length > 0 && v.length <= 4;
+      },
+      message: "You must provide between 1 and 4 images.",
+    },
+  },
+  // These fields are not on the create form but are useful for later operations
+  rating: {
+    type: Number,
+    min: 0,
+    max: 5,
+    default: 0,
+  },
+  reviews: {
+    type: Number,
+    min: 0,
+    default: 0,
+  },
+
+  // --- TOUR-SPECIFIC FIELDS ---
+  duration: {
+    type: Number, // Changed to Number for easier calculations
+    min: 1,
+    required: function () {
+      return this.type === "tour";
+    },
+  },
+  operates: {
+    type: String,
+    enum: ["everyday", "selected"],
+    required: function () {
+      return this.type === "tour";
+    },
+  },
+  selectedDays: {
+    type: [String],
+    // This is only required if 'operates' is 'selected', which can be enforced in the controller/service layer
+    default: [],
+  },
+  inclusions: {
+    type: [String],
+    default: [],
+  },
+  exclusions: {
+    type: [String],
+    default: [],
+  },
+  itinerary: {
+    type: [itinerarySchema],
+    required: function () {
+      return this.type === "tour";
+    },
+  },
+  detailedInclusions: {
+    type: detailedInclusionsSchema,
+    required: function () {
+      return this.type === "tour";
+    },
+  },
+
+  category: {
+    type: String,
+    required: [true, "Type is required."],
+    enum: [
+      "privateTours",
+      "smallGroupTour",
+      "luxuryProperties",
+      "guides",
+      "cruises",
+    ],
+  },
+  gender: {
+    type: String,
+    enum: ["male", "female", "other"],
+    required: function () {
+      return this.type === "guides";
+    },
+  },
+  spokenLanguages: {
+    type: [String],
+    default: [],
+  },
 });
 
-const Tour = mongoose.model("Tour", TourSchema);
+TourSchema.index({ location: "text", country: "text" });
+
+const Tour = mainProduct.discriminator("Tour", TourSchema);
 module.exports = Tour;

@@ -11,6 +11,7 @@ import {
   Warehouse,
   Users,
   Star,
+  MapPin,
 } from "lucide-react";
 import { useAuthStore } from "../../Store/authStore";
 
@@ -79,6 +80,11 @@ const DashboardLayout = () => {
       name: "Manage Holiday Spots",
       icon: <Users size={20} />,
       path: "/dashboard/vendor/manage/holiday-lets",
+    },
+    {
+      name: "Manage Tours ",
+      icon: <MapPin size={20} />,
+      path: "/dashboard/vendor/tour-management",
     },
     {
       name: "Add Tours",

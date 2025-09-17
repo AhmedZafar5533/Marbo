@@ -8,13 +8,13 @@ const Service = require("../models/service");
 
 const uploadFromBuffer = require("../Utils/imageCompress");
 const sharp = require("sharp");
+const mainProduct = require("../models/mainProduct");
 
 const router = express.Router();
 
 router.post("/add", checkVendor, async (req, res) => {
   try {
     const { typeOf } = req.body;
-    console.log(req.body.brand);
     let serviceToFindType;
 
     if (typeOf === "Groceries") {
@@ -32,7 +32,7 @@ router.post("/add", checkVendor, async (req, res) => {
     if (!service) {
       return res.status(404).json({ message: "Service not found" });
     }
-    const { error } = await productSchema.validate({
+    const { error } = productSchema.validate({
       productName: req.body.productName,
       category: req.body.category,
       price: req.body.price,
@@ -50,7 +50,7 @@ router.post("/add", checkVendor, async (req, res) => {
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
-
+    console.log(error);
     const imagesUrlArray = [];
 
     if (req.body.images && req.body.images.length > 0) {
@@ -81,12 +81,16 @@ router.post("/add", checkVendor, async (req, res) => {
     // Start with the basic product data
     const productData = {
       serviceId: service._id,
-      productName: req.body.productName,
+      name: req.body.productName,
       category: req.body.category,
       price: req.body.price,
       description: req.body.description,
-      typeOf: req.body.typeOf,
-      images: imagesUrlArray,
+      type: req.body.typeOf,
+      images: {
+        publicId: "jknsfd",
+        imageUrl:
+          "https://res.cloudinary.com/dx1u2f3eu/image/upload/v1700343085/jknsfd.jpg",
+      },
       sizes: req.body?.sizes,
       gender: req.body?.gender,
       brand: req.body?.brand,
@@ -120,7 +124,6 @@ router.post("/add", checkVendor, async (req, res) => {
 router.get("/get/inventory/:typeOf", checkVendor, async (req, res) => {
   try {
     const { typeOf } = req.params;
-    
 
     if (typeOf === "Groceries") {
       serviceToFindType = "Groceries";

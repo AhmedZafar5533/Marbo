@@ -5,6 +5,7 @@ const Service = require("../models/service");
 const uploadFromBuffer = require("../Utils/imageCompress");
 const sharp = require("sharp");
 const checkVendor = require("../middlewares/checkVendor");
+const mainProduct = require("../models/mainProduct");
 
 const router = require("express").Router();
 
@@ -70,9 +71,25 @@ router.post("/add", checkVendor, async (req, res) => {
 
 router.get("/:type/:country/:id", async (req, res) => {
   try {
-    const data = await Tour.find({
-      type: req.params.type,
+    let category;
+    if (req.params.type === "group") {
+      category = "smallGroupTour";
+    } else if (req.params.type === "properties") {
+      category = "luxuryProperties";
+    } else if (req.params.type === "private") {
+      category = "privateTours";
+    } else if (req.params.type === "guides") {
+      category = "guides";
+    } else if (req.params.type === "cruises") {
+      category = "cruises";
+    } else {
+      return res.status(400).json({ message: "Invalid category" });
+    }
+
+    const data = await mainProduct.find({
+      productType: "Tour",
       country: req.params.country,
+      category: category,
       serviceId: req.params.id,
     });
 
@@ -101,8 +118,9 @@ router.get("/:id", async (req, res) => {
 
 router.get("/countries-available/:id", async (req, res) => {
   try {
-    const data = await Tour.distinct("country", { serviceId: req.params.id });
-    console.log(data);
+    const data = await mainProduct.distinct("country", {
+      serviceId: req.params.id,
+    });
 
     if (!data || data.length === 0) {
       return res
@@ -114,6 +132,35 @@ router.get("/countries-available/:id", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+router.get("/get/dashboard", checkVendor, async (req, res) => {
+  try {
+    console.log(req.user);
+    const service = await Service.findOne({
+      userId: req.user._id,
+      category: "Tours",
+    });
+    console.log(service);
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" });
+    }
+    const tours = await mainProduct.find({ serviceId: service._id });
+    console.log(tours);
+    if (!tours.length) {
+      return res.status(404).json({ message: "No tours found" });
+    }
+    res.status(200).json({
+      tours,
+    });
+  } catch (error) {
+    console.error("Error getting tours:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
   }
 });
 

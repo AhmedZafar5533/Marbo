@@ -33,7 +33,7 @@ router.get("/get/dashboard", checkVendor, async (req, res) => {
     }
 });
 
-router.get("/get/all/:serviceId", checkVendor, async (req, res) => {
+router.get("/get/all/:serviceId", async (req, res) => {
     try {
         const service = await Service.findOne({
             userId: req.user._id,
@@ -60,7 +60,7 @@ router.get("/get/all/:serviceId", checkVendor, async (req, res) => {
     }
 });
 
-router.get("/get/:roomId", checkVendor, async (req, res) => {
+router.get("/get/:roomId", async (req, res) => {
     try {
         const room = await Room.findById(req.params.roomId);
         if (!room) {

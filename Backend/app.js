@@ -110,6 +110,7 @@ app.post(
           let itemData;
           try {
             itemData = JSON.parse(paymentIntent.metadata.cartItems);
+            userId = JSON.parse(paymentIntent.metadata.userId);
           } catch (parseErr) {
             console.error("Failed to parse cart items:", parseErr.message);
             return res.status(400).send("Invalid cart items format");
@@ -121,7 +122,7 @@ app.post(
           const paymentResults = await Promise.allSettled(
             itemData.map(async (item) => {
               return payment.create({
-                userId: item.userId,
+                userId: userId,
                 serviceId: item.serviceId,
                 productId: item.productId,
                 amount: item.amount,
@@ -145,7 +146,7 @@ app.post(
 
           // Update orders
           const mainOrderResult = await MainOrder.findOneAndUpdate(
-            { userId: itemData[0].userId, isPaid: false },
+            { userId: userId, isPaid: false },
             { isPaid: true },
             { new: true }
           );
@@ -153,7 +154,7 @@ app.post(
           console.log("Main order update result:", mainOrderResult);
 
           const serviceOrderResult = await ServiceOrder.updateMany(
-            { userId: itemData[0].userId },
+            { userId: userId },
             { isPaid: true }
           );
 
@@ -322,7 +323,7 @@ const scriptToRun = async () => {
       "Hardware Suppliers",
       "Agricultural Services",
       "Event Management",
-      "Tours"
+      "Tours",
     ];
 
     for (const title of serviceTitles) {

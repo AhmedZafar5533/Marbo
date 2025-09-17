@@ -1,105 +1,161 @@
 const Joi = require("joi");
 
-
-const types = ["private", "group", "luxuryProperties", "guides", "cruises"];
-const cabinTypes = ["interior", "oceanview", "balcony", "suite"];
+// Allowed types
+const types = [
+  "privateTour",
+  "smallGroupTour",
+  "luxuryProperties",
+  "guides",
+  "cruises",
+];
 
 // Regex for Base64 image string
 const base64ImageRegex =
   /^data:image\/(png|jpeg|gif|webp);base64,[A-Za-z0-9+/]*={0,2}$/;
 
 const tourValidationSchema = Joi.object({
-  country: Joi.string()
-    .required()
-    .messages({
-      "any.required": "Country is required.",
-      "any.only": "Please select a valid country.",
-    }),
-  type: Joi.string()
+  // --- BASIC INFORMATION (COMMON TO ALL TYPES) ---
+  country: Joi.string().required().messages({
+    "string.empty": "Country is required.",
+    "any.required": "Country is required.",
+  }),
+  category: Joi.string()
     .valid(...types)
     .required()
     .messages({
       "any.required": "Type is required.",
       "any.only": "Please select a valid type.",
     }),
-  title: Joi.string().min(3).max(100).required().messages({
-    "string.base": "Title must be a string.",
-    "string.empty": "Title is required.",
-    "string.min": "Title must be at least 3 characters long.",
-    "any.required": "Title is required.",
+  type: Joi.string().required().messages({
+    "string.empty": "Type is required.",
+    "any.required": "Type is required.",
+  }),
+  name: Joi.string().min(3).max(100).required().messages({
+    "string.empty": "A name or title is required.",
+    "string.min": "name must be at least 3 characters long.",
+    "any.required": "A name or title is required.",
   }),
   location: Joi.string().required().messages({
     "string.empty": "Location is required.",
     "any.required": "Location is required.",
   }),
-  price: Joi.number().positive().required().messages({
-    "number.base": "Price must be a number.",
-    "number.positive": "Price must be a positive number.",
-    "any.required": "Price is required.",
+  description: Joi.string().min(20).required().messages({
+    "string.empty": "Description is required.",
+    "string.min": "Description must be at least 20 characters long.",
+    "any.required": "Description is required.",
   }),
-  description: Joi.string().min(20).required(),
   images: Joi.array()
     .min(1)
     .max(4)
     .items(
       Joi.string().pattern(base64ImageRegex).messages({
-        "string.pattern.base":
-          "Each image must be a valid Base64 data URL (e.g., data:image/jpeg;base64,...)",
-        "string.empty": "Image cannot be empty.",
+        "string.pattern.base": "Each image must be a valid Base64 data URL.",
       })
     )
     .required()
     .messages({
-      "array.max": "You can upload a maximum of 4 images.",
       "array.min": "At least one image is required.",
+      "array.max": "You can upload a maximum of 4 images.",
       "any.required": "Images are required.",
     }),
 
-  duration: Joi.string().when("type", {
-    is: Joi.valid("privateTours", "smallGroupTours", "cruises"),
-    then: Joi.required(),
-  }),
-
-  maxGuests: Joi.string().when("type", {
-    is: Joi.valid("privateTours", "smallGroupTours"),
-    then: Joi.required(),
-  }),
-  pickupSpot: Joi.string().when("type", {
-    is: Joi.valid("privateTours", "smallGroupTours"),
-    then: Joi.required(),
-  }),
-  tourType: Joi.string()
-    .valid("private", "group")
-    .when("type", {
-      is: Joi.valid("privateTours", "smallGroupTours"),
-      then: Joi.required(),
+  // --- CONDITIONAL PRICE (ONLY FOR TOURS) ---
+  price: Joi.number()
+    .positive()
+    .when("category", {
+      is: Joi.valid("smallGroupTour", "privateTour"),
+      then: Joi.required().messages({
+        "any.required": "Price is required for tours.",
+      }),
+      otherwise: Joi.forbidden(),
     }),
-  address: Joi.string().when("type", {
-    is: "luxuryProperties",
-    then: Joi.required(),
-  }),
-  propertyType: Joi.string().when("type", {
-    is: "luxuryProperties",
-    then: Joi.required(),
-  }),
-  amenities: Joi.string().allow("").optional(),
-  checkInTime: Joi.string()
-    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)
-    .allow("")
-    .optional(),
-  checkOutTime: Joi.string()
-    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)
-    .allow("")
-    .optional(),
-  speciality: Joi.string().when("type", { is: "guides", then: Joi.required() }),
 
-  languages: Joi.string().allow("").optional(),
-  experience: Joi.number().integer().min(0).allow("").optional(),
-  ports: Joi.string().when("type", { is: "cruises", then: Joi.required() }),
-  cabinType: Joi.string()
-    .valid(...cabinTypes, "")
-    .optional(),
-  includes: Joi.string().allow("").optional(),
+  // --- TOUR-SPECIFIC FIELDS ---
+  duration: Joi.number()
+    .positive()
+    .integer()
+    .when("category", {
+      is: Joi.valid("smallGroupTour", "privateTour"),
+      then: Joi.required().messages({
+        "any.required": "Number of days is required.",
+      }),
+      otherwise: Joi.forbidden(),
+    }),
+  operates: Joi.string()
+    .valid("everyday", "selected")
+    .when("category", {
+      is: Joi.valid("smallGroupTour", "privateTour"),
+      then: Joi.required(),
+      otherwise: Joi.forbidden(),
+    }),
+  selectedDays: Joi.array()
+    .items(Joi.string())
+    .when("operates", {
+      is: "selected",
+      then: Joi.array().min(1).required().messages({
+        "array.min": "Please select at least one day of operation.",
+      }),
+      otherwise: Joi.optional(),
+    }),
+  inclusions: Joi.array()
+    .items(Joi.string().allow(""))
+    .when("category", {
+      is: Joi.valid("smallGroupTour", "privateTour"),
+      then: Joi.optional(),
+      otherwise: Joi.forbidden(),
+    }),
+  exclusions: Joi.array()
+    .items(Joi.string().allow(""))
+    .when("category", {
+      is: Joi.valid("smallGroupTour", "privateTour"),
+      then: Joi.optional(),
+      otherwise: Joi.forbidden(),
+    }),
+  itinerary: Joi.array()
+    .items(
+      Joi.object({
+        day: Joi.number().integer().positive().required(),
+        plan: Joi.string().min(10).required().messages({
+          "string.empty": "The itinerary plan cannot be empty.",
+          "string.min": "The plan must be at least 10 characters long.",
+        }),
+        meals: Joi.string()
+          .valid("none", "breakfast", "half-board", "full-board")
+          .required(),
+      })
+    )
+    .when("category", {
+      is: Joi.valid("smallGroupTour", "privateTour"),
+      then: Joi.array().min(1).required(),
+      otherwise: Joi.forbidden(),
+    }),
+  detailedInclusions: Joi.object({
+    accommodation: Joi.array().items(Joi.string().allow("")).optional(),
+    transfers: Joi.array().items(Joi.string().allow("")).optional(),
+    sightseeing: Joi.array().items(Joi.string().allow("")).optional(),
+    domesticFlights: Joi.array().items(Joi.string().allow("")).optional(),
+    freeItems: Joi.array().items(Joi.string().allow("")).optional(),
+  }).when("category", {
+    is: Joi.valid("smallGroupTour", "privateTour"),
+    then: Joi.required(),
+    otherwise: Joi.forbidden(),
+  }),
+
+  // --- GUIDE-SPECIFIC FIELDS ---
+  gender: Joi.string()
+    .valid("male", "female", "other")
+    .when("category", {
+      is: "guides",
+      then: Joi.required().messages({
+        "any.required": "Gender is required for guides.",
+      }),
+      otherwise: Joi.forbidden(),
+    }),
+  spokenLanguages: Joi.array().items(Joi.string().allow("")).when("category", {
+    is: "guides",
+    then: Joi.optional(),
+    otherwise: Joi.forbidden(),
+  }),
 });
 
 module.exports = { tourValidationSchema };

@@ -22,6 +22,10 @@ import {
   Languages,
   MessageSquare,
   MapPinned,
+  User,
+  ClipboardList,
+  FileText,
+  DollarSign,
 } from "lucide-react";
 import { useCartStore } from "../../Store/cartStore";
 import { useReviewStore } from "../../Store/reviewsStore";
@@ -43,6 +47,10 @@ export default function TourDetailPage() {
   const [quantityToBook, setQuantityToBook] = useState(1);
   const [startingDate, setStartingDate] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [guideGender, setGuideGender] = useState("any");
+  const [specialInstructions, setSpecialInstructions] = useState("");
+  // MODIFICATION: Add state to handle date validation errors
+  const [dateError, setDateError] = useState("");
 
   const { id } = useParams();
   const { getDetailsById: getTourById, details: fetchedTour } = useTourStore();
@@ -101,20 +109,28 @@ export default function TourDetailPage() {
     const cartItem = {
       price: totalPrice,
       serviceId: tourDetails.serviceId,
-      category: tourDetails.type,
+      category: tourDetails.category,
       productId: tourDetails._id,
       typeOf: "Tour",
-      name: tourDetails.title,
-      imageUrl: tourDetails.images[0]?.imageUrl || "",
-      quantity: quantityToBook,
+      name: tourDetails.name,
+      imageUrl: tourDetails.images?.[0]?.imageUrl || "",
+      quantity: 1,
       subDetails: {
         location: tourDetails.location,
+        numberofPeople: tourDetails.numberofPeople,
         duration: tourDetails.duration,
         pickupSpot: tourDetails.pickupSpot || "Not specified",
         startingDate,
         people: quantityToBook,
+        guideGender,
+        specialInstructions,
       },
     };
+
+    if (cartItem.subDetails.specialInstructions.trim() === "") {
+      delete cartItem.subDetails.specialInstructions;
+    }
+
     addToCart(cartItem);
   };
 
@@ -133,6 +149,52 @@ export default function TourDetailPage() {
     setActiveImage(allImages[prevIndex]);
   };
 
+  // MODIFICATION: Add a handler to validate the selected date.
+  const handleDateChange = (e) => {
+    const selectedDate = e.target.value;
+    const operatesOnDays = tourDetails.selectedDays;
+
+    // Clear previous state
+    setDateError("");
+    setStartingDate("");
+
+    // If the tour can be booked on any day, just set the date.
+    if (!operatesOnDays || operatesOnDays.length === 0) {
+      setStartingDate(selectedDate);
+      return;
+    }
+
+    // Get the day of the week for the selected date
+    const date = new Date(selectedDate);
+    const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+    const dayOfWeek = utcDate.getDay();
+    const dayNames = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const selectedDayName = dayNames[dayOfWeek];
+
+    // Check if the selected day is in the list of allowed days
+    const isDayValid = operatesOnDays.some(
+      (validDay) => validDay.toLowerCase() === selectedDayName.toLowerCase()
+    );
+
+    if (isDayValid) {
+      setStartingDate(selectedDate);
+    } else {
+      setDateError(
+        `This tour only operates on ${operatesOnDays.join(
+          ", "
+        )}. Please select a valid day.`
+      );
+    }
+  };
+
   const allImages = getAllImages();
 
   if (!tourDetails) {
@@ -149,7 +211,7 @@ export default function TourDetailPage() {
       details.push({
         icon: Clock,
         label: "Duration",
-        value: tourDetails.duration,
+        value: `${tourDetails.duration} days`,
       });
     if (tourDetails.location)
       details.push({
@@ -157,31 +219,30 @@ export default function TourDetailPage() {
         label: "Location",
         value: tourDetails.location,
       });
-    if (tourDetails.maxGuests)
+    if (tourDetails.country)
       details.push({
-        icon: Users,
-        label: "Max Guests",
-        value: tourDetails.maxGuests,
+        icon: MapPinned,
+        label: "Country",
+        value: tourDetails.country,
       });
-    if (tourDetails.speciality)
+    if (tourDetails.category)
       details.push({
         icon: Briefcase,
-        label: "Speciality",
-        value: tourDetails.speciality,
+        label: "Category",
+        value: tourDetails.category,
       });
-    if (tourDetails.languages?.length)
+    if (tourDetails.spokenLanguages?.length)
       details.push({
         icon: Languages,
         label: "Languages",
-        value: tourDetails.languages.join(", "),
+        value: tourDetails.spokenLanguages.join(", "),
       });
-    if (tourDetails.shipName)
-      details.push({ icon: Ship, label: "Ship", value: tourDetails.shipName });
-    if (tourDetails.pickupSpot)
+    // MODIFICATION: Use `selectedDays` for a more accurate description if available
+    if (tourDetails.selectedDays && tourDetails.selectedDays.length > 0)
       details.push({
-        icon: MapPinned,
-        label: "Pickup Spot",
-        value: tourDetails.pickupSpot,
+        icon: Calendar,
+        label: "Operates",
+        value: tourDetails.selectedDays.join(", "),
       });
 
     return (
@@ -205,6 +266,35 @@ export default function TourDetailPage() {
     );
   };
 
+  const renderTabs = () => {
+    const tabs = [
+      { id: "overview", label: "Overview", icon: Eye },
+      { id: "detailed", label: "Detailed Inclusions", icon: ClipboardList },
+      { id: "itinerary", label: "Itinerary", icon: FileText },
+      { id: "booking", label: "Date & Pricing", icon: DollarSign },
+    ];
+    return (
+      <div className="border-b border-gray-200">
+        <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`${
+                activeTab === tab.id
+                  ? "border-red-500 text-red-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2`}
+            >
+              <tab.icon size={16} />
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </nav>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -214,7 +304,7 @@ export default function TourDetailPage() {
             <div className="relative aspect-square bg-white rounded-xl overflow-hidden shadow-lg">
               <img
                 src={activeImage || allImages[0]}
-                alt={tourDetails.title}
+                alt={tourDetails.name}
                 className="w-full h-full object-cover"
               />
               {allImages.length > 1 && (
@@ -250,7 +340,7 @@ export default function TourDetailPage() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <span className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 capitalize">
-                {tourDetails.type}
+                {tourDetails.productType}
               </span>
               <div className="flex items-center space-x-1">
                 <div className="flex items-center">
@@ -274,92 +364,24 @@ export default function TourDetailPage() {
             </div>
 
             <h1 className="text-4xl font-bold text-gray-900">
-              {tourDetails.title}
+              {tourDetails.name}
             </h1>
             <div className="flex items-baseline space-x-3">
               <span className="text-3xl font-bold text-red-600">
-                {formatPrice(totalPrice)}
+                {formatPrice(tourDetails.price)}
               </span>
-              <span className="text-gray-500 text-base">
-                ({formatPrice(tourDetails.price)} per person)
-              </span>
+              <span className="text-gray-500 text-base">per person</span>
             </div>
-
-            <p className="text-gray-600 leading-relaxed">
-              {tourDetails.description}
-            </p>
 
             {renderKeyDetails()}
 
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center space-x-3">
-              <CheckCircle size={20} className="text-green-600" />
-              <span className="font-semibold text-green-700">
-                Available for Booking
-              </span>
-            </div>
-
-            {/* Date & Quantity */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm space-y-4">
-              <div>
-                <label
-                  htmlFor="start-date"
-                  className="block text-sm font-medium text-gray-900 mb-2"
-                >
-                  Select Start Date:
-                </label>
-                <input
-                  type="date"
-                  id="start-date"
-                  value={startingDate}
-                  onChange={(e) => setStartingDate(e.target.value)}
-                  min={new Date().toISOString().split("T")[0]}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-900">
-                  Number of People:
-                </span>
-                <div className="flex items-center border border-gray-300 rounded-lg bg-gray-50">
-                  <button
-                    onClick={() =>
-                      setQuantityToBook(Math.max(1, quantityToBook - 1))
-                    }
-                    className="p-2 hover:bg-gray-100 transition-colors"
-                  >
-                    <Minus size={16} className="text-gray-600" />
-                  </button>
-                  <span className="px-4 py-2 text-center min-w-[60px] border-x border-gray-300">
-                    {quantityToBook}
-                  </span>
-                  <button
-                    onClick={() => setQuantityToBook(quantityToBook + 1)}
-                    className="p-2 hover:bg-gray-100 transition-colors"
-                  >
-                    <Plus size={16} className="text-gray-600" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Actions */}
             <div className="space-y-3 pt-4">
               <button
-                onClick={addToCartHandler}
-                disabled={!startingDate}
-                className={`w-full font-semibold py-4 px-6 rounded-lg flex items-center justify-center space-x-3 transition-all ${
-                  startingDate
-                    ? "bg-red-600 hover:bg-red-700 text-white shadow-md hover:shadow-lg"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
+                onClick={() => setActiveTab("booking")}
+                className="w-full font-semibold py-4 px-6 rounded-lg flex items-center justify-center space-x-3 transition-all bg-red-600 hover:bg-red-700 text-white shadow-md hover:shadow-lg"
               >
                 <Users size={20} />
-                <span>
-                  {startingDate
-                    ? `Book Now for ${formatPrice(totalPrice)}`
-                    : "Select a date to book"}
-                </span>
+                <span>Book Now</span>
               </button>
 
               <button
@@ -370,6 +392,229 @@ export default function TourDetailPage() {
                 <span>View Reviews ({tourDetails.reviews})</span>
               </button>
             </div>
+          </div>
+        </div>
+
+        <div className="mt-12">
+          {renderTabs()}
+          <div className="py-8">
+            {activeTab === "overview" && (
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-gray-900">Overview</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {tourDetails.description}
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div>
+                    <h4 className="font-semibold text-lg text-gray-800 mb-3 flex items-center">
+                      <CheckCircle size={20} className="text-green-500 mr-2" />
+                      Inclusions
+                    </h4>
+                    <ul className="list-disc list-inside space-y-2 text-gray-600">
+                      {tourDetails.inclusions.map((item, idx) => (
+                        <li key={idx}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-lg text-gray-800 mb-3 flex items-center">
+                      <XCircle size={20} className="text-red-500 mr-2" />
+                      Exclusions
+                    </h4>
+                    <ul className="list-disc list-inside space-y-2 text-gray-600">
+                      {tourDetails.exclusions.map((item, idx) => (
+                        <li key={idx}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+            {activeTab === "detailed" && (
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-gray-900">
+                  Detailed Inclusions
+                </h3>
+                {Object.entries(tourDetails.detailedInclusions)
+                  .filter(
+                    ([key, value]) => Array.isArray(value) && value.length > 0
+                  )
+                  .map(([key, value]) => (
+                    <div key={key}>
+                      <h4 className="font-semibold text-lg text-gray-800 mb-3 capitalize">
+                        {key.replace(/([A-Z])/g, " $1")}
+                      </h4>
+                      <ul className="list-disc list-inside space-y-2 text-gray-600">
+                        {value.map((item, idx) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+              </div>
+            )}
+            {activeTab === "itinerary" && (
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-gray-900">Itinerary</h3>
+                <div className="space-y-8">
+                  {tourDetails.itinerary.map((day) => (
+                    <div key={day.day} className="flex items-start space-x-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-red-500 text-white rounded-full flex items-center justify-center font-bold text-lg">
+                        {day.day}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-lg text-gray-800">
+                          Day {day.day}
+                        </h4>
+                        <p className="text-gray-600 mt-1">{day.plan}</p>
+                        <p className="text-sm text-gray-500 mt-2">
+                          Meals: <span className="capitalize">{day.meals}</span>
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {activeTab === "booking" && (
+              <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">
+                  Date & Pricing
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Left Side: Booking Form */}
+                  <div className="space-y-6">
+                    <div>
+                      <label
+                        htmlFor="start-date"
+                        className="block text-sm font-medium text-gray-900 mb-2"
+                      >
+                        Select Start Date:
+                      </label>
+                      <input
+                        type="date"
+                        id="start-date"
+                        // MODIFICATION: Use `startingDate` for the value but the handler will control it
+                        value={startingDate}
+                        // MODIFICATION: Use the new handler for validation
+                        onChange={handleDateChange}
+                        min={new Date().toISOString().split("T")[0]}
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                      />
+                      {/* MODIFICATION: Display the error message if it exists */}
+                      {dateError && (
+                        <p className="text-red-500 text-sm mt-2">{dateError}</p>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-900">
+                        Number of People:
+                      </span>
+                      <div className="flex items-center border border-gray-300 rounded-lg bg-gray-50">
+                        <button
+                          onClick={() =>
+                            setQuantityToBook(Math.max(1, quantityToBook - 1))
+                          }
+                          className="p-2 hover:bg-gray-100 transition-colors"
+                        >
+                          <Minus size={16} className="text-gray-600" />
+                        </button>
+                        <span className="px-4 py-2 text-center min-w-[60px] border-x border-gray-300">
+                          {quantityToBook}
+                        </span>
+                        <button
+                          onClick={() => setQuantityToBook(quantityToBook + 1)}
+                          className="p-2 hover:bg-gray-100 transition-colors"
+                        >
+                          <Plus size={16} className="text-gray-600" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="guide-gender"
+                        className="block text-sm font-medium text-gray-900 mb-2"
+                      >
+                        Guide Gender Preference:
+                      </label>
+                      <select
+                        id="guide-gender"
+                        value={guideGender}
+                        onChange={(e) => setGuideGender(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                      >
+                        <option value="any">Any</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="special-instructions"
+                        className="block text-sm font-medium text-gray-900 mb-2"
+                      >
+                        Special Instructions:
+                      </label>
+                      <textarea
+                        id="special-instructions"
+                        rows="4"
+                        value={specialInstructions}
+                        onChange={(e) => setSpecialInstructions(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                        placeholder="e.g., dietary restrictions, mobility concerns"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  {/* Right Side: Price Summary */}
+                  <div className="bg-gray-50 rounded-lg p-6 flex flex-col justify-center">
+                    <h4 className="font-semibold text-lg text-gray-800 mb-4">
+                      Booking Summary
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Price per person:</span>
+                        <span className="font-medium text-gray-900">
+                          {formatPrice(tourDetails.price)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Quantity:</span>
+                        <span className="font-medium text-gray-900">
+                          {quantityToBook} people
+                        </span>
+                      </div>
+                      <div className="border-t border-gray-200 my-3"></div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xl font-bold text-gray-900">
+                          Total Price:
+                        </span>
+                        <span className="text-2xl font-bold text-red-600">
+                          {formatPrice(totalPrice)}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={addToCartHandler}
+                      disabled={!startingDate}
+                      className={`w-full font-semibold py-3 px-6 rounded-lg flex items-center justify-center space-x-3 transition-all mt-6 ${
+                        startingDate
+                          ? "bg-red-600 hover:bg-red-700 text-white shadow-md hover:shadow-lg"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      }`}
+                    >
+                      <Users size={20} />
+                      <span>
+                        {startingDate ? `Add to Cart` : "Select a date to book"}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

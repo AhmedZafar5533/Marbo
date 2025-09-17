@@ -8,6 +8,7 @@ export const useTourStore = create((set) => ({
   data: [],
   details: null,
   countries: [],
+  dashboardData: [],
   createTour: async (data) => {
     try {
       set({ loading: true });
@@ -27,11 +28,39 @@ export const useTourStore = create((set) => ({
 
       if (response.status === 201) {
         const data = await response.json();
+        
         toast.success(data.message || "Tour created successfully");
         return true;
       }
     } catch (error) {
       toast.error("Error creating tour" || error.message);
+    } finally {
+      set({ loading: false });
+    }
+  },
+  getDashboardTours: async () => {
+    try {
+      set({ loading: true });
+      const response = await fetch(`${baseUrl}/tours/get/dashboard`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        // toast.error(data.message || "Failed to fetch dashboard tours");
+        set({ dashboardData: [] });
+        return;
+      }
+      if (response.status === 200) {
+        const data = await response.json();
+        console.log("Fetched dashboard tours:", data);
+        set({ dashboardData: data.tours });
+      }
+    } catch (error) {
+      toast.error("Error fetching dashboard tours" || error.message);
     } finally {
       set({ loading: false });
     }

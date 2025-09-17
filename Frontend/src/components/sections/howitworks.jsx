@@ -544,37 +544,6 @@ const HowItWorks = () => {
 
 
 
-          {/* Bottom CTA */}
-          <motion.div
-            className="mt-10 text-center"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-          >
-            <h3 className="text-2xl font-bold mb-6" style={{ color: colors.dark }}>
-              Ready to Experience MarboGlobal?
-            </h3>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <motion.button
-                name="get-started"
-                className="px-8 py-4 rounded-lg font-medium cursor-pointer"
-                style={{
-                  background: colors.primary,
-                  color: colors.light
-                }}
-                whileHover={{
-                  scale: 1.03,
-                  boxShadow: `0 10px 20px -5px ${colors.primary}50`
-                }}
-                whileTap={{ scale: 0.97 }}
-              >
-                Start now
-              </motion.button>
-
-
-            </div>
-          </motion.div>
         </div>
       )}
 

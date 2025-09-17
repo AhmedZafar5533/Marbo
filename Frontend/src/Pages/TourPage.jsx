@@ -144,10 +144,9 @@ const TourWebsite = ({ videoUrl }) => {
     return (
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
         {tabContent.map((item) => {
-          switch (item.type) {
-            case "tour":
-            case "private": // Handling potential variations
-            case "group":
+          switch (item.category) {
+            case "privateTours": // Handling potential variations
+            case "smallGroupTour":
               return (
                 <TourCard
                   key={item._id} // Use _id from MongoDB
@@ -417,100 +416,8 @@ const TourWebsite = ({ videoUrl }) => {
         </div>
       </section>
 
-      {/* Footer (No changes here, remains the same) */}
-      <footer className="bg-gray-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-6">
-                <div className="bg-red-600 text-white p-2 rounded-lg">
-                  <MapPin className="w-6 h-6" />
-                </div>
-                <h4 className="text-xl font-bold">Wanderlust Tours</h4>
-              </div>
-              <p className="text-gray-400">
-                Creating unforgettable travel experiences around the world.
-              </p>
-            </div>
-
-            <div>
-              <h5 className="text-lg font-semibold mb-4">Quick Links</h5>
-              <div className="space-y-2">
-                <a
-                  href="#"
-                  className="block text-gray-400 hover:text-red-400 transition-colors"
-                >
-                  About Us
-                </a>
-                <a
-                  href="#"
-                  className="block text-gray-400 hover:text-red-400 transition-colors"
-                >
-                  Our Tours
-                </a>
-                <a
-                  href="#"
-                  className="block text-gray-400 hover:text-red-400 transition-colors"
-                >
-                  Gallery
-                </a>
-                <a
-                  href="#"
-                  className="block text-gray-400 hover:text-red-400 transition-colors"
-                >
-                  Blog
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <h5 className="text-lg font-semibold mb-4">Support</h5>
-              <div className="space-y-2">
-                <a
-                  href="#"
-                  className="block text-gray-400 hover:text-red-400 transition-colors"
-                >
-                  Contact Us
-                </a>
-                <a
-                  href="#"
-                  className="block text-gray-400 hover:text-red-400 transition-colors"
-                >
-                  FAQs
-                </a>
-                <a
-                  href="#"
-                  className="block text-gray-400 hover:text-red-400 transition-colors"
-                >
-                  Booking Policy
-                </a>
-                <a
-                  href="#"
-                  className="block text-gray-400 hover:text-red-400 transition-colors"
-                >
-                  Terms & Conditions
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <h5 className="text-lg font-semibold mb-4">Contact Info</h5>
-              <div className="space-y-2 text-gray-400">
-                <p>📧 hello@wanderlusttours.com</p>
-                <p>📞 +1 (555) 123-4567</p>
-                <p>📍 123 Adventure Street, Travel City, TC 12345</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 Wanderlust Tours. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-
       {/* Tour Modal (Updated to handle backend data structure) */}
-      {selectedTour && (
+      {/* {selectedTour && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="relative">
@@ -568,7 +475,7 @@ const TourWebsite = ({ videoUrl }) => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
@@ -612,7 +519,7 @@ const TourCard = ({ tour, tourType, onSelect }) => (
           {tour.maxGuests}
         </div>
       </div>
-      <Link to={`/service/tour/${tour._id}`}>
+      <Link to={`/service/tours/details/${tour._id}`}>
         <button className="w-full bg-red-600 text-white py-3 rounded-full hover:bg-red-700 transition-colors flex items-center justify-center group">
           View Details{" "}
           <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />

@@ -1,67 +1,83 @@
 import React, { useState, useEffect } from "react";
 import {
   MapPin,
-  Star,
-  Users,
   Calendar,
   DollarSign,
   Camera,
   User,
-  Ship,
-  Home,
-  Navigation,
+  CheckCircle,
+  XCircle,
+  PlusCircle,
+  Trash2,
+  Languages,
 } from "lucide-react";
+// Make sure this path is correct for your project structure
 import { useTourStore } from "../../../Store/tourStore";
 
+// Mock store for demonstration since the original is not provided
+// const useTourStore = () => ({
+//   createTour: async (data) => {
+//     console.log("Creating new entry with data:", data);
+//     // Simulate an API call
+//     await new Promise((resolve) => setTimeout(resolve, 2000));
+//     console.log("Entry created successfully.");
+//     return true; // Simulate a successful creation
+//   },
+// });
+
 const TourDataForm = () => {
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     country: "",
     type: "",
-    title: "",
+    name: "",
     location: "",
-    duration: "",
     price: "",
-    rating: "",
-    reviews: "",
-    maxGuests: "",
-    images: [], // Changed from image to images array
+    images: [],
     description: "",
-    // Tour-specific fields
-    pickupSpot: "",
-    tourType: "private",
-    // Property-specific fields
-    address: "",
-    propertyType: "",
-    amenities: "",
-    checkInTime: "",
-    checkOutTime: "",
-    // Guide-specific fields
-    guideName: "",
-    speciality: "",
-    citiesAvailable: "",
-    languages: "",
-    experience: "",
-    // Cruise-specific fields
-    shipName: "",
-    ports: "",
-    cabinType: "",
-    includes: "",
-  });
+    // Tour specific
+    duration: "",
+    operates: "everyday",
+    selectedDays: [],
+    inclusions: "",
+    exclusions: "",
+    itinerary: [{ day: 1, plan: "", meals: "none" }],
+    detailedInclusions: {
+      accommodation: "",
+      transfers: "",
+      sightseeing: "",
+      domesticFlights: "",
+      freeItems: "",
+    },
+    // Guide specific
+    gender: "",
+    spokenLanguages: "",
+  };
 
+  const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState({});
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [loading, setLoading] = useState(false); // <-- State for loader
 
   const countries = ["Egypt", "Saudi Arabia", "Lebanon", "Jordan", "Iraq"];
   const types = [
-    { value: "tour", label: "Tour" },
+    { value: "smallGroupTour", label: "Small group tours" },
+    { value: "privateTour", label: "Private tours" },
     { value: "luxuryProperties", label: "Luxury Properties" },
     { value: "guides", label: "Tour Guides" },
     { value: "cruises", label: "Cruises" },
   ];
+  const daysOfWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
 
   const { createTour } = useTourStore();
 
-  // Clean up preview URLs on unmount to prevent memory leaks
   useEffect(() => {
     return () => {
       imagePreviews.forEach((url) => URL.revokeObjectURL(url));
@@ -74,17 +90,60 @@ const TourDataForm = () => {
       ...prev,
       [name]: value,
     }));
-
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
+  const handleDaySelectionChange = (day) => {
+    setFormData((prev) => {
+      const selectedDays = prev.selectedDays.includes(day)
+        ? prev.selectedDays.filter((d) => d !== day)
+        : [...prev.selectedDays, day];
+      return { ...prev, selectedDays };
+    });
+  };
+
+  const handleItineraryChange = (index, field, value) => {
+    const newItinerary = [...formData.itinerary];
+    newItinerary[index][field] = value;
+    setFormData((prev) => ({ ...prev, itinerary: newItinerary }));
+  };
+
+  const addItineraryDay = () => {
+    setFormData((prev) => ({
+      ...prev,
+      itinerary: [
+        ...prev.itinerary,
+        { day: prev.itinerary.length + 1, plan: "", meals: "none" },
+      ],
+    }));
+  };
+
+  const removeItineraryDay = (index) => {
+    if (formData.itinerary.length <= 1) return;
+    const newItinerary = formData.itinerary
+      .filter((_, i) => i !== index)
+      .map((item, i) => ({ ...item, day: i + 1 }));
+    setFormData((prev) => ({ ...prev, itinerary: newItinerary }));
+  };
+
+  const handleDetailedInclusionChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      detailedInclusions: {
+        ...prev.detailedInclusions,
+        [name]: value,
+      },
+    }));
+  };
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     let error = "";
-    const newImages = [...formData.images]; // Will store Base64 strings
-    const newPreviews = [...imagePreviews]; // For UI preview
+    const newImages = [...formData.images];
+    const newPreviews = [...imagePreviews];
 
     if (newImages.length + files.length > 4) {
       error = "You can only upload a maximum of 4 images.";
@@ -92,239 +151,236 @@ const TourDataForm = () => {
       return;
     }
 
-    const readFileAsBase64 = (file) =>
-      new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (err) => reject(err);
-        reader.readAsDataURL(file);
-      });
-
-    const processFiles = async () => {
-      for (const file of files) {
-        if (file.size > 4 * 1024 * 1024) {
-          error = `File "${file.name}" exceeds the 4MB size limit.`;
-          break;
-        }
-        if (!file.type.startsWith("image/")) {
-          error = `File "${file.name}" is not a valid image type.`;
-          break;
-        }
-
-        try {
-          const base64 = await readFileAsBase64(file);
-          newImages.push(base64);
-          newPreviews.push(base64); // Use Base64 also for preview
-        } catch (err) {
-          error = `Failed to read file "${file.name}".`;
-          break;
-        }
+    files.forEach((file) => {
+      if (file.size > 4 * 1024 * 1024) {
+        error = `File "${file.name}" exceeds the 4MB size limit.`;
+        return;
+      }
+      if (!file.type.startsWith("image/")) {
+        error = `File "${file.name}" is not a valid image type.`;
+        return;
       }
 
-      if (error) {
-        setErrors((prev) => ({ ...prev, images: error }));
-      } else {
-        setFormData((prev) => ({ ...prev, images: newImages }));
-        setImagePreviews(newPreviews);
-        if (errors.images) {
-          setErrors((prev) => ({ ...prev, images: "" }));
-        }
-      }
-    };
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // Here, reader.result is the base64 string
+        newImages.push(reader.result);
+        newPreviews.push(URL.createObjectURL(file));
 
-    processFiles();
+        // Check if it's the last file to update state
+        if (newImages.length === formData.images.length + files.length) {
+          setFormData((prev) => ({ ...prev, images: newImages }));
+          setImagePreviews(newPreviews);
+          if (errors.images) {
+            setErrors((prev) => ({ ...prev, images: "" }));
+          }
+        }
+      };
+      reader.onerror = () => {
+        error = `Failed to read file "${file.name}".`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    if (error) {
+      setErrors((prev) => ({ ...prev, images: error }));
+    }
   };
 
   const handleRemoveImage = (indexToRemove) => {
-    URL.revokeObjectURL(imagePreviews[indexToRemove]);
-
     const updatedImages = formData.images.filter(
       (_, index) => index !== indexToRemove
     );
     const updatedPreviews = imagePreviews.filter(
       (_, index) => index !== indexToRemove
     );
-
+    URL.revokeObjectURL(imagePreviews[indexToRemove]); // Clean up object URL
     setFormData((prev) => ({ ...prev, images: updatedImages }));
     setImagePreviews(updatedPreviews);
   };
 
   const validateForm = () => {
     const newErrors = {};
-
     if (!formData.country) newErrors.country = "Country is required";
     if (!formData.type) newErrors.type = "Type is required";
-    if (formData.type !== "guides" && !formData.title)
-      newErrors.title = "Title is required";
-    if (!formData.location) newErrors.location = "Location is required";
-    if (!formData.price) newErrors.price = "Price is required";
+    if (!formData.name) newErrors.name = "A name or name is required";
     if (!formData.description)
       newErrors.description = "Description is required";
     if (formData.images.length === 0)
       newErrors.images = "At least one image is required.";
-    if (formData.images.length > 4)
-      newErrors.images = "You can upload a maximum of 4 images.";
 
-    // Type-specific validations
-    if (
-      formData.type === "privateTours" ||
-      formData.type === "smallGroupTours"
-    ) {
-      if (!formData.duration)
-        newErrors.duration = "Duration is required for tours";
-      if (!formData.maxGuests)
-        newErrors.maxGuests = "Max guests is required for tours";
-      if (!formData.pickupSpot)
-        newErrors.pickupSpot = "Pickup spot is required for tours";
+    if (formData.type === "smallGroupTour" || formData.type === "privateTour") {
+      if (!formData.price) newErrors.price = "Price is required for tours";
+      if (!formData.duration || parseInt(formData.duration) <= 0) {
+        newErrors.duration = "Please enter a valid number of days.";
+      }
+      if (
+        formData.operates === "selected" &&
+        formData.selectedDays.length === 0
+      ) {
+        newErrors.selectedDays = "Please select at least one day of operation.";
+      }
     }
-    if (formData.type === "luxuryProperties") {
-      if (!formData.address)
-        newErrors.address = "Address is required for properties";
-      if (!formData.propertyType)
-        newErrors.propertyType = "Property type is required";
-    }
-    if (formData.type === "guides") {
-      if (!formData.guideName) newErrors.guideName = "Guide name is required";
-      if (!formData.speciality)
-        newErrors.speciality = "Speciality is required for guides";
-      if (!formData.citiesAvailable)
-        newErrors.citiesAvailable = "Cities available is required for guides";
-    }
-    if (formData.type === "cruises") {
-      if (!formData.duration)
-        newErrors.duration = "Duration is required for cruises";
-      if (!formData.shipName)
-        newErrors.shipName = "Ship name is required for cruises";
-      if (!formData.ports)
-        newErrors.ports = "Ports information is required for cruises";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      const newEntry = createDataObject();
-      console.log("New entry created:", newEntry);
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true); // <-- Start loader
+    const newEntry = createDataObject();
+
+    try {
       const success = await createTour(newEntry);
-      if (!success) return;
-      resetForm();
-      alert("Entry created successfully! Check console for output.");
+      if (success) {
+        console.log("Form submission successful!");
+        resetForm();
+      } else {
+        console.error("Failed to create the entry.");
+        // Optionally set an error message to display to the user
+      }
+    } catch (error) {
+      console.error("An error occurred during submission:", error);
+    } finally {
+      setLoading(false); // <-- Stop loader regardless of outcome
     }
   };
 
   const createDataObject = () => {
-    console.log(formData.type);
     const baseData = {
-      title: formData.title,
+      name: formData.name,
       location: formData.location,
       country: formData.country,
-      price: parseInt(formData.price),
-      type: formData.type,
-      tourType: formData.tourType,
+      type: "tours",
+      category: formData.type,
       images: formData.images,
       description: formData.description,
     };
 
+    if (formData.type === "smallGroupTour" || formData.type === "privateTour") {
+      baseData.price = parseInt(formData.price, 10);
+    }
+
     switch (formData.type) {
-      case "tour":
-        console.log("we are in");
+      case "smallGroupTour":
+      case "privateTour":
         return {
           ...baseData,
-          duration: formData.duration,
-          type: formData.tourType,
-          maxGuests: formData.maxGuests,
-          pickupSpot: formData.pickupSpot,
-        };
-      case "luxuryProperties":
-        return {
-          ...baseData,
-          address: formData.address,
-          propertyType: formData.propertyType,
-          amenities: formData.amenities,
-          checkInTime: formData.checkInTime,
-          checkOutTime: formData.checkOutTime,
+          duration: parseInt(formData.duration, 10),
+          operates: formData.operates,
+          ...(formData.operates === "selected" && {
+            selectedDays: formData.selectedDays,
+          }),
+          inclusions: formData.inclusions
+            .split("\n")
+            .filter((line) => line.trim() !== ""),
+          exclusions: formData.exclusions
+            .split("\n")
+            .filter((line) => line.trim() !== ""),
+          itinerary: formData.itinerary,
+          detailedInclusions: {
+            accommodation: formData.detailedInclusions.accommodation
+              .split("\n")
+              .filter((line) => line.trim() !== ""),
+            transfers: formData.detailedInclusions.transfers
+              .split("\n")
+              .filter((line) => line.trim() !== ""),
+            sightseeing: formData.detailedInclusions.sightseeing
+              .split("\n")
+              .filter((line) => line.trim() !== ""),
+            domesticFlights: formData.detailedInclusions.domesticFlights
+              .split("\n")
+              .filter((line) => line.trim() !== ""),
+            freeItems: formData.detailedInclusions.freeItems
+              .split("\n")
+              .filter((line) => line.trim() !== ""),
+          },
         };
       case "guides":
         return {
           ...baseData,
-          title: formData.guideName,
-          speciality: formData.speciality,
-          // citiesAvailable: formData.citiesAvailable
-          //   .split(",")
-          //   .map((c) => c.trim()),
-          languages: formData.languages,
-          experience: formData.experience,
+          gender: formData.gender,
+          spokenLanguages: formData.spokenLanguages
+            .split(",")
+            .map((lang) => lang.trim())
+            .filter((lang) => lang),
         };
       case "cruises":
-        return {
-          ...baseData,
-          duration: formData.duration,
-          shipName: formData.shipName,
-          ports: formData.ports.split(",").map((p) => p.trim()),
-          cabinType: formData.cabinType,
-          includes: formData.includes.split(",").map((i) => i.trim()),
-        };
+      case "luxuryProperties":
+        return baseData;
       default:
         return baseData;
     }
   };
 
   const resetForm = () => {
-    // Clean up any existing image preview URLs
-    imagePreviews.forEach((url) => URL.revokeObjectURL(url));
+    if (loading) return;
+    setFormData(initialFormData);
     setImagePreviews([]);
-
-    setFormData({
-      country: "",
-      type: "",
-      title: "",
-      location: "",
-      duration: "",
-      price: "",
-
-      maxGuests: "",
-      images: [],
-      description: "",
-      pickupSpot: "",
-      tourType: "private",
-      address: "",
-      propertyType: "",
-      amenities: "",
-      checkInTime: "",
-      checkOutTime: "",
-      guideName: "",
-      speciality: "",
-      citiesAvailable: "",
-      languages: "",
-      experience: "",
-      shipName: "",
-      ports: "",
-      cabinType: "",
-      includes: "",
-    });
     setErrors({});
   };
 
   const renderTypeSpecificFields = () => {
     switch (formData.type) {
-      case "tour":
+      case "guides":
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Calendar className="inline w-4 h-4 mr-2" />
-                  Duration *
+                  Gender
+                </label>
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Languages className="inline w-4 h-4 mr-2" />
+                  Spoken Languages
                 </label>
                 <input
                   type="text"
+                  name="spokenLanguages"
+                  value={formData.spokenLanguages}
+                  onChange={handleChange}
+                  placeholder="English, Arabic (comma-separated)"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          </div>
+        );
+
+      case "smallGroupTour":
+      case "privateTour":
+        return (
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Calendar className="inline w-4 h-4 mr-2" />
+                  Number of Days *
+                </label>
+                <input
+                  type="number"
                   name="duration"
                   value={formData.duration}
                   onChange={handleChange}
-                  placeholder="e.g., 7 days"
+                  placeholder="e.g., 7"
+                  min="1"
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
                     errors.duration ? "border-red-500" : "border-gray-300"
                   }`}
@@ -333,352 +389,257 @@ const TourDataForm = () => {
                   <p className="text-red-500 text-sm mt-1">{errors.duration}</p>
                 )}
               </div>
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Users className="inline w-4 h-4 mr-2" />
-                  Max Guests *
+            <div>
+              <h3 className="text-lg font-medium text-gray-800 mb-3">
+                Operation Schedule
+              </h3>
+              <div className="flex items-center space-x-6">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="operates"
+                    value="everyday"
+                    checked={formData.operates === "everyday"}
+                    onChange={handleChange}
+                    className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-gray-700">Operates Every Day</span>
                 </label>
-                <input
-                  type="text"
-                  name="maxGuests"
-                  value={formData.maxGuests}
-                  onChange={handleChange}
-                  placeholder="e.g., 2-4 guests"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.maxGuests ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {errors.maxGuests && (
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="operates"
+                    value="selected"
+                    checked={formData.operates === "selected"}
+                    onChange={handleChange}
+                    className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-gray-700">Select Days</span>
+                </label>
+              </div>
+            </div>
+
+            {formData.operates === "selected" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Select Operation Days *
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {daysOfWeek.map((day) => (
+                    <label
+                      key={day}
+                      className="flex items-center space-x-2 p-2 border rounded-md cursor-pointer hover:bg-blue-50"
+                    >
+                      <input
+                        type="checkbox"
+                        value={day.toLowerCase()}
+                        checked={formData.selectedDays.includes(
+                          day.toLowerCase()
+                        )}
+                        onChange={() =>
+                          handleDaySelectionChange(day.toLowerCase())
+                        }
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span>{day}</span>
+                    </label>
+                  ))}
+                </div>
+                {errors.selectedDays && (
                   <p className="text-red-500 text-sm mt-1">
-                    {errors.maxGuests}
+                    {errors.selectedDays}
                   </p>
                 )}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <CheckCircle className="inline w-4 h-4 mr-2 text-green-500" />
+                  What's Included
+                </label>
+                <textarea
+                  name="inclusions"
+                  value={formData.inclusions}
+                  onChange={handleChange}
+                  placeholder="List each inclusion on a new line..."
+                  rows="4"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 border-gray-300"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <XCircle className="inline w-4 h-4 mr-2 text-red-500" />
+                  What's Not Included
+                </label>
+                <textarea
+                  name="exclusions"
+                  value={formData.exclusions}
+                  onChange={handleChange}
+                  placeholder="List each exclusion on a new line..."
+                  rows="4"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 border-gray-300"
+                />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Navigation className="inline w-4 h-4 mr-2" />
-                Pickup Spot *
-              </label>
-              <input
-                type="text"
-                name="pickupSpot"
-                value={formData.pickupSpot}
-                onChange={handleChange}
-                placeholder="e.g., Hotel lobby, Airport, Central Station"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                  errors.pickupSpot ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-              {errors.pickupSpot && (
-                <p className="text-red-500 text-sm mt-1">{errors.pickupSpot}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tour Type
-              </label>
-              <select
-                name="tourType"
-                value={formData.tourType}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              <h3 className="text-lg font-medium text-gray-800 mb-3">
+                Daily Itinerary
+              </h3>
+              <div className="space-y-4">
+                {formData.itinerary.map((item, index) => (
+                  <div
+                    key={index}
+                    className="p-4 border rounded-lg bg-white relative"
+                  >
+                    <p className="font-semibold text-gray-600 mb-2">
+                      Day {item.day}
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                      <div className="md:col-span-3">
+                        <label className="text-sm font-medium text-gray-600">
+                          Plan
+                        </label>
+                        <textarea
+                          value={item.plan}
+                          onChange={(e) =>
+                            handleItineraryChange(index, "plan", e.target.value)
+                          }
+                          placeholder="Describe the plan for this day..."
+                          rows="3"
+                          className="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 border-gray-300"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="text-sm font-medium text-gray-600">
+                          Meals Included
+                        </label>
+                        <select
+                          value={item.meals}
+                          onChange={(e) =>
+                            handleItineraryChange(
+                              index,
+                              "meals",
+                              e.target.value
+                            )
+                          }
+                          className="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 border-gray-300"
+                        >
+                          <option value="none">None</option>
+                          <option value="breakfast">Bed and Breakfast</option>
+                          <option value="half-board">Half Board</option>
+                          <option value="full-board">Full Board</option>
+                        </select>
+                      </div>
+                    </div>
+                    {formData.itinerary.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeItineraryDay(index)}
+                        className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={addItineraryDay}
+                className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                <option value="private">Private</option>
-                <option value="group">Group</option>
-              </select>
-            </div>
-          </div>
-        );
-
-      case "luxuryProperties":
-        return (
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <MapPin className="inline w-4 h-4 mr-2" />
-                Address *
-              </label>
-              <textarea
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="Full address of the property"
-                rows="2"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                  errors.address ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-              {errors.address && (
-                <p className="text-red-500 text-sm mt-1">{errors.address}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Home className="inline w-4 h-4 mr-2" />
-                  Property Type *
-                </label>
-                <input
-                  type="text"
-                  name="propertyType"
-                  value={formData.propertyType}
-                  onChange={handleChange}
-                  placeholder="e.g., Villa, Resort, Hotel"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.propertyType ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {errors.propertyType && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.propertyType}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Amenities
-                </label>
-                <input
-                  type="text"
-                  name="amenities"
-                  value={formData.amenities}
-                  onChange={handleChange}
-                  placeholder="Pool, Spa, Gym (comma separated)"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Check-in Time
-                </label>
-                <input
-                  type="time"
-                  name="checkInTime"
-                  value={formData.checkInTime}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Check-out Time
-                </label>
-                <input
-                  type="time"
-                  name="checkOutTime"
-                  value={formData.checkOutTime}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-          </div>
-        );
-
-      case "guides":
-        return (
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <User className="inline w-4 h-4 mr-2" />
-                Guide Name *
-              </label>
-              <input
-                type="text"
-                name="guideName"
-                value={formData.guideName}
-                onChange={handleChange}
-                placeholder="Full name of the guide"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                  errors.guideName ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-              {errors.guideName && (
-                <p className="text-red-500 text-sm mt-1">{errors.guideName}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Speciality *
-                </label>
-                <input
-                  type="text"
-                  name="speciality"
-                  value={formData.speciality}
-                  onChange={handleChange}
-                  placeholder="e.g., Cultural Traditions & Food"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.speciality ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {errors.speciality && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.speciality}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Experience (years)
-                </label>
-                <input
-                  type="number"
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleChange}
-                  placeholder="Years of experience"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+                <PlusCircle className="mr-2" size={20} />
+                Add Day to Itinerary
+              </button>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Cities Available *
-              </label>
-              <input
-                type="text"
-                name="citiesAvailable"
-                value={formData.citiesAvailable}
-                onChange={handleChange}
-                placeholder="Tokyo, Kyoto, Osaka (comma separated)"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                  errors.citiesAvailable ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-              {errors.citiesAvailable && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.citiesAvailable}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Languages Spoken
-              </label>
-              <input
-                type="text"
-                name="languages"
-                value={formData.languages}
-                onChange={handleChange}
-                placeholder="English, Japanese, Mandarin (comma separated)"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
+              <h3 className="text-lg font-medium text-gray-800 mb-3">
+                Detailed Inclusions (List items)
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-600">
+                    Luxury Accommodation
+                  </label>
+                  <textarea
+                    name="accommodation"
+                    value={formData.detailedInclusions.accommodation}
+                    onChange={handleDetailedInclusionChange}
+                    placeholder="Jul 29 - 30: Four Seasons..."
+                    rows="4"
+                    className="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 border-gray-300"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">
+                    Transfers
+                  </label>
+                  <textarea
+                    name="transfers"
+                    value={formData.detailedInclusions.transfers}
+                    onChange={handleDetailedInclusionChange}
+                    placeholder="Jul 29: Arrival transfer..."
+                    rows="4"
+                    className="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 border-gray-300"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">
+                    Sightseeing
+                  </label>
+                  <textarea
+                    name="sightseeing"
+                    value={formData.detailedInclusions.sightseeing}
+                    onChange={handleDetailedInclusionChange}
+                    placeholder="Aug 04: Full-day pyramids..."
+                    rows="3"
+                    className="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 border-gray-300"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">
+                    Domestic Flights
+                  </label>
+                  <textarea
+                    name="domesticFlights"
+                    value={formData.detailedInclusions.domesticFlights}
+                    onChange={handleDetailedInclusionChange}
+                    placeholder="CAI -> ASW..."
+                    rows="2"
+                    className="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 border-gray-300"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">
+                    Free Items
+                  </label>
+                  <textarea
+                    name="freeItems"
+                    value={formData.detailedInclusions.freeItems}
+                    onChange={handleDetailedInclusionChange}
+                    placeholder="Camel ride..."
+                    rows="2"
+                    className="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 border-gray-300"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         );
 
       case "cruises":
+      case "luxuryProperties":
         return (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Calendar className="inline w-4 h-4 mr-2" />
-                  Duration *
-                </label>
-                <input
-                  type="text"
-                  name="duration"
-                  value={formData.duration}
-                  onChange={handleChange}
-                  placeholder="e.g., 12 days"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.duration ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {errors.duration && (
-                  <p className="text-red-500 text-sm mt-1">{errors.duration}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Ship className="inline w-4 h-4 mr-2" />
-                  Ship Name *
-                </label>
-                <input
-                  type="text"
-                  name="shipName"
-                  value={formData.shipName}
-                  onChange={handleChange}
-                  placeholder="Name of the cruise ship"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.shipName ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {errors.shipName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.shipName}</p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ports of Call *
-              </label>
-              <input
-                type="text"
-                name="ports"
-                value={formData.ports}
-                onChange={handleChange}
-                placeholder="Rome, Barcelona, Monaco (comma separated)"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                  errors.ports ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-              {errors.ports && (
-                <p className="text-red-500 text-sm mt-1">{errors.ports}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cabin Type
-                </label>
-                <select
-                  name="cabinType"
-                  value={formData.cabinType}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Cabin Type</option>
-                  <option value="interior">Interior</option>
-                  <option value="oceanview">Ocean View</option>
-                  <option value="balcony">Balcony</option>
-                  <option value="suite">Suite</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  What's Included
-                </label>
-                <input
-                  type="text"
-                  name="includes"
-                  value={formData.includes}
-                  onChange={handleChange}
-                  placeholder="Meals, Entertainment, WiFi (comma separated)"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
+          <div className="text-center py-4 bg-gray-100 rounded-lg">
+            <p className="text-gray-600">
+              Please fill in the basic information above for the listing.
+            </p>
           </div>
         );
 
@@ -693,7 +654,7 @@ const TourDataForm = () => {
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Create New Tour Data Entry
+              Create New Data Entry
             </h1>
             <p className="text-gray-600">
               Fill in the details to create a new tour, property, guide, or
@@ -758,39 +719,36 @@ const TourDataForm = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                {formData.type !== "guides" && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Title *
-                    </label>
-                    <input
-                      type="text"
-                      name="title"
-                      value={formData.title}
-                      onChange={handleChange}
-                      placeholder="Enter title"
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                        errors.title ? "border-red-500" : "border-gray-300"
-                      }`}
-                    />
-                    {errors.title && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.title}
-                      </p>
-                    )}
-                  </div>
-                )}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {formData.type === "guides" ? "Guide Name" : "Title / Name"}{" "}
+                    *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Enter name or name"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
+                      errors.name ? "border-red-500" : "border-gray-300"
+                    }`}
+                  />
+                  {errors.name && (
+                    <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                  )}
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <MapPin className="inline w-4 h-4 mr-2" />
-                    Location *
+                    Location
                   </label>
                   <input
                     type="text"
                     name="location"
                     value={formData.location}
                     onChange={handleChange}
-                    placeholder="City, Country"
+                    placeholder="City or Area"
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
                       errors.location ? "border-red-500" : "border-gray-300"
                     }`}
@@ -803,32 +761,39 @@ const TourDataForm = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <DollarSign className="inline w-4 h-4 mr-2" />
-                    Price *
-                  </label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleChange}
-                    placeholder="Price in USD"
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                      errors.price ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {errors.price && (
-                    <p className="text-red-500 text-sm mt-1">{errors.price}</p>
-                  )}
+              {/* <-- UPDATED/FIXED: Price field is now conditional --> */}
+              {(formData.type === "smallGroupTour" ||
+                formData.type === "privateTour") && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <DollarSign className="inline w-4 h-4 mr-2" />
+                      Price *
+                    </label>
+                    <input
+                      type="number"
+                      name="price"
+                      value={formData.price}
+                      onChange={handleChange}
+                      placeholder="Price in USD"
+                      min="0"
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
+                        errors.price ? "border-red-500" : "border-gray-300"
+                      }`}
+                    />
+                    {errors.price && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.price}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="mt-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <Camera className="inline w-4 h-4 mr-2" />
-                  Images (min 1, max 4) *
+                  Images / Photos (min 1, max 4) *
                 </label>
                 <div
                   className={`mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md ${
@@ -869,7 +834,7 @@ const TourDataForm = () => {
                       <p className="pl-1">or drag and drop</p>
                     </div>
                     <p className="text-xs text-gray-500">
-                      PNG, JPG, GIF up to 4MB
+                      PNG, JPG up to 4MB each
                     </p>
                   </div>
                 </div>
@@ -908,7 +873,7 @@ const TourDataForm = () => {
                   value={formData.description}
                   onChange={handleChange}
                   placeholder="Detailed description of the offering"
-                  rows="3"
+                  rows="4"
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
                     errors.description ? "border-red-500" : "border-gray-300"
                   }`}
@@ -934,15 +899,44 @@ const TourDataForm = () => {
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 transition-colors"
+                disabled={loading} // <-- UPDATED: Disable when loading
+                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Reset Form
               </button>
               <button
                 type="submit"
-                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 transition-colors font-medium"
+                disabled={loading} // <-- UPDATED: Disable when loading
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 transition-colors font-medium flex items-center justify-center disabled:opacity-75 disabled:cursor-not-allowed"
               >
-                Create Entry
+                {/* <-- UPDATED: Add loader and text change --> */}
+                {loading ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Creating...
+                  </>
+                ) : (
+                  "Create Entry"
+                )}
               </button>
             </div>
           </form>

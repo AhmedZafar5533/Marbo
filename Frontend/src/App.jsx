@@ -23,6 +23,7 @@ import VendorOrders from "./Pages/VendorDashboard/Orders";
 import TourWebsite from "./Pages/TourPage";
 import TourDataForm from "./Pages/VendorDashboard/tourCreationForm";
 import TourDetailPage from "./Pages/detailTourPage";
+import TourDashboard from "./Pages/VendorDashboard/TourDashboard";
 
 const MainLayout = lazy(() => import("./Layout/MainlLayout"));
 const VendorDashBoardLayout = lazy(() =>
@@ -441,6 +442,10 @@ const App = () => {
             <Route
               path="/dashboard/vendor/domestic-staffing-management"
               element={<DomesticStaffingDashboard />}
+            />
+            <Route
+              path="/dashboard/vendor/tour-management"
+              element={<TourDashboard />}
             />
             <Route
               path="/dashboard/vendor/hotel-managment"
