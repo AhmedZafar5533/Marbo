@@ -215,7 +215,7 @@ const ListedVendors = () => {
                                             {formatCurrency(vendor.businessRevenue)}
                                         </td>
                                         <td className="px-3 py-4 text-white">
-                                            <Link to={`/admin/vendor-details/${vendor.id}?mode=view`} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">View</Link>
+                                            <Link to={`/vendor-details/${vendor.id}?mode=view`} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">View</Link>
                                         </td>
                                     </tr>
                                 ))
