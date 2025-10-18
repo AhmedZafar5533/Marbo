@@ -64,17 +64,7 @@ const TourSchema = new Schema({
   //   required: true,
   //   ref: "Service",
   // },
-  // type: {
-  //   type: String,
-  //   required: [true, "Type is required."],
-  //   enum: [
-  //     "privateTour",
-  //     "smallGroupTour",
-  //     "luxuryProperties",
-  //     "guides",
-  //     "cruises",
-  //   ],
-  // },
+
   // title: {
   //   type: String,
   //   trim: true,
@@ -167,7 +157,7 @@ const TourSchema = new Schema({
     type: String,
     required: [true, "Type is required."],
     enum: [
-      "privateTours",
+      "privateTour",
       "smallGroupTour",
       "luxuryProperties",
       "guides",

@@ -24,6 +24,9 @@ import TourWebsite from "./Pages/TourPage";
 import TourDataForm from "./Pages/VendorDashboard/tourCreationForm";
 import TourDetailPage from "./Pages/detailTourPage";
 import TourDashboard from "./Pages/VendorDashboard/TourDashboard";
+import PrivacyPolicy from "./Pages/privacyPolicy";
+import MedicalService from "./Pages/Medical";
+import TermsOfService from "./Pages/TermsPage";
 
 const MainLayout = lazy(() => import("./Layout/MainlLayout"));
 const VendorDashBoardLayout = lazy(() =>
@@ -204,7 +207,13 @@ const App = () => {
       <style>{nprogressStyles}</style>
       <Toaster position="top-right" richColors closeButton />
 
-      <Suspense fallback={<></>}>
+      <Suspense
+        fallback={
+          <>
+            <div className="hidden">This is a loader</div>
+          </>
+        }
+      >
         <Routes>
           {/* Catch-all for 404 */}
           <Route path="*" element={<NotFoundPage />} />
@@ -213,6 +222,7 @@ const App = () => {
             {/* Core Public Pages */}
             <Route path="/" element={<Home />} />
             <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/services" element={<MarketPlace />} />
             <Route path="/contact-us" element={<ContactForm />} />
             <Route path="/success" element={<SuccessPage />} />
@@ -249,6 +259,10 @@ const App = () => {
               element={<DomesticStaffingService />}
             />
 
+            <Route
+              path="/service/Medical-Staffing/:id"
+              element={<MedicalService />}
+            />
             {/* Financial Services */}
             <Route
               path="/service/Money-Transfer-Services/:id"
@@ -273,6 +287,7 @@ const App = () => {
               path="/service/hotel/room/details/:id"
               element={<RoomDetailPage />}
             />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
 
             {/* Property Services */}
             <Route
@@ -486,7 +501,7 @@ const App = () => {
             />
           </Route>
           <Route
-            path="/admin/vendor-details/:id"
+            path="/vendor-details/:id"
             element={
               <AdminProtectedRoute>
                 <VendorDetailsPage />

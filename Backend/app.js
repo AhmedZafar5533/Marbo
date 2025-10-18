@@ -30,7 +30,6 @@ const app = express();
 // STEP 1: Trust proxy
 app.set("trust proxy", "1");
 
-// STEP 2: CORS (before webhook)
 app.use(
   cors({
     origin: "http://localhost:5173",

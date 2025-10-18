@@ -5,6 +5,7 @@ import { ChevronUp } from "lucide-react";
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useReviewStore } from "../../Store/reviewsStore";
 import { useCartStore } from "../../Store/cartStore";
+import CookieBanner from "../components/cookieConsent";
 
 const ReviewsModal = lazy(() => import("../components/Modals/ReviewsModal"));
 const FloatingCart = lazy(() => import("../components/cartButton"));
@@ -56,6 +57,7 @@ export default function MainLayout() {
           <ChevronUp size={24} />
         </button>
       )}
+      <CookieBanner />
     </>
   );
 }

@@ -36,6 +36,7 @@ const UserSchema = new mongoose.Schema(
       enum: ["yes", "pending", "no"],
       default: "no",
     },
+
     profilePic: {
       url: {
         type: String,

@@ -14,7 +14,7 @@ router.get("/pending-vendors", auth, checkAdmin, async (req, res) => {
     const pendingVendors = await Vendor.find({
       status: { $in: ["Pending", "Under Review"] },
     }).sort({ createdAt: -1 });
-
+    console.log(pendingVendors);
     res.status(200).json({
       success: true,
       count: pendingVendors.length,
@@ -35,6 +35,7 @@ router.get("/approved-vendors", auth, checkAdmin, async (req, res) => {
     const approvedVendors = await Vendor.find({
       status: "Approved",
     }).sort({ createdAt: -1 });
+
     if (!approvedVendors.length) {
       return res.status(404).json({
         success: false,
@@ -100,10 +101,6 @@ router.post("/change-vendor-status/:id", auth, checkAdmin, async (req, res) => {
       { new: true }
     );
 
-    await User.findByIdAndUpdate(req.user._id, {
-      onboardingDone: "no",
-    });
-
     if (!vendor) {
       return res.status(404).json({
         success: false,
@@ -117,6 +114,7 @@ router.post("/change-vendor-status/:id", auth, checkAdmin, async (req, res) => {
       });
     }
     if (status === "Approved") {
+      console.log("approved");
       await User.findByIdAndUpdate(vendor.userId, {
         onboardingDone: "yes",
       });

@@ -353,7 +353,7 @@ router.post("/business-address", auth, async (req, res) => {
         message: "Please provide all required address details",
       });
     }
-
+    console.log("we are here");
     // Find and update vendor
     const vendor = await Vendor.findOneAndUpdate(
       { userId: req.user.id },
@@ -380,9 +380,13 @@ router.post("/business-address", auth, async (req, res) => {
       onboardingDone: "pending",
     });
 
-    await Vendor.findByIdAndUpdate(req.user.id, {
-      status: "Pending",
-    });
+    const newVendor = await Vendor.findOneAndUpdate(
+      { userId: req.user.id },
+      { status: "Pending" },
+      { new: true } 
+    );
+
+    console.log(newVendor);
 
     res.status(200).json({
       success: true,
