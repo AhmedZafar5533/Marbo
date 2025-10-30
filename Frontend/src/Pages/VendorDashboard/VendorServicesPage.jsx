@@ -601,6 +601,7 @@ const VendorDashboardServicesSection = () => {
                     Water Bill Payments
                   </option>
                   <option value="Tours">Tours</option>
+                  <option value="Oil Services">Oil Services</option>
                 </select>
               </div>
               <div>

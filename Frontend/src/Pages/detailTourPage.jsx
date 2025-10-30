@@ -52,7 +52,7 @@ export default function TourDetailPage() {
   // MODIFICATION: Add state to handle date validation errors
   const [dateError, setDateError] = useState("");
 
-  const { id } = useParams();
+  const { id, serviceId } = useParams();
   const { getDetailsById: getTourById, details: fetchedTour } = useTourStore();
   const { addToCart } = useCartStore();
   const { setisModelOpen } = useReviewStore();

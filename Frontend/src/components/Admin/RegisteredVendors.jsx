@@ -18,6 +18,7 @@ const ListedVendors = () => {
     const [sortConfig, setSortConfig] = useState({ key: 'joinDate', direction: 'desc' });
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
+    
 
     useEffect(() => {
         getApprovedVendors();

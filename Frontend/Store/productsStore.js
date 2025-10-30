@@ -6,7 +6,34 @@ const baseUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/api";
 export const useProductStore = create((set) => ({
   products: [],
   fetchedProduct: null,
+  displayProducts: [],
   loading: false,
+
+  fetchDisplayProducts: async (serviceId) => {
+    try {
+      set({ loading: true });
+      const response = await fetch(`${baseUrl}/products/display`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (response.status === 200 || response.status === 304) {
+        const data = await response.json();
+        console.log("Response from fetching display products:", data);
+        set({ displayProducts: data.products });
+        return true;
+      } else if (!response.ok) {
+        const data = await response.json();
+        toast.error(data.message || "Failed to fetch products");
+        return false;
+      }
+    } catch (error) {
+      toast.error("Failed to fetch products. Please try again.");
+      return false;
+    } finally {
+      set({ loading: false });
+    }
+  },
   addProduct: async (product) => {
     try {
       set({ loading: true });

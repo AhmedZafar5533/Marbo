@@ -30,7 +30,10 @@ const Footer = () => {
                 </a>
               </li>
               <li key="Terms of Service">
-                <Link to="#" className="hover:text-white transition-colors">
+                <Link
+                  to="/terms-of-service"
+                  className="hover:text-white transition-colors"
+                >
                   Terms of Service
                 </Link>
               </li>

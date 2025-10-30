@@ -27,6 +27,8 @@ import TourDashboard from "./Pages/VendorDashboard/TourDashboard";
 import PrivacyPolicy from "./Pages/privacyPolicy";
 import MedicalService from "./Pages/Medical";
 import TermsOfService from "./Pages/TermsPage";
+import OilOfferForm from "./Pages/VendorDashboard/OilOfferCreation";
+import OilOfferDetailPage from "./Pages/FuelOfferPage";
 
 const MainLayout = lazy(() => import("./Layout/MainlLayout"));
 const VendorDashBoardLayout = lazy(() =>
@@ -241,8 +243,16 @@ const App = () => {
 
             {/* Product Services */}
             <Route
-              path="/view/:type/:serviceId/:id"
+              path="/products/Groceries/:serviceId/:id"
               element={<ProductDetailPage />}
+            />
+            <Route
+              path="/products/Groceries/:serviceId/:id"
+              element={<ProductDetailPage />}
+            />
+            <Route
+              path="/products/Oil Offer/:serviceId/:id"
+              element={<OilOfferDetailPage />}
             />
             <Route
               path="/service/Groceries/:id"
@@ -278,9 +288,9 @@ const App = () => {
               path="/service/Hotel-Booking/:id"
               element={<HotelRoomsShowcase />}
             />
-            <Route path="/service/tours/:id" element={<TourWebsite />} />
+            <Route path="/products/tours/:id" element={<TourWebsite />} />
             <Route
-              path="/service/tours/details/:id"
+              path="/products/tours/:serviceId/:id"
               element={<TourDetailPage />}
             />
             <Route
@@ -473,6 +483,10 @@ const App = () => {
             <Route
               path="/dashboard/vendor/manage/clothes"
               element={<ClothingManagement />}
+            />
+            <Route
+              path="/dashboard/vendor/manage/oil"
+              element={<OilOfferForm />}
             />
             <Route
               path="/dashboard/vendor/manage/holiday-lets"

@@ -154,6 +154,22 @@ router.get("/get/inventory/:typeOf", checkVendor, async (req, res) => {
   }
 });
 
+router.get("/display", async (req, res) => {
+  try {
+    const products = await mainProduct.aggregate([{ $sample: { size: 20 } }]);
+    console.log("Products found:", products);
+
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No products found" });
+    }
+
+    res.status(200).json({ products });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 router.get("/get/:serviceId", async (req, res) => {
   try {
     const service = await Service.findById(req.params.serviceId).exec();

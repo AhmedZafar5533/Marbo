@@ -284,6 +284,7 @@ app.use("/api/payment", require("./routes/paymentRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
 app.use("/api/checkout", require("./routes/checkoutRoutes"));
 app.use("/api/tours", require("./routes/tourRoutes"));
+app.use("/api/oil-offers", require("./routes/OilOfferRoutes"));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

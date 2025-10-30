@@ -14,6 +14,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { useAuthStore } from "../../Store/authStore";
+import { FaOilCan } from "react-icons/fa";
 
 const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -75,6 +76,11 @@ const DashboardLayout = () => {
       name: "Manage Hotel",
       icon: <Users size={20} />,
       path: "/dashboard/vendor/hotel-managment",
+    },
+    {
+      name: "Manage Offers",
+      icon: <FaOilCan size={20} />,
+      path: "/dashboard/vendor/manage/oil",
     },
     {
       name: "Manage Holiday Spots",

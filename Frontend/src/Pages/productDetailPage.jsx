@@ -32,8 +32,6 @@ import { useReviewStore } from "../../Store/reviewsStore";
 import { useProductStore } from "../../Store/productsStore";
 import { useParams } from "react-router-dom";
 
-
-
 const fallbackGalleryImages = [
   "https://images.unsplash.com/photo-1583394838336-acd977736f90?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
   "https://images.unsplash.com/photo-1484704849700-f032a568e944?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=800",
@@ -159,7 +157,7 @@ export default function ProductDetailPage() {
 
   const addToCartHandler = async () => {
     const productToAdd = {
-      name: productDetails.productName,
+      name: productDetails.name,
       price: productDetails.price,
       quantity: quantityToBuy,
       typeOf: "product",
@@ -169,6 +167,7 @@ export default function ProductDetailPage() {
       serviceId: productDetails.serviceId.id || productDetails.serviceId,
       productId: productDetails._id,
     };
+    console.log("Adding to cart:", productToAdd);
     addToCart(productToAdd);
   };
 
