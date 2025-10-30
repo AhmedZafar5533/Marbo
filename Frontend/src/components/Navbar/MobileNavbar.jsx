@@ -126,7 +126,7 @@ const MobileNavbar = ({ menuItems, performSearch, isScrolled }) => {
                                 <div
                                     className="relative h-9 w-9 rounded-full bg-gradient-to-tr from-red-600 to-red-500 shadow-lg flex items-center justify-center transition-transform transform group-hover:scale-110"
                                 >
-                                    <span className="text-white font-extrabold text-2xl">M</span>
+                                    <span className="text-white font-extrabold text-2xl">T</span>
                                     <span className="absolute inset-0 rounded-full ring-2 ring-white opacity-0 group-hover:opacity-20 transition-opacity"></span>
                                 </div>
                             </a>

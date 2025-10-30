@@ -126,7 +126,7 @@ const DesktopNavbar = ({ menuItems, performSearch }) => {
               >
                 <div className="relative h-7 w-7 sm:h-8 sm:w-8 lg:h-10 lg:w-10 xl:h-12 xl:w-12 rounded-full bg-gradient-to-tr from-red-600 to-red-500 shadow-lg flex items-center justify-center transition-transform transform group-hover:scale-110">
                   <span className="text-white font-extrabold text-sm sm:text-base lg:text-lg xl:text-xl">
-                    M
+                    T
                   </span>
                   <span className="absolute inset-0 rounded-full ring-2 ring-white opacity-0 group-hover:opacity-20 transition-opacity"></span>
                 </div>
@@ -137,7 +137,7 @@ const DesktopNavbar = ({ menuItems, performSearch }) => {
                       : "text-lg sm:text-xl lg:text-2xl xl:text-[1.7rem]"
                   } transition-all duration-300 font-extrabold text-gray-900 group-hover:text-red-600 whitespace-nowrap`}
                 >
-                  Marbo Global
+                  Triple Portion
                 </span>
               </a>
             </div>
