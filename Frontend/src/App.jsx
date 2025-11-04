@@ -29,6 +29,7 @@ import MedicalService from "./Pages/Medical";
 import TermsOfService from "./Pages/TermsPage";
 import OilOfferForm from "./Pages/VendorDashboard/OilOfferCreation";
 import OilOfferDetailPage from "./Pages/FuelOfferPage";
+import ECommerceMarketplace from "./Pages/services";
 
 const MainLayout = lazy(() => import("./Layout/MainlLayout"));
 const VendorDashBoardLayout = lazy(() =>
@@ -222,10 +223,10 @@ const App = () => {
           {/* Public Routes - No authentication required */}
           <Route element={<MainLayout />}>
             {/* Core Public Pages */}
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<ECommerceMarketplace />} />
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/services" element={<MarketPlace />} />
+            <Route path="/about" element={<Home />} />
             <Route path="/contact-us" element={<ContactForm />} />
             <Route path="/success" element={<SuccessPage />} />
             <Route

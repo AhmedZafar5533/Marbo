@@ -26,7 +26,7 @@ const RedirectPage = () => {
 
                 {/* Brand name */}
                 <span className="text-2xl font-extrabold text-gray-900 transition-colors group-hover:text-red-600">
-                  Marbo Global
+                  Triple Portion
                 </span>
               </a>
             </div>

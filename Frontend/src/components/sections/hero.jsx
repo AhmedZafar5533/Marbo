@@ -108,8 +108,13 @@ const HeroSection = () => {
         {mobileProfiles.map((img, index) => (
           <div
             key={index}
-            className={`w-14 h-14 rounded-full border-2 border-white shadow-md transition-transform duration-300 hover:scale-105 ${index === 1 ? "mx-2 z-10" : index === 0 ? "-mr-3 mt-3" : "-ml-3 mt-3"
-              }`}
+            className={`w-14 h-14 rounded-full border-2 border-white shadow-md transition-transform duration-300 hover:scale-105 ${
+              index === 1
+                ? "mx-2 z-10"
+                : index === 0
+                ? "-mr-3 mt-3"
+                : "-ml-3 mt-3"
+            }`}
             style={{
               backgroundImage: `url(${img})`,
               backgroundSize: "cover",
@@ -152,7 +157,9 @@ const HeroSection = () => {
           </h1>
 
           <p className="text-base sm:text-lg md:text-xl text-gray-600 mt-6 mb-8 md:mb-10 max-w-3xl mx-auto leading-relaxed opacity-90">
-            Marbo Global connects diasporans and global workforce to goods & service providers back home and worldwide. View it, like it, pay it – all on one secure platform.
+            Triple Portion connects diasporans and global workforce to goods &
+            service providers back home and worldwide. View it, like it, pay it
+            – all on one secure platform.
           </p>
 
           <form
@@ -191,14 +198,27 @@ const HeroSection = () => {
               </button>
             </div>
           </form>
-          <div className={`hidden md:flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 mt-6 transition-all duration-700 delay-700 opacity-100 translate-y-0`}>
+          <div
+            className={`hidden md:flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 mt-6 transition-all duration-700 delay-700 opacity-100 translate-y-0`}
+          >
             <a
               href="/services"
               className="no-underline relative overflow-hidden px-8 py-4 rounded-tl-2xl rounded-br-2xl uppercase font-semibold text-base sm:text-lg cursor-pointer bg-red-600 text-white hover:shadow-2xl hover:-translate-y-1.5 group w-full sm:w-auto text-center transition-all duration-300"
             >
               <span className="relative z-10 flex items-center justify-center">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  ></path>
                 </svg>
                 Explore Services
               </span>
@@ -209,8 +229,19 @@ const HeroSection = () => {
               className="no-underline relative overflow-hidden px-8 py-4 rounded-tl-2xl rounded-br-2xl uppercase font-semibold text-base sm:text-lg cursor-pointer bg-white text-red-600 hover:shadow-2xl hover:text-white hover:-translate-y-1.5 group border-2 border-red-600 w-full sm:w-auto text-center transition-all duration-300"
             >
               <span className="relative z-10 flex items-center justify-center">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  ></path>
                 </svg>
                 Join Now
               </span>
@@ -218,7 +249,9 @@ const HeroSection = () => {
             </Link>
           </div>
         </div>
-        <div className={`md:hidden flex flex-row justify-center items-center font-['alergy'] gap-4 sm:gap-3 mt-6 transition-all duration-700 delay-700 opacity-100 translate-y-0 `}>
+        <div
+          className={`md:hidden flex flex-row justify-center items-center font-['alergy'] gap-4 sm:gap-3 mt-6 transition-all duration-700 delay-700 opacity-100 translate-y-0 `}
+        >
           <Link
             to="/services"
             className="no-underline relative overflow-hidden px-5 sm:px-5 py-4 sm:py-4 rounded-tl-2xl rounded-br-2xl uppercase font-semibold text-base sm:text-lg cursor-pointer bg-red-600 text-white hover:shadow-2xl hover:-translate-y-1.5 group w-full sm:w-auto text-center transition-all duration-300"
@@ -234,7 +267,6 @@ const HeroSection = () => {
             <span className="absolute inset-0 bg-red-600 bg-opacity-10 transform scale-x-0 origin-right transition-transform duration-300 group-hover:scale-x-100"></span>
           </Link>
         </div>
-
       </div>
 
       {/* Animation styles */}

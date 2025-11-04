@@ -10,7 +10,10 @@ const Footer = () => {
             <ul className="space-y-3">
               {["About", "Careers"].map((item) => (
                 <li key={item}>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a
+                    href={`/${item}`}
+                    className="hover:text-white transition-colors"
+                  >
                     {item}
                   </a>
                 </li>

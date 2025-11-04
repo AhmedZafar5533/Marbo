@@ -311,7 +311,7 @@ const MobileNavbar = ({ menuItems, performSearch, isScrolled }) => {
             >
                 <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200">
                     <div className="text-red-600 font-bold text-2xl tracking-tight">
-                        Marbo Global
+                       Triple Portion
                     </div>
                     <button
                         onClick={toggleMenu}
@@ -365,7 +365,7 @@ const MobileNavbar = ({ menuItems, performSearch, isScrolled }) => {
                                                 ))}
                                                 <div className="pt-3 pb-1 pl-4">
                                                     <a
-                                                        href={item.link || '#'}
+                                                        href='/'
                                                         className="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-300"
                                                         onClick={closeMenu}
                                                     >

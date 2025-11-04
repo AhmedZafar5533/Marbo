@@ -28,7 +28,7 @@ const steps = [
   {
     title: "Global Connection Hub",
     description:
-      "MarboGlobal bridges continents, connecting diasporans worldwide with trusted providers from home—bringing distant services right to your fingertips.",
+      "Triple Portion bridges continents, connecting diasporans worldwide with trusted providers from home—bringing distant services right to your fingertips.",
     icon: <FaGlobeAfrica />,
     category: "global network",
   },
@@ -173,7 +173,7 @@ const HowItWorks = () => {
                 color: colors.primary
               }}
             >
-              EXPERIENCE MARBO GLOBAL
+              EXPERIENCE Triple Portion
             </div>
 
             <h2 className="text-3xl md:text-5xl font-bold mb-6" style={{ color: colors.dark }}>
@@ -565,7 +565,7 @@ const HowItWorks = () => {
                 color: colors.primary
               }}
             >
-              EXPERIENCE MARBO GLOBAL
+              EXPERIENCE Triple Portion
             </div>
 
             <h2 className="text-3xl md:text-5xl font-bold mb-6" style={{ color: colors.dark }}>
@@ -665,7 +665,7 @@ const HowItWorks = () => {
             viewport={{ once: true }}
           >
             <h3 className="text-2xl font-bold mb-6" style={{ color: colors.dark }}>
-              Ready to Experience MarboGlobal?
+              Ready to Experience Triple Poriton?
             </h3>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

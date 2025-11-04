@@ -36,7 +36,7 @@ const AboutSection = () => {
             </h2>
 
             <p className="text-white mb-8 opacity-90">
-              Marbo Global connects international communities with trusted local sellers — making commerce seamless, safe, and borderless.
+              Triple Portion connects international communities with trusted local sellers — making commerce seamless, safe, and borderless.
             </p>
           </div>
 

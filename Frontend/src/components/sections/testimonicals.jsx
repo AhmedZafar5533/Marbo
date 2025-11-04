@@ -7,7 +7,7 @@ const testimonialsData = [
     quote:
       "Very easy to work with! Was able to quickly get something beautiful and performant up and running in minutes. Straightforward to customize, as well. Dashkit is 🔥!!!",
     name: "Tanya",
-    role: "Marbo customer",
+    role: "Triple Portion customer",
     image: "https://images.pexels.com/photos/6422421/pexels-photo-6422421.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     background:
       "https://images.unsplash.com/photo-1740504713072-2b634befcf6a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw0Mnx8fGVufDB8fHx8fA%3D%3D",
@@ -168,7 +168,7 @@ const Testimonials = () => {
             </h2>
 
             <p className="text-[#646965] text-lg">
-              At Marbo Global, we empower diasporans, their families and friends, and service providers
+              At Triple Portion, we empower diasporans, their families and friends, and service providers
               with seamless, secure transactions. Whether supporting loved ones or offering services, we make shopping effortless and stress-free.
             </p>
 

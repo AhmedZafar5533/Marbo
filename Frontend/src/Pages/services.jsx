@@ -26,7 +26,7 @@ const HeroSection = () => {
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="space-y-6">
             <h1 className="text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
-              Triple your money's worth by
+              Triple your money's worth with
               <span className="bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent">
                 {" "}
                 Triple Portion
@@ -376,10 +376,6 @@ const ECommerceMarketplace = () => {
   useEffect(() => {
     fetchDisplayProducts();
   }, [fetchDisplayProducts]);
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
 
   return (
     <div className="min-h-screen bg-white">

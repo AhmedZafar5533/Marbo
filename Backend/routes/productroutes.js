@@ -156,8 +156,20 @@ router.get("/get/inventory/:typeOf", checkVendor, async (req, res) => {
 
 router.get("/display", async (req, res) => {
   try {
-    const products = await mainProduct.aggregate([{ $sample: { size: 20 } }]);
-    console.log("Products found:", products);
+    const products = await mainProduct.aggregate([
+      { $sample: { size: 20 } },
+      {
+        $project: {
+          name: 1,
+          price: 1,
+          images: 1,
+          image: 1,
+          serviceId: 1,
+          type: 1,
+        },
+      },
+    ]);
+
 
     if (!products || products.length === 0) {
       return res.status(404).json({ message: "No products found" });
