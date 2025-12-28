@@ -49,9 +49,9 @@ const DashboardLayout = () => {
                 <div className={`flex items-center px-4 py-6 border-b border-gray-200 ${!isSidebarOpen && 'justify-center'}`}>
                     <Link to="/" className="flex items-center gap-3">
                         <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                            <span className="text-white font-bold">M</span>
+                            <span className="text-white font-bold">T</span>
                         </div>
-                        {isSidebarOpen && <span className="text-xl font-semibold text-gray-800">Marbo Global</span>}
+                        {isSidebarOpen && <span className="text-xl font-semibold text-gray-800">Triple Portion</span>}
                     </Link>
                 </div>
 

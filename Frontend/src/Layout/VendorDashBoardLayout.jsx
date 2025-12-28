@@ -144,11 +144,11 @@ const DashboardLayout = () => {
         >
           <Link to="/" className="flex items-center gap-3">
             <div className="h-8 w-8 bg-indigo-700 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">M</span>
+              <span className="text-white font-bold">T</span>
             </div>
             {isSidebarOpen && (
               <span className="text-xl font-semibold text-gray-800">
-                Marbo Global
+                Triple Portion
               </span>
             )}
           </Link>

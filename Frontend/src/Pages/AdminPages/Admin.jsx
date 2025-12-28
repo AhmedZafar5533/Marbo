@@ -73,7 +73,6 @@ function AdminDashboard() {
     }
   }, [loading, user, navigate]);
 
-
   return (
     <>
       {!user?.role === "admin" ? (
@@ -213,7 +212,6 @@ const Sidebar = ({
       label: "Messages",
       path: "/admin/messages",
     },
-   
   ];
 
   return (
@@ -227,7 +225,7 @@ const Sidebar = ({
         {!isCollapsed && (
           <Link to="/">
             <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400">
-              Marbo Global
+              Triple Portion
             </h1>
           </Link>
         )}
