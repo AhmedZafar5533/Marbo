@@ -48,14 +48,14 @@ const LoginPage = () => {
               <div
                 className="relative h-12 w-12 rounded-full bg-gradient-to-tr from-red-600 to-red-500 shadow-lg flex items-center justify-center transition-transform transform group-hover:scale-110"
               >
-                <span className="text-white font-extrabold text-2xl">M</span>
+                <span className="text-white font-extrabold text-2xl">T</span>
                 {/* subtle ring on hover */}
                 <span className="absolute inset-0 rounded-full ring-2 ring-white opacity-0 group-hover:opacity-20 transition-opacity"></span>
               </div>
 
               {/* Brand name */}
               <span className="text-2xl font-extrabold text-gray-900 transition-colors group-hover:text-red-600">
-                Marbo Global
+                Triple Portion
               </span>
             </a>
           </div>
